@@ -1,0 +1,42 @@
+﻿@using Nop.Core
+@inject IStoreContext storeContext
+@inject Nop.Services.Configuration.ISettingService settingService
+@{
+    var store = await storeContext.GetCurrentStoreAsync();
+    var welcomeText = await settingService.GetSettingByKeyAsync<string>("CapeTownSettings.WelcomeText", storeId: store.Id, loadSharedValueIfNotFound: true);
+}
+
+<div class="header">
+    <div class="header-upper">
+        <div class="welcome-text">
+            @welcomeText
+        </div>
+
+        @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderBefore })
+        <div class="header-selectors-wrapper">
+            @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
+            @await Component.InvokeAsync(typeof(CurrencySelectorViewComponent))
+            @await Component.InvokeAsync(typeof(LanguageSelectorViewComponent))
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderSelectors })
+        </div>
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderMiddle })
+    <div class="header-lower">
+        <i class="icon-hamburger d-inline-block d-lg-none mr-2 mr-sm-3 mr-lg-0"></i>
+        <div class="header-logo">
+            @await Component.InvokeAsync(typeof(LogoViewComponent))
+        </div>
+
+        <div class="header-menu">
+            @await Component.InvokeAsync(typeof(TopMenuViewComponent))
+        </div>
+
+        <div class="header-links-wrapper">
+            @await Component.InvokeAsync(typeof(HeaderLinksViewComponent))
+        </div>
+
+        @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderAfter })
+</div>

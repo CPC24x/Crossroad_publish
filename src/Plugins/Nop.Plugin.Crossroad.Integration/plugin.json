@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Integration with third party services",
+  "FriendlyName": "Third party services",
+  "SystemName": "Crossroad.Integration",
+  "Version": "1.02",
+  "SupportedVersions": [ "4.60" ],
+  "Author": "Crossroad publishing",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Crossroad.Integration.dll",
+  "Description": "Integration with third party services"
+}

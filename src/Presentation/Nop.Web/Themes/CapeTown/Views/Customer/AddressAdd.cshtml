@@ -1,0 +1,47 @@
+﻿@model CustomerAddressEditModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsTwo";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Account").Text);
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    //page class
+    NopHtml.AppendPageCssClassParts("html-address-edit-page");
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+@section left
+{
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = CustomerNavigationEnum.Addresses })
+}
+@section Breadcrumb
+{
+    <div class="breadcrumb">
+        <ul itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li>
+                <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <h1> @T("Account.MyAccount") - @T("Account.CustomerAddresses.AddNew") </h1>
+            </li>
+        </ul>
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsAfterBreadcrumb, additionalData = Model })
+}
+<form asp-route="CustomerAddressAdd" method="post">
+    <div class="page account-page address-edit-page">
+        <div class="page-body">
+            <div asp-validation-summary="ModelOnly" class="message-error"></div>
+            @{
+                var dataDictAddress = new ViewDataDictionary(ViewData);
+                dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
+                @await Html.PartialAsync("_CreateOrUpdateAddress", Model.Address, dataDictAddress)
+            }
+            <div class="buttons">
+                <button type="submit" class="button-1 save-address-button">@T("Common.Save")</button>
+            </div>
+        </div>
+    </div>
+</form>

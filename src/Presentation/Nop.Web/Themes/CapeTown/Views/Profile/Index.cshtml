@@ -1,0 +1,62 @@
+﻿@model ProfileIndexModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Profile").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-profile-page");
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+
+
+@section Breadcrumb
+{
+    <div class="breadcrumb">
+        <ul itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li>
+                <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <h1>@Model.ProfileTitle</h1>
+            </li>
+        </ul>
+    </div>
+}
+
+<div class="page profile-page">
+    <div class="page-title">
+        <h1>@Model.ProfileTitle</h1>
+    </div>
+    <div class="page-body">
+        @{
+            var selectPostsTab = Model.ForumsEnabled && Model.PagingPosts ? ".tabs( 'option', 'active', 1 )" : "";
+        }
+        <script asp-location="Footer">
+            $(document).ready(function () {
+                $("#tabs").tabs()@Html.Raw(selectPostsTab);
+            });
+        </script>
+        <div class="tabs inbox-tabs" id="tabs">
+            <ul class="tabs-header">
+                <li><a href="#tabs-1">@T("Profile.PersonalInfo")</a></li>
+                @if (Model.ForumsEnabled)
+                {
+                    <li><a href="#tabs-2">@T("Profile.LatestPosts")</a></li>
+                }
+            </ul>
+            <div id="tabs-1" class="tab-content">
+                @await Component.InvokeAsync(typeof(ProfileInfoViewComponent), new { customerProfileId = Model.CustomerProfileId })
+            </div>
+            @if (Model.ForumsEnabled)
+            {
+                <div id="tabs-2" class="tab-content">
+                    @await Component.InvokeAsync(typeof(ProfilePostsViewComponent), new { customerProfileId = Model.CustomerProfileId, pageNumber = Model.PostsPage })
+                </div>
+            }
+        </div>
+    </div>
+</div>

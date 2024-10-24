@@ -1,0 +1,31 @@
+﻿@model IntegrationSettingsModel
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.OpenKMSettingsModel.Url" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.OpenKMSettingsModel.Url" />
+            <span asp-validation-for="@Model.OpenKMSettingsModel.Url"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.OpenKMSettingsModel.Username" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.OpenKMSettingsModel.Username" />
+            <span asp-validation-for="@Model.OpenKMSettingsModel.Username"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.OpenKMSettingsModel.Password" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.OpenKMSettingsModel.Password" />
+            <span asp-validation-for="@Model.OpenKMSettingsModel.Password"></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+﻿@using Nop.Core
+@using Nop.Services.Helpers
+@using Nop.Web.Framework.UI
+@using Nop.Core.Domain.Catalog
+
+@inject CatalogSettings catalogSettings
+@inject IWorkContext workContext
+@inject IThemeContext themeContext
+@inject IUserAgentHelper userAgentHelper
+@{
+    var supportRtl = (await workContext.GetWorkingLanguageAsync()).Rtl;
+    var themeName = await themeContext.GetWorkingThemeNameAsync();
+
+    //add main CSS file
+    if (supportRtl)
+    {
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/color.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/capetown.rtl.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/styles.rtl.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/owl.carousel.rtl.css", string.Empty);
+    }
+    else
+    {
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/color.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/capetown.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/styles.css", string.Empty);
+        NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/owl.carousel.css", string.Empty);
+    }
+
+    NopHtml.AppendCssFileParts($"/Themes/{themeName}/Content/css/animate.css", string.Empty);
+    //add jQuery UI css file
+    NopHtml.AppendCssFileParts("/lib_npm/jquery-ui-dist/jquery-ui.min.css", string.Empty);
+
+    //add swiper css file
+    if (catalogSettings.DisplayAllPicturesOnCatalogPages)
+    {
+        NopHtml.AppendCssFileParts("~/lib_npm/swiper/swiper-bundle.min.css");
+    }
+}

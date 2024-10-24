@@ -1,0 +1,205 @@
+﻿@model BlogPostModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsTwo";
+
+    //title
+    NopHtml.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
+    //meta
+    NopHtml.AddMetaDescriptionParts(Model.MetaDescription);
+    NopHtml.AddMetaKeywordParts(Model.MetaKeywords);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-blogpost-page");
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+@section left {
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.LeftSideColumnBlogBefore })
+    @await Component.InvokeAsync(typeof(BlogMonthsViewComponent))
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.LeftSideColumnAfterBlogArchive })
+    @await Component.InvokeAsync(typeof(BlogTagsViewComponent))
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.LeftSideColumnBlogAfter })
+}
+@section Breadcrumb{
+    <div class="breadcrumb">
+        <ul>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("Homepage")">
+                        <span>@T("Products.Breadcrumb.Top")</span>
+                    </a>
+                </span>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("Blog")">
+                        <strong>@T("NopStation.Theme.CapeTown.Blogs")</strong>
+                    </a>
+                </span>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <strong class="current-item" itemprop="name">@Model.Title</strong>
+            </li>
+
+        </ul>
+    </div>
+}
+<div class="page blogpost-page">
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageTop, additionalData = Model })
+    <div class="blog-posts-picture">
+        <a href="@Url.RouteUrl("BlogPost", new { SeName = Model.SeName })" title="@Model.Title"></a>
+    </div>
+    <div class="post-head">
+        <span class="post-date">@Model.CreatedOn.ToString("D")</span>
+        <a class="post-title" href="@Url.RouteUrl("BlogPost", new {SeName = Model.SeName})">@Model.Title</a>
+    </div>
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageBeforeBody, additionalData = Model })
+        <div class="post-body">
+            @Html.Raw(Model.Body)
+        </div>
+        @if (Model.Tags.Count > 0)
+        {
+            <div class="tags">
+                <label>@T("Blog.Tags"):</label>
+                <ul>
+                    @for (var i = 0; i < Model.Tags.Count; i++)
+                    {
+                        var tag = Model.Tags[i];
+                        <li><a href="@Url.RouteUrl("BlogByTag", new {tag = tag})">@tag</a></li>
+                        if (i != Model.Tags.Count - 1)
+                        {
+                            <li class="separator">,</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageBeforeComments, additionalData = Model })
+        @if (Model.AllowComments)
+        {
+            <div class="fieldset new-comment" id="comments">
+                <div class="title">
+                    <strong>@T("Blog.Comments.LeaveYourComment")</strong>
+                </div>
+                <div class="notifications">
+                    <div asp-validation-summary="ModelOnly" class="message-error"></div>
+                    @{
+                        var result = TempData["nop.blog.addcomment.result"] as string;
+                    }
+                    @if (!string.IsNullOrEmpty(result))
+                    {
+                        <div class="result">@result</div>
+                    }
+                </div>
+
+                <form asp-route="BlogPost" asp-route-sename="@Model.SeName" method="post">
+                    <div class="form-fields">
+                        <div class="inputs">
+                            <label asp-for="AddNewComment.CommentText" asp-postfix=":"></label>
+                            <textarea placeholder="@T("AddNewComment.PlaceHolder")" asp-for="AddNewComment.CommentText" class="enter-comment-text"></textarea>
+                            <span asp-validation-for="AddNewComment.CommentText"></span>
+                        </div>
+                        @if (Model.AddNewComment.DisplayCaptcha)
+                        {
+                            <nop-captcha />
+                        }
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" name="add-comment" class="button-1 blog-post-add-comment-button">@T("Blog.Comments.SubmitButton")</button>
+                    </div>
+                </form>
+            </div>
+            if (Model.Comments.Count > 0)
+            {
+                <div class="comment-list">
+                    <div class="title">
+                        <strong>@T("Blog.Comments")</strong>
+                    </div>
+                    <div class="comments">
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <div class="comment blog-comment">
+                                <div class="comment-info">
+                                    <div class="user-info">
+                                        @if (comment.AllowViewingProfiles)
+                                        {
+                                            <a href="@Url.RouteUrl("CustomerProfile", new {id = comment.CustomerId})" class="username">@(comment.CustomerName)</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="username">@(comment.CustomerName)</span>
+                                        }
+
+                                        @if (!string.IsNullOrEmpty(comment.CustomerAvatarUrl))
+                                        {
+                                            <div class="avatar">
+                                                @if (comment.AllowViewingProfiles)
+                                                {
+                                                    <a href="@Url.RouteUrl("CustomerProfile", new {id = comment.CustomerId})" class="avatar-img-link">
+                                                        <img src="@(comment.CustomerAvatarUrl)" class="avatar-img" alt="avatar" />
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@(comment.CustomerAvatarUrl)" class="avatar-img" alt="avatar" />
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="comment-time">
+                                        <label>@T("Blog.Comments.CreatedOn"):</label>
+                                        <span class="stat-value">@comment.CreatedOn.ToString("g")</span>
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-body">
+                                        @Html.Raw(htmlFormatter.FormatText(comment.CommentText, false, true, false, false, false, false))
+                                    </div>
+                                </div>
+                                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageInsideComment, additionalData = comment })
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageAfterComments, additionalData = Model })
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BlogPostPageBottom, additionalData = Model })
+</div>
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $('.side-2 .block-blog-archive .title').on('click', function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+            if (result.width < 769) {
+                $(this).siblings('.list').slideToggle('slow');
+            }
+            if (result.width < 1001) {
+                $(this).siblings('.listbox').slideToggle('slow');
+            }
+        });
+
+        $('.side-2 .block-popular-blogtags .title').on('click', function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+            if (result.width < 769) {
+                $(this).siblings('.list').slideToggle('slow');
+            }
+            if (result.width < 1001) {
+                $(this).siblings('.listbox').slideToggle('slow');
+            }
+        });
+    });
+</script>

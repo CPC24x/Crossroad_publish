@@ -1,0 +1,47 @@
+﻿@model ShoppingCartModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.ShoppingCart").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-shopping-cart-page");
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+
+@section Breadcrumb{
+    <div class="breadcrumb">
+        <ul>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("Homepage")">
+                        <span>@T("Products.Breadcrumb.Top")</span>
+                    </a>
+                </span>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("cart")">
+                        <strong class="current-item" itemprop="name">@T("ShoppingCart")</strong>
+                    </a>
+                </span>
+
+            </li>
+        </ul>
+    </div>
+}
+@if (!Model.OnePageCheckoutEnabled)
+{
+    @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Cart })
+}
+<div class="page shopping-cart-page">
+    @*<div class="page-title">
+        <h1>@T("ShoppingCart")</h1>
+    </div>*@
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(OrderSummaryViewComponent), new { overriddenModel = Model })
+    </div>
+</div>

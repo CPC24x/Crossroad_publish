@@ -1,0 +1,45 @@
+﻿@model RegisterResultModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Register").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-registration-result-page");
+
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+
+@section Breadcrumb
+{
+    <div class="breadcrumb">
+        <ul itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li>
+                <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <h1>@T("Account.MyAccount") - @T("Account.CustomerInfo")</h1>
+            </li>
+        </ul>
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsAfterBreadcrumb, additionalData = Model })
+}
+
+<div class="page registration-result-page">
+    <div class="page-title">
+        <h1>@T("Account.Register")</h1>
+    </div>
+    <div class="page-body">
+        <div class="regi-comp">
+            <div class="result">
+                @Model.Result
+            </div>
+            <div class="buttons">
+                <a href="@Model.ReturnUrl" class="button-1 register-continue-button">@T("Common.Continue")</a>
+            </div>
+        </div>
+    </div>
+</div>

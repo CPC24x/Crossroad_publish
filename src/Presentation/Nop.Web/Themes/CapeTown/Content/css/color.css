@@ -1,0 +1,153 @@
+
+.ocarousel .manufacturer-name, .ocarousel .owl-nav button.owl-prev, .add-Cart, .overview .add-to-cart-button,
+.ui-tabs-nav li.ui-state-active a, .block-blog-archive .title, .block-popular-blogtags .title, .blog-posts .post-head,
+.cart-collaterals .button-2, .shopping-cart-page .common-buttons button, .cart-footer .totals, .opc .step-title,
+.checkout-page .button-1, .order-progress li.active-step,
+.ui-tabs-nav li.ui-state-active a, .block-blog-archive .title, .block-popular-blogtags .title, .blog-posts .post-head, .new-comment .button-1,
+.block-category-navigation .title, .block-manufacturer-navigation .title, .block-recently-viewed-products .title, .block-popular-tags .title,
+.checkout-page .button-1, .order-progress li.active-step, .product-tab-container .product-tab-picture a strong,
+.owl-carousel .owl-nav button.owl-next, .contact-page .button-1, .email-a-friend-page .button-1, .apply-vendor-page .button-1,
+.search-box .search-box-button, .forum-edit-page .buttons .button-1, .overview .add-to-cart-button,
+.variant-overview .add-to-cart-button, .compare-products-page .clear-list, .wishlist-content .update-wishlist-button,
+.wishlist-content .wishlist-add-to-cart-button, .shipping-types .shipping-type, .product-filter .filter-title, .product-selectors .product-viewmode a.selected,
+.product-sorting::after, .product-page-size::after, #topcartlink,
+div.owl-theme .owl-nav [class*="owl-"]:hover,
+div.owl-carousel .owl-nav .owl-next:hover,
+div.owl-carousel .owl-nav .owl-prev:hover,
+.ui-tabs-nav li.ui-state-active a,
+.blog-news-area .title-block,
+div.ocarousel .manufacturer-name,
+.ui-tabs-nav li.ui-state-active a,
+.product-tab-container .ui-state-default.ui-state-active a,
+.tab-add-caption a,
+div.owl-carousel .owl-nav button.owl-next,
+.header-menu .sublist li a:before,
+.block .icon-plus, .block .icon-minus,
+.mini-shopping-cart button[type="button"],
+.shopping-cart-page .cart th, .checkout-page .cart th, .wishlist-page .cart th,
+.order-details-page .page-title a.print-order-button,
+.order-details-page .actions button:first-child,
+.registration-page .button-1, .registration-result-page .button-1,
+.login-page .button-1, .password-recovery-page .button-1,
+.email-revalidation-page .button-1, .account-activation-page .button-1,
+.account-page .button-1, .return-request-page .button-1,
+.slider-container .slider .owl-nav button.owl-prev,
+.slider-container .slider .owl-nav button.owl-next, .data-table th, .forum-table th,
+.order-list-page .order-details-button {
+  background: #78949f;
+  color: #fff;
+}
+
+
+.ocarousel .owl-nav button.owl-next {
+  background: #78949f;
+  color: #78949f;
+}
+
+.blogpost-page .comment-info .username, 
+.news-item-page .comment-info .username,
+.item-box .actual-price, .footer-block .title strong, .follow-us .social i,
+.blog-posts .buttons .read-more, .cart-footer .checkout-button, .sitemap-page .entity-title h2,
+.variant-overview .variant-name, .email-a-friend-page .title h2,
+.blog-posts .buttons .read-more, .cart-footer .checkout-button,
+.blog-posts .buttons .read-more, .news-list-page .news-date, .block .view-all a,
+.mm-navbar-nav > li:hover > a,
+.blog-news-area .blog-link,
+.footer-block.findus .icon-location:before, .footer-block.findus .icon-phone-call:before,
+.footer-block.findus .icon-email:before,
+.mm-navbar-nav > li:hover > a,
+.mini-shopping-cart .picture + .product,
+.text-info, .text-danger,
+div.owl-carousel .owl-nav button.owl-prev,
+.product-tab-nav-title .title-nav span.title-nav-next,
+.product-tab-nav-title span.title-nav-previous,
+.item-box .product-title a:hover,
+.header-menu .mm-navbar-nav > li:hover > a,
+.block .list .active > a,
+.block .list a:hover, .footer-powered-by a,
+.header-links a:hover, .header-links a:focus,
+.search-toggle:hover, .product-no-reviews, .product-reviews-overview,
+.footer-block .list a:hover, .footer-block .list a:focus, .blog-news-area .news-box-info {
+  color: #78949f;
+}
+
+.category-grid .shop-now {
+  border: solid 1px #78949f;
+}
+
+.owl-carousel .owl-nav button,
+.footer-follow-us::before,
+.follow-us .social li,
+.category-carousel .category-grid > .title::before, .ocarousel-grid .title::before,
+.blog-news-area .title:before,
+.manufacturer-carousel .ocarousel-grid .title::before,
+.ocarousel-grid.product-carousel .title::before,
+div.owl-carousel .owl-nav button.owl-next,
+div.owl-carousel .owl-nav button.owl-prev,
+.product-tab-nav-title .title-nav span.title-nav-next,
+.product-tab-nav-title span.title-nav-previous,
+.product-grid .title::before,
+.login-page .returning-wrapper input[type="password"]:focus,
+.login-page .returning-wrapper input[type="email"]:focus,
+.lds-ripple div {
+  border-color: #78949f;
+}
+
+.login-page .returning-wrapper input[type="password"]:focus,
+.login-page .returning-wrapper input[type="email"]:focus {
+  outline-color: #78949f;
+}
+
+  .attributes .option-list input[type="checkbox"]:checked ~ label,
+  .attributes .option-list input[type="radio"]:checked ~ label {
+    color: #78949f;
+    border-color: #78949f;
+  }
+
+.address-list-page .edit-address-button,
+.blogpost-page .post-head,
+.newsletter-subscribe-button,
+#topcartlink a,
+.forums-table-section .view-all a,
+.category-grid .shop-now,
+.header-menu .sublist li:hover > a,
+.mm-dropdown-list .mm-nav-link:hover,
+.home-page .slider-container .slider button.owl-dot.active,
+.login-page .new-wrapper .button-1, .login-page .button-1,
+.mobile-filter-wrapper .filter-title, .product-filter .filter-title,
+.slider-container .slider a.slider-btn,
+.block .title,
+.mobile.mobile-menu .close-mobile-menu,
+.search-page .button-1,
+#topcartlink,
+.product-filter .ui-slider .ui-slider-handle,
+.product-filter .ui-slider .ui-slider-range, .manufacturer-list-page .title {
+  background-color: #78949f;
+}
+
+  .forums-table-section .view-all a:hover,
+  .forums-table-section .view-all a:focus {
+    background-color: #78949f;
+    opacity:0.9;
+  }
+
+  .mm-nav-item.dropdown-menu-list > a::after {
+    border-bottom-color: #78949f;
+  }
+
+.footer::before {
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 35px solid #78949f;
+}
+
+.mm-nav-item.dropdown-menu-list > a::after {
+  border-bottom-color: #78949f;
+}
+
+
+@media (max-width: 991px) {
+  .home-page .slider-container #slider-1 .slider-caption {
+    background: #78949f;
+  }
+}

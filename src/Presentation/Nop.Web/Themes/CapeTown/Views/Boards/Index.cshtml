@@ -1,0 +1,47 @@
+﻿@model BoardsIndexModel
+@using Nop.Core.Domain.Common
+@inject CommonSettings commonSettings
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("Forum.PageTitle.Default").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-forums-main-page");
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+
+@section Breadcrumb{
+    <div class="breadcrumb">
+        <ul>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("Homepage")">
+                        <span>@T("Products.Breadcrumb.Top")</span>
+                    </a>
+                </span>
+                <span class="delimiter">@breadcrumbDelimiter</span>
+            </li>
+            <li>
+                <span>
+                    <a href="@Url.RouteUrl("boards")">
+                        <strong class="current-item" itemprop="name">@T("Forum.Forums")</strong>
+                    </a>
+                </span>
+
+            </li>
+        </ul>
+    </div>
+}
+<div class="page forums-main-page">
+    @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "ForumWelcomeMessage" })
+    @await Html.PartialAsync("_ForumHeader")
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BoardsMainAfterHeader })
+    @foreach (var forumGroup in Model.ForumGroups)
+    {
+        await Html.RenderPartialAsync("_ForumGroup", forumGroup);
+    }
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BoardsMainBeforeActivediscussions })
+    @await Component.InvokeAsync(typeof(ForumActiveDiscussionsSmallViewComponent))
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BoardsMainAfterActivediscussions })
+</div>

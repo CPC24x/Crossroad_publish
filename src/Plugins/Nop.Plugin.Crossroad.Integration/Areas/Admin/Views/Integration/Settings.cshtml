@@ -1,0 +1,58 @@
+﻿@model IntegrationSettingsModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Admin.Configuration.Settings.Integration").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("Integration Settings");
+}
+
+@{
+    const string hideOpenKMBlockAttributeName = "IntegrationSettingsPage.HideOpenKMBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideOpenKMBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideOpenKMBlockAttributeName);
+
+    const string hideOnixEditAttributeName = "IntegrationSettingsPage.HideOnixEditBlock";
+    var hideOnixEdit = await genericAttributeService.GetAttributeAsync<bool>(customer, hideOnixEditAttributeName);
+}
+
+<form asp-controller="Integration" asp-action="Settings" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.Configuration.Settings.Integration")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div asp-validation-summary="All"></div>
+
+                <nop-cards id="integration-cards">
+                    <nop-card asp-name="integration-openkm"
+                              asp-icon="fas fa-info"
+                              asp-title="@T("Admin.Configuration.Settings.Integration.OpenKM")"
+                              asp-hide-block-attribute-name="@hideOpenKMBlockAttributeName"
+                              asp-hide="@hideOpenKMBlock"
+                              asp-advanced="false">
+                        @await Html.PartialAsync("Settings.OpenKM", Model)
+                    </nop-card>
+
+                    <nop-card asp-name="integration-onixedit"
+                              asp-icon="fas fa-info"
+                              asp-title="@T("Admin.Configuration.Settings.Integration.OnixEdit")"
+                              asp-hide-block-attribute-name="@hideOnixEditAttributeName"
+                              asp-hide="@hideOnixEdit"
+                              asp-advanced="false">
+                        @await Html.PartialAsync("Settings.OnixEdit", Model)
+                    </nop-card>
+                </nop-cards>
+            </div>
+        </div>
+    </section>
+</form>
