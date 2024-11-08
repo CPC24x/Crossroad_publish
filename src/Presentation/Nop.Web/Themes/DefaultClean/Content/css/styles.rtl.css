@@ -1010,9 +1010,8 @@ label, label + * {
 }
 
 .search-box input.search-box-text {
-  float: right;
-  width: 200px;
-  height: 36px;
+  width: 300px;
+  height: 46px;
   margin: 0 0 0 -1px;
 }
 
@@ -1026,11 +1025,6 @@ label, label + * {
   text-align: center;
   color: #fff;
   text-transform: uppercase;
-}
-
-.search-box .search-box-button:hover,
-.search-box .search-box-button:focus {
-  background-color: #248ece;
 }
 
 .search-box .ui-autocomplete-loading {
@@ -8037,12 +8031,6 @@ label, label + * {
     text-align: left;
     vertical-align: middle;
   }
-
-  .search-box input.search-box-text,
-  .search-box .search-box-button {
-    height: 40px;
-  }
-
 
   /*** NAVIGATION ***/
 

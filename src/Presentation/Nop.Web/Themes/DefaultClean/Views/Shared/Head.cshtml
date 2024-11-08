@@ -13,8 +13,10 @@
     var supportRtl = await Html.ShouldUseRtlThemeAsync();
 
     //add main CSS file
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/stylesResponsive.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/styles{(supportRtl ? ".rtl" : "")}.css");
-    
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.css");
+     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     //add swiper css file
     if (catalogSettings.DisplayAllPicturesOnCatalogPages)
     {
