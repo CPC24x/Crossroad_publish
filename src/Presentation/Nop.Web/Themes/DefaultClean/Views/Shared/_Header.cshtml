@@ -11,10 +11,10 @@
                 <div class="col-lg-8 align-self-center">
                     @* d-flex flex-column align-items-start align-items-lg-end justify-content-center position-relative *@
                     <div class="row header-links">
-                        <div class="col-md-9 search-box store-search-box">
+                        <div class="col-md-7 search-box store-search-box">
                             @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
                         </div>
-                        <div class="header-menu col-md-3 d-flex align-items-center justify-content-lg-end">
+                        <div class="header-menu-right col-md-5 d-flex align-items-center justify-content-lg-end">
                             @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
                             @await Component.InvokeAsync(typeof(CurrencySelectorViewComponent))
                             @await Component.InvokeAsync(typeof(LanguageSelectorViewComponent))
@@ -29,4 +29,25 @@
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderMiddle })
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderAfter })
     </div>
+    <div class="hdr-nav">
+        <div class="container">
+            <div class="header-menu position-relative">
+                @await Component.InvokeAsync(typeof(TopMenuViewComponent))
+            </div>
+        </div>
+    </div>
 </div>
+
+<script asp-location="Footer">
+    var yourNavigation = $(".hdr-nav");
+    stickyDiv = "sticking";
+    yourHeader = $('.header-upper').height();
+
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > yourHeader) {
+            yourNavigation.addClass(stickyDiv);
+        } else {
+            yourNavigation.removeClass(stickyDiv);
+        }
+    });
+</script>

@@ -1,6 +1,17 @@
 /*********** Theme Fonts **********/
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 /*********** CSS RESET **********/
 
 
@@ -156,6 +167,7 @@ button, .button-1, .button-2 {
   background-color: #0097bd;
   font-size: 14px;
   font-weight: 500;
+  border: none;
 }
 
   .btn-1:hover {
@@ -201,7 +213,6 @@ label, label + * {
 
 .page {
   min-height: 200px;
-  text-align: center;
 }
 
 .page-title {
@@ -889,9 +900,21 @@ label, label + * {
       }
 
 .header {
-  position: relative;
   z-index: 10;
   margin: auto;
+  padding: 0px 0px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sticking {
+  width: 100%;
+  -webkit-animation: fadeInDown 0.6s ease-in-out;
+  animation: fadeInDown 0.6s ease-in-out;
+  position: fixed !important;
+  z-index: 9999;
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  top: 0;
 }
 
 .header-upper {
@@ -933,6 +956,13 @@ label, label + * {
     margin: auto;
   }
 
+.header-menu-right {
+  gap: 10px;
+}
+
+.header-menu > .top-menu.mobile {
+  z-index: 1;
+}
 
 .header-menu > .top-menu.notmobile > li:first-child > a {
   margin-left: 0px;
@@ -1271,8 +1301,34 @@ label, label + * {
     border-color: #26bfe6;
   }
 
+.newsletter {
+  background-color: #0097bd;
+  padding: 50px 0px;
+  color: #fff;
+  text-align: center;
+}
+
+  .newsletter .title {
+    text-align: center;
+    color: #fff;
+    padding-bottom: 0px;
+    border-bottom: none;
+    font-size: 30px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  .newsletter .newsletter-subscribe {
+    margin-bottom: 20px;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
 .newsletter-email {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
   overflow: hidden;
 }
 
@@ -1281,27 +1337,27 @@ label, label + * {
   }
 
   .newsletter-email input[type="email"] {
-    float: left;
-    width: 180px;
-    height: 36px;
-    margin: 0 -1px 0 0;
+    background-color: #fff;
+    border: none;
+    border-radius: 30px !important;
+    padding: 10px 35px;
+    height: 58px;
   }
 
-.newsletter-subscribe-button {
-  float: left;
-  height: 36px;
-  border: none;
-  background-color: #4ab2f1;
-  padding: 0 15px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
+.newsletter .input-group-append {
+  display: flex;
 }
 
-  .newsletter-subscribe-button:hover,
-  .newsletter-subscribe-button:focus {
-    background-color: #248ece;
-  }
+.newsletter-subscribe-button {
+  background-color: #26bfe6;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: none;
+  padding: 10px 35px;
+  transition: all 0.5s ease-in-out;
+}
 
 .newsletter-email .options {
   clear: both;
@@ -2104,9 +2160,7 @@ label, label + * {
 }
 
 .product-essential {
-  margin: 0 0 40px;
-  border-bottom: 1px solid #ddd;
-  padding: 0 0 10px;
+  margin-bottom: 2em;
 }
 
   .product-essential:after {
@@ -2130,25 +2184,24 @@ label, label + * {
     overflow: hidden;
   }
 
-    .gallery .picture:before {
-      content: "";
-      display: block;
-      padding-top: 100%;
+    .gallery .picture img {
+      width: 100%;
+      height: auto;
     }
 
-    .gallery .picture img,
-    .picture-gallery .picture-thumbs img,
-    .video-gallery .video-thumbs iframe,
-    .variant-picture img {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      max-width: 100%;
-      max-height: 100%;
-      margin: auto;
-    }
+
+.picture-gallery .picture-thumbs img,
+.video-gallery .video-thumbs iframe,
+.variant-picture img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}
 
 .picture-gallery .picture-thumbs {
   overflow: hidden;
@@ -2172,6 +2225,37 @@ label, label + * {
   overflow: hidden;
 }
 
+.product-details-page .nav-tabs {
+  border: 0;
+}
+
+  .product-details-page .nav-tabs .nav-link,
+  .product-details-page .nav-tabs .nav-item.show .nav-link {
+    background: rgba(0, 152, 191, .1);
+    padding: 15px 35px;
+    margin: 0 5px;
+    color: #0098bf;
+    font-size: 16px;
+    display: inline-block;
+    position: relative;
+    z-index: 0;
+    border-radius: 4px 4px 0 0;
+    font-weight: 700;
+    border-bottom: 0px;
+  }
+
+    .product-details-page .nav-tabs .nav-link.active,
+    .product-details-page .nav-tabs .nav-item.show .nav-link {
+      background: rgba(0, 152, 191, 1);
+      color: #fff;
+    }
+
+#productInfoTabContent {
+  border: 1px solid #d2d2d2;
+  border-radius: 5px;
+  padding: 25px;
+}
+
 .overview {
   position: relative;
   margin: 0 0 50px;
@@ -2191,14 +2275,14 @@ label, label + * {
     }
 
   .overview .product-name {
-    margin: 0 0 25px;
-    border-bottom: 1px solid #ddd;
-    padding: 0 0 10px;
+    margin-bottom: 20px;
   }
 
     .overview .product-name h1 {
-      font-size: 30px;
-      font-weight: normal;
+      font-size: 26px;
+      padding-top: 10px;
+      font-weight: 400;
+      margin-bottom: 8px;
     }
 
   .overview .short-description {
@@ -2313,8 +2397,14 @@ label, label + * {
   background-image: url('../images/wishlist-button.png');
 }
 
-.overview .manufacturers {
-  margin: 0 0 20px;
+.overview .manufacturers a,
+.overview .manufacturers .separator {
+  color: #0097bd;
+  font-size: 17px;
+  font-weight: 600;
+  display: inline-block;
+  margin: 0;
+  cursor: pointer;
 }
 
 .overview .availability,
@@ -2477,14 +2567,10 @@ label, label + * {
 
 .overview .add-to-cart-panel,
 .variant-overview .add-to-cart-panel {
-  display: inline-block;
-  position: relative;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
 }
-
-  .overview .add-to-cart-panel > *,
-  .variant-overview .add-to-cart-panel > * {
-    float: left;
-  }
 
 .overview .qty-label,
 .variant-overview .qty-label {
@@ -2493,12 +2579,12 @@ label, label + * {
 
 .overview .qty-input,
 .variant-overview .qty-input {
-  width: 45px;
-  height: 43px;
-  padding: 0 12px;
-  text-align: center;
-  font-size: 15px;
-  color: #444;
+  border: 1px solid #d1d1d1;
+  border-radius: 30px;
+  padding: 13px 25px;
+  min-width: 90px;
+  max-width: 120px;
+  text-align: left;
 }
 
 .overview .qty-dropdown,
@@ -2509,23 +2595,50 @@ label, label + * {
   color: #444;
 }
 
-.overview .add-to-cart-button,
-.variant-overview .add-to-cart-button {
-  height: 43px;
-  border: none;
-  background-color: #4ab2f1;
-  padding: 0 24px;
-  font-size: 15px;
-  color: #fff;
-  text-transform: uppercase;
+.overview .add-to-cart-button span {
+  position: relative;
+  padding-left: 30px;
+  font-weight: 600;
 }
 
-  .overview .add-to-cart-button:hover,
-  .overview .add-to-cart-button:focus,
-  .variant-overview .add-to-cart-button:hover,
-  .variant-overview .add-to-cart-button:focus {
-    background-color: #248ece;
+  .overview .add-to-cart-button span:before {
+    content: '\f07a';
+    position: absolute;
+    left: 0;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
   }
+
+.overview .add-to-cart-button,
+.variant-overview .add-to-cart-button {
+  position: relative;
+  line-height: 1;
+  text-transform: uppercase;
+  width: 100%;
+  padding: 18px 0;
+  font-size: 18px;
+  text-transform: uppercase;
+  max-width: 400px;
+}
+
+.overview .product-bulk-email {
+  display: flex;
+  justify-content: center;
+}
+
+  .overview .product-bulk-email a {
+    font-size: 16px;
+    color: #111111;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: underline;
+  }
+
+    .overview .product-bulk-email a span {
+      color: #0097bd;
+    }
 
 .product-share-button {
   display: inline-block;
@@ -2652,16 +2765,41 @@ label, label + * {
   .attributes dt,
   .attribute-label {
     display: block;
-    margin: 0 0 5px;
     white-space: nowrap;
-    font-weight: bold;
-    color: #444;
   }
+
+    .attributes dt label {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      font-size: 16px;
+    }
 
   .attributes dd,
   .attribute-data {
     margin: 0 0 10px;
   }
+
+    .attributes dd select {
+      border: 1px solid #d2e6eb;
+      background: #f1fafc;
+      padding: 15px 20px;
+      border-radius: 50px;
+      padding: 18px 20px;
+      border-radius: 50px;
+      margin: 0;
+    }
+
+    .attributes dd select {
+      width: 100%;
+      -webkit-appearance: none;
+      line-height: 1;
+      background-image: url(http://clientwebsitedemos.com/crossroadpublishing/wp-content/themes/crossroad/assets/images/appearance-arrow-down.png);
+      background-repeat: no-repeat;
+      background-position: center right;
+      background-position-x: 96%;
+    }
+
+
 
   .attributes li {
     margin: 8px 0 12px;
