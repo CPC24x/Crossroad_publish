@@ -9,7 +9,7 @@
 @inject IHtmlFormatter htmlFormatter
 @inject IWebHelper webHelper
 @inject SeoSettings seoSettings
-@inject BookHelpers.BookHelpers bookHelpers
+@inject BookHelpers bookHelpers
 
 @{
     Layout = "_ColumnsOne";
@@ -87,10 +87,66 @@
                         </div>
                         @if (!string.IsNullOrEmpty(Model.ShortDescription))
                         {
-                            <div class="short-description">
-                                @Html.Raw(Model.ShortDescription)
+                            <div class="description-section">
+                                <div class="hidden-menu" style="display: none;">
+                                    @Html.Raw(Model.ShortDescription + "<br/><br/><a onclick='hidefullText(this)'>Read Less</a>")
+                                </div>
+                                <div class="show-menu">
+                                    @{
+                                        string[] words = Model.ShortDescription.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                                        string result = string.Join(" ", words.Take(100));
+                                        result += " ...";
+                                        result += "<br/><br/><a onclick='showfullText(this)'>Read more</a>";
+                                    }
+                                    @Html.Raw(result)
+                                </div>
                             </div>
+
+                            <script asp-location="Footer">
+                                function showfullText(e) {
+                                    var ele = $(e).parent().parent().find(".hidden-menu");
+                                    ele.slideToggle('slow');
+                                    $(e).parent().slideToggle('slow');
+                                }
+
+                                function hidefullText(e) {
+                                    var ele = $(e).parent().parent().find(".show-menu");
+                                    ele.slideToggle('slow');
+                                    $(e).parent().slideToggle('slow');
+
+                                }
+                            </script>
                         }
+
+                        <div class="endoresement">
+                            <div class="hidden-menu" style="display: none;">
+                                @Html.Raw(Model.ShortDescription + "<br/><br/><a onclick='hidefullText(this)'>Read Less</a>")
+                            </div>
+                            <div class="show-menu">
+                                @{
+                                    string[] words1 = Model.ShortDescription.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                                    string result1 = string.Join(" ", words1.Take(100));
+                                    result1 += " ...";
+                                    result1 += "<br/><br/><a onclick='showfullText(this)'>Read more</a>";
+                                }
+                                @Html.Raw(result1)
+                            </div>
+                        </div>
+
+                        <script asp-location="Footer">
+                            function showfullText(e) {
+                                var ele = $(e).parent().parent().find(".hidden-menu");
+                                ele.slideToggle('slow');
+                                $(e).parent().slideToggle('slow');
+                            }
+
+                            function hidefullText(e) {
+                                var ele = $(e).parent().parent().find(".show-menu");
+                                ele.slideToggle('slow');
+                                $(e).parent().slideToggle('slow');
+
+                            }
+                        </script>
                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsOverviewTop, additionalData = Model })
                         <!--product reviews-->
                         @await Html.PartialAsync("_ProductReviewOverview", Model.ProductReviewOverview)
@@ -162,11 +218,6 @@
                 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsBeforeCollateral, additionalData = Model })
                 <div class="product-collateral">
                     <ul class="nav nav-tabs justify-content-center justify-content-md-start" id="productInfoTab" role="tablist">
-
-                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
-                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
-                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
-
                         @{
                             var hasSpecification = await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel);
                         }
@@ -199,7 +250,33 @@
                         @if (!string.IsNullOrWhiteSpace(await hasSpecification.RenderHtmlContentAsync()))
                         {
                             <div class="tab-pane fade" id="specs-tab-pane" role="tabpanel" aria-labelledby="specs-tab" tabindex="0">
-                                @await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel)
+                                @*  @await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel) *@
+                                <div class="row">
+                                    <div class="col-md-6 lefttab">
+                                        <ul>
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Title")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthorNameInverted")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthoRole")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Endorsement")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Formats")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Imprint")))
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6 righttab">
+                                        <ul>
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Keywords")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Language")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Number of pages")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Publication date")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "PublishingStatus")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Table of content")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Trim size")))
+                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Type")))
+                                        </ul>
+                                    </div>
+                                </div>
+
+
                             </div>
                         }
                     </div>

@@ -92,6 +92,7 @@ body {
   color: #111111;
   font-weight: 400;
   line-height: 1.5;
+  font-size: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -99,10 +100,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  font-size: 14px;
-  color: inherit;
   cursor: pointer;
   text-decoration: none;
+  color: #0097bd;
+  transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
 }
 
   a img {
@@ -2159,6 +2163,21 @@ label, label + * {
   padding: 20px 0 0;
 }
 
+
+  .product-details-page .endoresement {
+    font-weight: 500;
+  }
+
+  .product-details-page .description-section,
+  .product-details-page .endoresement {
+    margin-bottom: 20px;
+  }
+
+    .product-details-page .description-section a,
+    .product-details-page .endoresement a {
+      color: #0097bd;
+    }
+
 .product-essential {
   margin-bottom: 2em;
 }
@@ -2255,6 +2274,27 @@ label, label + * {
   border-radius: 5px;
   padding: 25px;
 }
+
+#specs-tab-pane {
+  font-size: 13px;
+}
+
+  #specs-tab-pane ul li {
+    padding-bottom: 5px;
+    font-weight: 400;
+  }
+
+    #specs-tab-pane ul li strong {
+      font-weight: 600;
+    }
+
+  #specs-tab-pane .lefttab {
+    border-right: 1px solid #d2d2d2;
+  }
+
+  #specs-tab-pane .righttab {
+    border-left: 1px solid #d2d2d2;
+  }
 
 .overview {
   position: relative;
