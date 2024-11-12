@@ -4,10 +4,12 @@
 @using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Seo
 @using Nop.Services.Html
+@using Nop.Web.BookHelpers
 
 @inject IHtmlFormatter htmlFormatter
 @inject IWebHelper webHelper
 @inject SeoSettings seoSettings
+@inject BookHelpers.BookHelpers bookHelpers
 
 @{
     Layout = "_ColumnsOne";
@@ -160,6 +162,11 @@
                 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsBeforeCollateral, additionalData = Model })
                 <div class="product-collateral">
                     <ul class="nav nav-tabs justify-content-center justify-content-md-start" id="productInfoTab" role="tablist">
+
+                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
+                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
+                        <div>@await bookHelpers.GetTitleAsync(Model.Id)</div>
+
                         @{
                             var hasSpecification = await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel);
                         }

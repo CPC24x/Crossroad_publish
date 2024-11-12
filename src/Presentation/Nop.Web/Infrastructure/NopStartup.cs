@@ -110,6 +110,9 @@ namespace Nop.Web.Infrastructure
             services.AddScoped<Factories.IVendorModelFactory, Factories.VendorModelFactory>();
             services.AddScoped<Factories.IWidgetModelFactory, Factories.WidgetModelFactory>();
 
+            // panorazzi
+            services.AddScoped<BookHelpers.BookHelpers>();
+
             //helpers classes
             services.AddScoped<ITinyMceHelper, TinyMceHelper>();
         }
