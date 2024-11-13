@@ -5,7 +5,17 @@
 
   .header-menu-right {
     height: 45px;
+    padding-right: 30px;
   }
+
+  .search-box {
+    width: 100%;
+  }
+
+    .search-box input.search-box-text {
+      max-width: 100%;
+      width: 100%;
+    }
 
   .review-rating .name-description {
     text-align: center;
@@ -78,6 +88,10 @@
 
   .sticking {
     min-height: 50px;
+  }
+
+  .newlibrarysecbg {
+    max-height: 250px;
   }
   /*** GLOBAL TABLES ***/
 
@@ -248,6 +262,10 @@
     display: none;
   }
 
+  .header-menu ul ul {
+    position: relative;
+  }
+
   .top-menu {
     display: none;
   }
@@ -323,6 +341,16 @@
   .block-account-navigation {
     float: none;
     margin: auto !important;
+  }
+
+  .delboxicon {
+    float: none;
+    margin: 0 auto 5px;
+  }
+
+  .delcont {
+    margin: 0;
+    text-align: center;
   }
 
   .write-review .review-rating {
@@ -1169,7 +1197,9 @@
 
 @media all and (min-width: 992px) {
 
-
+  .newlibrarysecbg {
+    max-height: 335px;
+  }
   /*** GLOBAL STYLES ***/
 
 
@@ -1990,6 +2020,10 @@
 
 
   /*** HEADER ***/
+
+  .newlibrarysecbg {
+    max-height: 490px;
+  }
 
   /*** NAVIGATION ***/
 

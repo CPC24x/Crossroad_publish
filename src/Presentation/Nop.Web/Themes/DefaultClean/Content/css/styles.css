@@ -27,6 +27,11 @@
     box-sizing: border-box;
   }
 
+html,
+body {
+  height: 100%;
+}
+
 html {
   margin: 0;
   -webkit-text-size-adjust: none;
@@ -96,7 +101,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444;
+  margin: 0 0 15px 0;
+  padding: 0;
+  font-weight: normal;
+  line-height: 1.2;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
 }
 
 a {
@@ -961,6 +971,7 @@ label, label + * {
   }
 
 .header-menu-right {
+  height: 100%;
   gap: 10px;
 }
 
@@ -1067,27 +1078,31 @@ label, label + * {
   box-sizing: border-box;
 }
 
-.header-links .cart-qty {
-  display: inline-block;
-  margin-left: 5px;
-  margin-right: 2px;
-  vertical-align: middle;
+.header-links {
+  gap: 16px;
 }
 
-.header-links a {
-  display: inline-block;
-  color: #999;
-  font-size: 16px;
-}
-
-  .header-links a svg {
-    color: #0894bc;
+  .header-links .cart-qty {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 2px;
+    vertical-align: middle;
   }
 
-  .header-links a:hover,
-  .header-links a:focus {
-    color: #0097bd;
+  .header-links a {
+    display: inline-block;
+    color: #999;
+    font-size: 16px;
   }
+
+    .header-links a svg {
+      color: #0894bc;
+    }
+
+    .header-links a:hover,
+    .header-links a:focus {
+      color: #0097bd;
+    }
 
 
 .header-logo a {
@@ -1104,6 +1119,7 @@ label, label + * {
 
 .store-search-box {
   position: relative;
+  width: fit-content;
 }
 
 .search-box select.search-box-dropdown {
@@ -1122,7 +1138,7 @@ label, label + * {
 }
 
 .search-box input.search-box-text {
-  width: 100%;
+  max-width: 300px;
   padding-left: 18px;
   background-color: #fff;
   border: 1px solid #d5d5d5;
@@ -1132,7 +1148,7 @@ label, label + * {
 .search-box .search-box-button {
   position: absolute;
   top: 12px;
-  right: 25px;
+  right: 12px;
   width: 20px;
   height: 20px;
   background-color: transparent;
@@ -1200,6 +1216,136 @@ label, label + * {
   }
 
 
+/*********** Index Slider ***********/
+.homemain-slider {
+  max-height: 650px;
+}
+
+  .homemain-slider .slide {
+    position: relative;
+  }
+
+.homeslidersec .slick-slider .slick-track,
+.homeslidersec .slick-slider .slick-list {
+  height: 100%;
+}
+
+.sldrcaption {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+  .sldrcaption .container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+
+.slidercont h5 {
+  font-size: 22px;
+  color: #0097bd;
+  font-weight: 6000;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.slibigatext {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.slibtn a {
+  display: inline-block;
+  padding: 13px 35px;
+  border-radius: 30px;
+  color: #fff;
+  background-color: #0097bd;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.delboxicon {
+  float: left;
+  width: 53px;
+}
+
+.delsec {
+  border-bottom: 1px solid #e5e5e5;
+  padding-top: 25px;
+}
+
+  .delsec > .container > .row {
+    margin-bottom: 25px;
+  }
+
+.delcont {
+  margin-left: 70px;
+  font-size: 14px;
+  color: #666666;
+}
+
+  .delcont h4 {
+    font-size: 18px;
+    color: #0097bd;
+    margin-bottom: 7px;
+  }
+
+  .delcont p {
+    line-height: 21px;
+    margin-bottom: 0px;
+  }
+
+/*********** index video  ***********/
+
+.newlibrarysecbg {
+  background-image: url('../images/explore_library_bg.jpg');
+  padding: 0;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+  color: #fff;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+  .newlibrarysecbg:before {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.40);
+    content: "";
+  }
+
+.newlibrarysecbg {
+}
+
+  .newlibrarysecbg .container {
+    position: relative;
+  }
+
+.playicon {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.libplay h3 {
+  font-size: 40px;
+  color: #fff;
+  margin-bottom: 0px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
 /*********** FOOTER ***********/
 
 .footer {
@@ -1321,10 +1467,10 @@ label, label + * {
     font-size: 30px;
     text-transform: uppercase;
     margin-bottom: 30px;
+    font-weight: 700;
   }
 
   .newsletter .newsletter-subscribe {
-    margin-bottom: 20px;
     max-width: 750px;
     margin-left: auto;
     margin-right: auto;
@@ -1335,6 +1481,7 @@ label, label + * {
   justify-content: center;
   gap: 10px;
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
   .newsletter-email:focus-within {
@@ -1367,6 +1514,10 @@ label, label + * {
 .newsletter-email .options {
   clear: both;
   padding: 10px 0 0;
+}
+
+#newsletter_unsubscribe {
+  font-size: 14px;
 }
 
 .newsletter-validation,

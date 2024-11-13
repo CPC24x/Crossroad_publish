@@ -1,0 +1,116 @@
+﻿@using Nop.Services.Localization
+@using Nop.Core
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+
+@{
+    Layout = "_FullWidth";
+
+    var homepageTitle = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageTitle);
+
+    //title
+    if (!string.IsNullOrEmpty(homepageTitle))
+    {
+        NopHtml.AddTitleParts(homepageTitle);
+    }
+
+    var homepageDescription = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageDescription);
+
+    //meta
+    if (!string.IsNullOrEmpty(homepageDescription))
+    {
+        NopHtml.AddMetaDescriptionParts(homepageDescription);
+    }
+
+    //page class
+    NopHtml.AppendPageCssClassParts("html-home-page");
+}
+<div class="homemain-slider">
+    <div class="slick-track" role="listbox">
+        <div class="slide slick-slide" data-slick-index="0" aria-hidden="true" style="width:100%" tabindex="-1" role="option" aria-describedby="slick-slide00">
+            <div class="sldrimg"><img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/bookbanner-1.jpg" style="width:100%" alt="Please email"></div>
+            <div class="sldrcaption">
+                <div class="container">
+                    <div class="slidercontpos">
+                        <div class="slidercont wow  fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                            <h5>Please email</h5>
+                            <div class="slibigatext">
+                                <a href="mailto:office@crossroadpublishing.com" tabindex="-1">office@crossroadpublishing.com</a> <br>if you encounter any difficulties
+                            </div>
+                            <div class="slibtn">
+                                <a href="https://pixabay.com/vectors/open-book-literature-education-29822/?download" tabindex="-1">Use coupon code “25%” and you will <br>receive 25% discount on order over $50 <br>for all books (exclude journals)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="delsec">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-3">
+                <div class="delboxsec">
+                    <div class="delboxicon"> <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/crossroad-logo.png" alt=""> </div>
+                    <div class="delcont">
+                        <h4><a href="https://crossroadpublishing.com/product-category/imprint/crossroad/">Crossroad</a></h4>
+                        <p>Books about Faith, Science and Contemplative Traditions </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="delboxsec">
+                    <div class="delboxicon"> <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/herder-logo.png" alt=""> </div>
+                    <div class="delcont">
+                        <h4><a href="https://crossroadpublishing.com/product-category/imprint/herder-herder/">Herder &amp; Herder</a></h4>
+                        <p>Books on Theology, Religious Thought and Mysticism </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="delboxsec">
+                    <div class="delboxicon"> <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/blue-logo.png" alt=""> </div>
+                    <div class="delcont">
+                        <h4><a href="">Blessed Blue</a></h4>
+                        <p>Little Gifts and Treasures </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="delboxsec">
+                    <div class="delboxicon"> <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/LogoConvivium-e1657188172267.jpg" alt=""> </div>
+                    <div class="delcont">
+                        <h4><a href="https://crossroadpublishing.com/product-category/distributedprogram/convivium/">Convivium</a></h4>
+                        <p>Distributed Program </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageTop })
+@await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" })
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeCategories })
+@await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
+@await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeBestSellers })
+@await Component.InvokeAsync(typeof(HomepageBestSellersViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeNews })
+@await Component.InvokeAsync(typeof(HomepageNewsViewComponent))
+<div class="newlibrarysecbg">
+    <div class="container">
+        <div class="libplay d-flex justify-content-center align-items-center">
+            <a class="popup-youtube" href="https://www.youtube.com/watch?v=dYF28JAllPI">
+                <div class="playicon"><img src="../Themes/DefaultClean/Content/images/play-icon.png" alt=""></div>
+                <h3>Explore</h3>
+            </a>
+        </div>
+    </div>
+</div>
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforePoll })
+@await Component.InvokeAsync(typeof(HomepagePollsViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBottom })
+
