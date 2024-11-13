@@ -2163,6 +2163,18 @@ label, label + * {
   padding: 20px 0 0;
 }
 
+  .product-details-page .productviewbookdetail ul li {
+    font-size: 14px;
+    font-weight: 400;
+    padding: 10px 15px;
+    border: 1px solid #e3e3e3;
+  }
+
+    .product-details-page .productviewbookdetail ul li strong {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
 
   .product-details-page .endoresement {
     font-weight: 500;
@@ -2269,10 +2281,22 @@ label, label + * {
       color: #fff;
     }
 
+    .product-details-page .nav-tabs .nav-link:hover,
+    .product-details-page .nav-tabs .nav-item .nav-link:hover {
+      background: rgba(0, 152, 191, .75);
+      color: #fff;
+    }
+
 #productInfoTabContent {
   border: 1px solid #d2d2d2;
   border-radius: 5px;
   padding: 25px;
+}
+
+#author-tab-pane > div {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 #specs-tab-pane {
