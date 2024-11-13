@@ -1,4 +1,4 @@
-﻿@media all and (max-width: 769px) {
+﻿@media all and (max-width: 767.98px) {
   .header-menu {
     height: 0;
   }
@@ -58,7 +58,7 @@
   }
 }
 
-@media all and (max-width: 1000px) {
+@media all and (max-width: 991.98px) {
   .search-box input.search-box-text {
     font-size: 15px;
   }
@@ -323,7 +323,7 @@
     }
 }
 
-@media all and (min-width: 481px) {
+@media all and (min-width: 576px) {
 
 
   /*** GLOBAL ***/
@@ -1154,7 +1154,7 @@
   }
 }
 
-@media all and (min-width: 1001px) {
+@media all and (min-width: 992px) {
 
 
   /*** GLOBAL STYLES ***/
@@ -1951,7 +1951,7 @@
   }
 }
 
-@media all and (min-width: 1367px) {
+@media all and (min-width: 1200px) {
 
 
   /*** GLOBAL STYLES ***/
