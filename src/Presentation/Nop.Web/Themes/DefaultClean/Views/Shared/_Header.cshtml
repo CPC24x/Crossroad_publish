@@ -8,7 +8,7 @@
                         @await Component.InvokeAsync(typeof(LogoViewComponent))
                     </div>
                 </div>
-                <div class="col-lg-8 align-self-center">
+                <div class="header-upper-links col-lg-8 align-self-center">
                     @* d-flex flex-column align-items-start align-items-lg-end justify-content-center position-relative *@
                     <div class="row header-links">
                         <div class="col-md-7 search-box store-search-box">
@@ -41,13 +41,19 @@
 <script asp-location="Footer">
     var yourNavigation = $(".hdr-nav");
     stickyDiv = "sticking";
+    toggleSticking = "toggle-sticking";
     yourHeader = $('.header-upper').height();
-
-    $(window).scroll(function () {
+    window.addEventListener("scroll", () => {
         if ($(this).scrollTop() > yourHeader) {
             yourNavigation.addClass(stickyDiv);
+            if (window.innerWidth <= 991.98) {
+                $(".menu-toggle").addClass(toggleSticking);
+            }
         } else {
             yourNavigation.removeClass(stickyDiv);
+            if (window.innerWidth <= 991.98) {
+                $(".menu-toggle").removeClass(toggleSticking);
+            }
         }
     });
 </script>

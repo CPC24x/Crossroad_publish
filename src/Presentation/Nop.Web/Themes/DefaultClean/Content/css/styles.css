@@ -1252,8 +1252,9 @@ label, label + * {
     margin-bottom: 15px;
   }
 
-  .footer-block.information a {
+  .footer-block a {
     font-size: 16px;
+    color: #fff;
   }
 
   .footer-block .list a {
@@ -1271,8 +1272,8 @@ label, label + * {
     content: "\f105";
   }
 
-  .footer-block .list a:hover,
-  .footer-block .list a:focus {
+  .footer-block a:hover,
+  .footer-block a:focus {
     color: #4ab2f1;
   }
 

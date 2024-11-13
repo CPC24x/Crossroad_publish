@@ -71,6 +71,14 @@
     margin-right: 0;
   }
 
+  .header-upper-links {
+    position: relative;
+    top: 0;
+  }
+
+  .sticking {
+    min-height: 50px;
+  }
   /*** GLOBAL TABLES ***/
 
 
@@ -184,6 +192,11 @@
     height: 25px;
     z-index: 10;
   }
+
+    .header-menu .menu-toggle.toggle-sticking {
+      margin-top: 15px;
+      top: 0;
+    }
 
     .header-menu .menu-toggle::before {
       content: '';
