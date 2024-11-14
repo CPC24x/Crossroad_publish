@@ -359,9 +359,7 @@ public class PersistenceService : IPersistenceService
 
         Dictionary<string, string> keywordsDictionary = GetBookSubjects(onixProduct);
 
-        var keywords = keywordsDictionary["Keywords"];
-
-        if (keywords is not null)
+        if (keywordsDictionary.TryGetValue("Keywords", out var keywords))
         {
             string[] splitKeywords = keywords.StringToArray();
 
