@@ -29,7 +29,27 @@
     display: inline-block;
   }
 
+  .offerings .offering-info {
+    text-align: center;
+  }
 
+    .offerings .offering-info .pricerating .review {
+      justify-content: center
+    }
+
+  .view-all {
+    width: 100%;
+    position: relative;
+    top: 0;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .title h2,
+  title-center h2 {
+    margin-bottom: 15px;
+    text-align: center;
+  }
   /*** Subsecibe ***/
 
   .newsletter .input-group-append {
@@ -90,7 +110,7 @@
     min-height: 50px;
   }
 
-  .newlibrarysecbg {
+  .newlibrarysec {
     max-height: 250px;
   }
   /*** GLOBAL TABLES ***/
@@ -417,29 +437,13 @@
 
   /*** CATEGORY ***/
 
-
-  .item-box {
-    width: 49%;
-    margin: 0 0.5% 50px;
+  .item-box .product-rating-box {
+    margin: 0 0 15px;
   }
 
-    .item-box:nth-child(2n+1) {
-      clear: both;
-    }
-
-    .item-box .product-rating-box {
-      margin: 0 0 15px;
-    }
-
-    .item-box .prices {
-      min-height: 40px;
-    }
-
-    .item-box .product-title {
-      min-height: 42px;
-      margin: 0 0 5px;
-    }
-
+  .item-box .prices {
+    min-height: 40px;
+  }
 
   /*** PRODUCT PAGE ***/
 
@@ -632,80 +636,55 @@
           opacity: 1;
         }
 
-  .item-box {
-    width: 32.33333%;
-    margin: 0 0.5% 50px;
+  .product-list .item-box .product-item:after {
+    content: "";
+    display: block;
+    clear: both;
   }
 
-    .item-box:nth-child(2n+1) {
-      clear: none;
-    }
+  .product-list .item-box .picture {
+    float: left;
+    width: 220px;
+  }
 
-    .item-box:nth-child(3n+1) {
-      clear: both;
-    }
+  .product-list .item-box:hover .picture a img,
+  .product-list .item-box:focus .picture a img {
+    opacity: 1;
+  }
 
-  .product-list .item-box {
-    float: none;
+  .product-list .item-box .picture:hover a img,
+  .product-list .item-box .picture:focus a img {
+    opacity: 0.85;
+  }
+
+  .product-list .item-box .picture + .details {
+    margin: 0 0 0 240px;
+  }
+
+  .product-list .item-box .description {
+    display: block;
+    margin: 0 0 10px;
+    line-height: 22px;
+  }
+
+  .product-list .item-box .prices {
+    height: auto;
+    margin: 0 0 30px;
+  }
+
+  .product-list .item-box .buttons {
+  }
+
+  .product-list .item-box .product-box-add-to-cart-button {
     width: auto;
-    margin: 0 5px 20px;
+    min-width: 150px;
+    padding: 0 20px;
   }
 
-    .product-list .item-box .product-item:after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-
-    .product-list .item-box .picture {
-      float: left;
-      width: 220px;
-    }
-
-    .product-list .item-box:hover .picture a img,
-    .product-list .item-box:focus .picture a img {
-      opacity: 1;
-    }
-
-    .product-list .item-box .picture:hover a img,
-    .product-list .item-box .picture:focus a img {
-      opacity: 0.85;
-    }
-
-    .product-list .item-box .picture + .details {
-      margin: 0 0 0 240px;
-    }
-
-    .product-list .item-box .product-title {
-      height: auto;
-      padding: 10px 0;
-      font-size: 18px;
-    }
-
-    .product-list .item-box .description {
-      display: block;
-      margin: 0 0 10px;
-      line-height: 22px;
-    }
-
-    .product-list .item-box .prices {
-      height: auto;
-      margin: 0 0 30px;
-    }
-
-    .product-list .item-box .buttons {
-    }
-
-    .product-list .item-box .product-box-add-to-cart-button {
-      width: auto;
-      min-width: 150px;
-      padding: 0 20px;
-    }
-
-    .product-list .item-box .add-to-compare-list-button,
-    .product-list .item-box .add-to-wishlist-button {
-      width: 42px;
-    }
+  .product-list .item-box .add-to-compare-list-button,
+  .product-list .item-box .add-to-wishlist-button {
+    width: 42px;
+  }
 
 
   /*** PRODUCT PAGE ***/
@@ -1197,7 +1176,7 @@
 
 @media all and (min-width: 992px) {
 
-  .newlibrarysecbg {
+  .newlibrarysec {
     max-height: 335px;
   }
   /*** GLOBAL STYLES ***/
@@ -1597,26 +1576,6 @@
   .item-box .buttons {
     text-align: left;
   }
-
-  .home-page .product-grid .item-box,
-  .product-details-page .product-grid .item-box,
-  .shopping-cart-page .product-grid .item-box {
-    width: 24%;
-    margin: 0 0.5% 50px;
-  }
-
-    .home-page .product-grid .item-box:nth-child(3n+1),
-    .product-details-page .product-grid .item-box:nth-child(3n+1),
-    .shopping-cart-page .product-grid .item-box:nth-child(3n+1) {
-      clear: none;
-    }
-
-    .home-page .product-grid .item-box:nth-child(4n+1),
-    .product-details-page .product-grid .item-box:nth-child(4n+1),
-    .shopping-cart-page .product-grid .item-box:nth-child(4n+1) {
-      clear: both;
-    }
-
 
   /*** PRODUCT PAGE ***/
 

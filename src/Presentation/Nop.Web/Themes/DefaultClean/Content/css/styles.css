@@ -86,7 +86,9 @@ script {
 
 /*********** GLOBAL STYLES **********/
 
-
+.secPTB {
+  padding: 65px 0;
+}
 
 body {
   max-width: 100%;
@@ -108,6 +110,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
 }
+
+  h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    color: inherit;
+    text-decoration: none;
+    font-size: inherit;
+  }
 
 a {
   cursor: pointer;
@@ -254,6 +262,31 @@ label, label + * {
   text-align: center;
 }
 
+.title h2 {
+  margin: 0 0 30px;
+  border-bottom: 1px solid #ccc;
+  padding: 0 0 15px;
+  font-size: 30px;
+  color: #111111;
+}
+
+.title-center h2 {
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  text-transform: uppercase;
+}
+
+.view-all {
+  position: absolute;
+  right: 0px;
+  top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .buttons {
   margin: 0 0 30px;
 }
@@ -303,11 +336,43 @@ label, label + * {
   display: none;
 }
 
+.owl-carousel .owl-stage {
+  display: flex;
+}
+
+.owl-carousel .owl-stage-outer {
+  z-index: 1;
+}
+
+.owl-carousel .owl-nav {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+
+  .owl-carousel .owl-nav .owl-prev,
+  .owl-carousel .owl-nav .owl-next {
+    position: absolute;
+    width: .75rem;
+    height: 100%;
+  }
+
+  .owl-carousel .owl-nav .owl-next {
+    right: -.75rem;
+    background: url('../images/chevron-right.svg') center no-repeat !important;
+  }
+
+  .owl-carousel .owl-nav .owl-prev {
+    left: -.75rem;
+    background: url('../images/chevron-left.svg') center no-repeat !important;
+  }
+
+  .owl-carousel .owl-nav span {
+    display: none;
+  }
 
 /*********** GLOBAL FORMS ***********/
-
-
-
 .fieldset, .section {
   position: relative;
   margin: 0 0 40px;
@@ -1280,7 +1345,7 @@ label, label + * {
   padding-top: 25px;
 }
 
-  .delsec > .container > .row {
+  .delsec > .container > .row > div {
     margin-bottom: 25px;
   }
 
@@ -1303,7 +1368,7 @@ label, label + * {
 
 /*********** index video  ***********/
 
-.newlibrarysecbg {
+.newlibrarysec {
   background-image: url('../images/explore_library_bg.jpg');
   padding: 0;
   background-repeat: no-repeat;
@@ -1317,7 +1382,7 @@ label, label + * {
   justify-content: center;
 }
 
-  .newlibrarysecbg:before {
+  .newlibrarysec:before {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -1327,10 +1392,10 @@ label, label + * {
     content: "";
   }
 
-.newlibrarysecbg {
+.newlibrarysec {
 }
 
-  .newlibrarysecbg .container {
+  .newlibrarysec .container {
     position: relative;
   }
 
@@ -1346,8 +1411,221 @@ label, label + * {
   text-transform: uppercase;
   font-weight: 600;
 }
-/*********** FOOTER ***********/
 
+
+/*********** Offering ***********/
+
+.offerings {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+  color: #fff;
+}
+
+  .offerings .offering-info {
+    padding-top: 15px;
+  }
+
+  .offerings .container {
+    position: relative;
+  }
+
+  .offerings:before {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    content: "";
+  }
+
+.offimgbg {
+  background-color: #313131;
+  text-align: center;
+  border: 1px solid #5f5e5a;
+  padding: 15px;
+}
+
+.offerings h2 {
+  font-size: 42px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, .15);
+}
+
+.offerings .offtitle {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, .15);
+}
+
+  .offerings .offtitle a:hover {
+    color: #0097bd;
+  }
+
+.offerings .pricerating {
+  margin-bottom: 20px;
+}
+
+.offimgbg img {
+  width: 100%;
+}
+
+.offerings .price {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.offerings .review {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.offerings .product-rating-box {
+  display: inline-block;
+}
+
+.offerings .rating {
+  background: url('../images/rating1.png') repeat-x;
+  width: 95px;
+  height: 14px;
+}
+
+  .offerings .rating div {
+    background: url('../images/rating2.png') repeat-x;
+    height: 14px;
+  }
+
+.offerings .btn-1 {
+  padding: 13px 25px;
+  color: #111111;
+  background-color: #fff;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 600;
+  line-height: normal;
+}
+
+  .offerings .btn-1:hover {
+    background-color: #0097bd;
+    color: #fff;
+  }
+
+/*********** Blog ***********/
+.blogsec {
+  background-color: #eff6f7;
+}
+
+  .blogsec .container {
+    position: relative;
+  }
+
+  .blogsec .blogbox {
+    background-color: #fff;
+    position: relative;
+    height: 100%;
+    padding-bottom: 70px;
+  }
+
+    .blogsec .blogbox .blogtitledate {
+      font-size: 14px;
+      color: #666666;
+      font-weight: 300;
+      border-bottom: 1px solid #eeeeee;
+      margin-bottom: 16px;
+      padding-bottom: 5px;
+    }
+
+    .blogsec .blogbox .blogcontent {
+      padding: 20px 10px 0px 10px;
+      height: 100%;
+    }
+
+    .blogsec .blogbox .blogtitledate h3 {
+      font-size: 18px;
+      margin-bottom: 2px;
+      color: #111111;
+    }
+
+    .blogsec .blogbox .blogtext {
+      font-size: 14px;
+      line-height: 24px;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+
+    .blogsec .blogbox .readmorelink {
+      position: absolute;
+      bottom: 25px;
+    }
+
+/*********** Books and Authors ***********/
+.book-and-authors .container {
+  position: relative;
+}
+
+  .book-and-authors .container .content {
+    text-align: center;
+    max-width: 815px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+    .book-and-authors .container .content h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .book-and-authors .container .content p {
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 26px;
+      margin-bottom: 45px;
+    }
+
+    .book-and-authors .container .content h4 {
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    .book-and-authors .container .content img {
+      width: 80px;
+      height: 80px;
+      margin-right: 20px;
+    }
+/*********** bookstores ***********/
+
+.bookstores .clientbox {
+  text-align: center;
+  border: 1px solid #d9d9d9;
+  padding: 10px;
+  height: 92px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+}
+
+  .bookstores .clientbox img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    display: block;
+    width: auto !important;
+    max-width: 90%;
+    transition: all 0.5s ease-in-out;
+    max-height: 90%;
+  }
+
+/*********** FOOTER ***********/
 .footer {
   background-color: #001318;
   color: #fff;
@@ -1965,15 +2243,18 @@ label, label + * {
 .item-box {
   position: relative;
   width: 100%;
-  float: left;
-  margin: 0 0 80px;
-  text-align: left;
 }
+
+  .item-box .product-item {
+    border: 1px solid #d7d7d7;
+    height: 100%;
+  }
 
   .item-box .picture {
     z-index: 1;
     background-color: #fff;
     margin: 0 0 20px;
+    border-bottom: 1px solid #d7d7d7;
   }
 
     .item-box .picture a {
@@ -2010,15 +2291,13 @@ label, label + * {
   }
 
   .item-box .details {
-    padding: 0 10px;
+    padding: 0 10px 15px;
   }
 
   .item-box .product-title {
-    margin: 0 0 10px;
-    font-size: 17px;
-    line-height: 1.2;
-    font-weight: normal;
-    color: #4ab2f1;
+    margin: 0 0 15px;
+    font-size: 16px;
+    font-weight: 700;
   }
 
     .item-box .product-title a {
@@ -2029,6 +2308,12 @@ label, label + * {
       .item-box .product-title a:focus {
         color: #248ece;
       }
+
+  .item-box .product-author {
+    margin: 0 0 15px;
+    font-size: 16px;
+    font-weight: 400;
+  }
 
   .item-box .sku {
     margin: 0 0 15px;
@@ -2199,17 +2484,8 @@ label, label + * {
 }
 
   .product-grid .title {
-    margin: 0 0 30px;
-    border-bottom: 1px solid #ddd;
-    padding: 0 0 15px;
-    font-size: 30px;
-    font-weight: normal;
-    color: #444;
+    position: relative
   }
-
-    .product-grid .title strong {
-      font-weight: normal;
-    }
 
 .manufacturer-grid .title {
   margin: 0 0 15px;

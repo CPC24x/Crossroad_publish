@@ -1,0 +1,24 @@
+﻿@model IList<ProductOverviewModel>
+
+@if (Model.Count > 0)
+{
+
+    <div class="product-grid home-page-product-grid">
+        <div class="container">
+            <div class="title">
+                <h2>@T("Homepage.Products")</h2>
+                <div class="view-all"><a href="#">View All -</a></div>
+            </div>
+            <div class="owl-carousel">
+                @foreach (var item in Model)
+                {
+                    <div class="item-box">
+                        @await Html.PartialAsync("_ProductBox", item)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+

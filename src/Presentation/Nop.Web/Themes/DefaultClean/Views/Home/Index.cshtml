@@ -97,10 +97,169 @@
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
 @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeBestSellers })
+@* black *@
+<div class="offerings secPTB">
+    <div class="container">
+        <div class="owl-carousel">
+            <div class="row">
+                <div class="col-sm-5 col-md-4 col-lg-3">
+                    <div class="offimgbg">
+                        <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
+                            <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-7 col-md-8 col-lg-9">
+                    <div class="offering-info">
+                        <h2>Offerings</h2>
+                        <div class="offtitle">
+                            <h3><a>Surprised By Grace</a></h3>
+                            <span>Author: <a>Kevin Patrick Joyce</a></span>
+                        </div>
+                        <div class="pricerating">
+                            <div class="price">$$14.97</div>
+                            <div class="review">
+                                @{
+                                    var ratingPercent = 0;
+                                    ratingPercent = 5 / 5;
+                                    <div class="product-rating-box">
+                                        <div class="rating">
+                                            <div style="width: @(ratingPercent)%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="total-review">0 Review</div>
+                            </div>
+                        </div>
+                        <a class="btn-1">View Detail</a>
+                    </div>
+                </div>
+            </div><div class="row">
+                <div class="col-sm-5 col-md-4 col-lg-3">
+                    <div class="offimgbg">
+                        <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
+                            <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-sm-7 col-md-8 col-lg-9">
+                    <div class="offering-info">
+                        <h2>Offerings</h2>
+                        <div class="offtitle">
+                            <h3><a>Surprised By Grace</a></h3>
+                            <span>Author: <a>Kevin Patrick Joyce</a></span>
+                        </div>
+                        <div class="pricerating">
+                            <div class="price">$$14.97</div>
+                            <div class="review">
+                                @{
+                                    var ratingPercent1 = 0;
+                                    ratingPercent1 = 5 / 5;
+                                    <div class="product-rating-box">
+                                        <div class="rating">
+                                            <div style="width: @(ratingPercent1)%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="total-review">0 Review</div>
+                            </div>
+                        </div>
+                        <a class="btn-1">View Detail</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @await Component.InvokeAsync(typeof(HomepageBestSellersViewComponent))
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeNews })
 @await Component.InvokeAsync(typeof(HomepageNewsViewComponent))
-<div class="newlibrarysecbg">
+<div class="blogsec secPTB">
+    <div class="container">
+        <div class="title">
+            <h2>News and Other Communications</h2>
+            <div class="view-all"><a href="#">View All -</a></div>
+        </div>
+        <div class="owl-carousel">
+            <div class="blogbox">
+                <div class="blogimg">
+                    <a href="https://crossroadpublishing.com/endorsements-george/">
+                        <img src="https://crossroadpublishing.com/wp-content/uploads/2022/06/cover-plain.png" alt="">
+                    </a>
+                </div>
+                <div class="blogcontent">
+                    <div class="blogtitledate">
+                        <h3><a href="https://crossroadpublishing.com/endorsements-george/">Endorsements George</a></h3>
+                        <p>June 5, 2022</p>
+                    </div>
+                    <div class="blogtext">“A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic</div>
+                    <div class="readmorelink"><a href="https://crossroadpublishing.com/endorsements-george/" class="btn-1">Read More</a></div>
+                </div>
+            </div>
+            <div class="blogbox">
+                <div class="blogimg">
+                    <a href="https://crossroadpublishing.com/endorsements-george/">
+                        <img src="https://crossroadpublishing.com/wp-content/uploads/2022/06/cover-plain.png" alt="">
+                    </a>
+                </div>
+                <div class="blogcontent">
+                    <div class="blogtitledate">
+                        <h3><a href="https://crossroadpublishing.com/endorsements-george/">Endorsements George</a></h3>
+                        <p>June 5, 2022</p>
+                    </div>
+                    <div class="blogtext">“A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic “A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic</div>
+                    <div class="readmorelink"><a href="https://crossroadpublishing.com/endorsements-george/" class="btn-1">Read More</a></div>
+                </div>
+            </div>
+            <div class="blogbox">
+                <div class="blogimg">
+                    <a href="https://crossroadpublishing.com/endorsements-george/">
+                        <img src="https://crossroadpublishing.com/wp-content/uploads/2022/06/cover-plain.png" alt="">
+                    </a>
+                </div>
+                <div class="blogcontent">
+                    <div class="blogtitledate">
+                        <h3><a href="https://crossroadpublishing.com/endorsements-george/">Endorsements George</a></h3>
+                        <p>June 5, 2022</p>
+                    </div>
+                    <div class="blogtext">“A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic “A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic “A great little book that confronts the dark dragons that oppress us in these times of passion, with joyful, ironic</div>
+                    <div class="readmorelink"><a href="https://crossroadpublishing.com/endorsements-george/" class="btn-1">Read More</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="book-and-authors secPTB">
+    <div class="container">
+        <div class="title-center">
+            <h2>On Books and Authors</h2>
+        </div>
+        <div class="owl-carousel">
+            <div class="content">
+                <div><p>“With this little book I want to introduce you to the ways of fasting or, if you have fasted at some earlier time, to remind you of its benefits. My main goal, therefore, is to strengthen your confidence i your ability to fast and to encourage you to try fasting when the time is ripe.”</p></div>
+                <div class="d-flex justify-content-center">
+                    <div>
+                        <img />
+                    </div>
+                    <div class="text-start">
+                        <h3>Astrophysics and Creation by Arnold Benz</h3>
+                        <h4>Perceiving the Universe through Science and Participation</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div><p>“With this little book I want to introduce you to the ways of fasting or, if you have fasted at some earlier time, to remind you of its benefits. My main goal, therefore, is to strengthen your confidence i your ability to fast and to encourage you to try fasting when the time is ripe.”</p></div>
+                <div>
+                    <h3>Astrophysics and Creation by Arnold Benz</h3>
+                    <h4>Perceiving the Universe through Science and Participation</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="newlibrarysec">
     <div class="container">
         <div class="libplay d-flex justify-content-center align-items-center">
             <a class="popup-youtube" href="https://www.youtube.com/watch?v=dYF28JAllPI">
@@ -109,6 +268,48 @@
             </a>
         </div>
     </div>
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            $('.popup-youtube').magnificPopup({
+                disableOn: 700,
+                type: 'iframe',
+                mainClass: 'mfp-fade',
+                removalDelay: 160,
+                preloader: false,
+                fixedContentPos: false
+            });
+        });
+    </script>
+</div>
+<div class="bookstores secPTB">
+    <div class="container">
+        <div class="title-center">
+            <h2>You can find our books at bookstores or via the links below.</h2>
+        </div>
+        <div class="owl-carousel">
+            <div class="clientbox">
+                <a href="https://www.barnesandnoble.com/" target="_blank" tabindex="0">
+                    <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/barnes_noble.png" alt="">
+                </a>
+            </div>
+            <div class="clientbox">
+                <a href="https://www.amazon.com/s?k=the+crossroad+publishing+company&amp;crid=1VSD8DWLBLK77&amp;sprefix=the+%2Caps%2C1791&amp;ref=nb_sb_noss_2" target="_blank" tabindex="0">
+                    <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/amazon.png" alt="">
+                </a>
+            </div>
+            <div class="clientbox">
+                <a href="https://www.christianbook.com/apps/easyfind?Ns=product.number_sold&amp;N=1014644+4294943070&amp;Ne=12000&amp;event=EBRN&amp;Nso=1&amp;Nu=product.endeca_rollup&amp;category=Books?p=1181849" target="_blank" tabindex="0">
+                    <img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/Christianbook_logo.png" alt="">
+                </a>
+            </div>
+            <div class="clientbox">
+                <a href="" target="_blank" tabindex="0">
+                    <img src="https://crossroadpublishing.com/wp-content/uploads/2020/07/ourclient-logo-2.png" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+
 </div>
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforePoll })
 @await Component.InvokeAsync(typeof(HomepagePollsViewComponent))
