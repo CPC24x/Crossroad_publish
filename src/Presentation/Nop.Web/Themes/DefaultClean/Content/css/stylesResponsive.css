@@ -8,6 +8,23 @@
     padding-right: 30px;
   }
 
+  .slidercont h5 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .slibigatext {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .slibtn a {
+    font-size: 14px;
+    line-height: 1.1;
+    padding: 6px 15px;
+  }
+
   .search-box {
     width: 100%;
   }
@@ -56,6 +73,23 @@
     margin: 0 !important;
     width: 100%;
     justify-content: center;
+  }
+
+  .owl-carousel .owl-nav .owl-next {
+    right: 0;
+  }
+
+  .owl-carousel .owl-nav .owl-prev {
+    left: 0;
+  }
+
+  /*** carousel ***/
+
+  .owl-carousel .item-box .product-item,
+  .owl-carousel .item {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /*** product Details tab ***/

@@ -26,19 +26,37 @@
     NopHtml.AppendPageCssClassParts("html-home-page");
 }
 <div class="homemain-slider">
-    <div class="slick-track" role="listbox">
-        <div class="slide slick-slide" data-slick-index="0" aria-hidden="true" style="width:100%" tabindex="-1" role="option" aria-describedby="slick-slide00">
-            <div class="sldrimg"><img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/bookbanner-1.jpg" style="width:100%" alt="Please email"></div>
+    <div class="owl-carousel">
+        <div class="slide">
+            <div class="sldrimg"><img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/bookbanner-1.jpg" alt="Please email"></div>
             <div class="sldrcaption">
                 <div class="container">
                     <div class="slidercontpos">
-                        <div class="slidercont wow  fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                        <div class="slidercont">
                             <h5>Please email</h5>
                             <div class="slibigatext">
                                 <a href="mailto:office@crossroadpublishing.com" tabindex="-1">office@crossroadpublishing.com</a> <br>if you encounter any difficulties
                             </div>
                             <div class="slibtn">
                                 <a href="https://pixabay.com/vectors/open-book-literature-education-29822/?download" tabindex="-1">Use coupon code “25%” and you will <br>receive 25% discount on order over $50 <br>for all books (exclude journals)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="sldrimg"><img src="https://crossroadpublishing.com/wp-content/uploads/2021/01/banner-3-min.jpg" alt="Books"></div>
+            <div class="sldrcaption">
+                <div class="container">
+                    <div class="slidercontpos">
+                        <div class="slidercont">
+                            <h5>BOOKS</h5>
+                            <div class="slibigatext">
+                                A good book is an event.
+                            </div>
+                            <div class="slibtn">
+                                <a href="http://clientwebsitedemos.com/crossroadpublishing/shop/?orderby=bestsell" tabindex="-1">Use coupon code “25%” and you will <br>receive 25% discount on order over $50 <br>for all books (exclude journals)</a>
                             </div>
                         </div>
                     </div>
@@ -91,9 +109,9 @@
 </div>
 
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageTop })
-@await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" })
+@* @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" }) *@
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeCategories })
-@await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+@* @await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent)) *@
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
 @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeBestSellers })
@@ -101,72 +119,77 @@
 <div class="offerings secPTB">
     <div class="container">
         <div class="owl-carousel">
-            <div class="row">
-                <div class="col-sm-5 col-md-4 col-lg-3">
-                    <div class="offimgbg">
-                        <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
-                            <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-7 col-md-8 col-lg-9">
-                    <div class="offering-info">
-                        <h2>Offerings</h2>
-                        <div class="offtitle">
-                            <h3><a>Surprised By Grace</a></h3>
-                            <span>Author: <a>Kevin Patrick Joyce</a></span>
+            <div class="item">
+                <div class="row">
+                    <div class="col-sm-5 col-md-4 col-lg-3">
+                        <div class="offimgbg">
+                            <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
+                                <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
+                            </a>
                         </div>
-                        <div class="pricerating">
-                            <div class="price">$$14.97</div>
-                            <div class="review">
-                                @{
-                                    var ratingPercent = 0;
-                                    ratingPercent = 5 / 5;
-                                    <div class="product-rating-box">
-                                        <div class="rating">
-                                            <div style="width: @(ratingPercent)%">
+                    </div>
+                    <div class="col-sm-7 col-md-8 col-lg-9">
+                        <div class="offering-info">
+                            <h2>Offerings</h2>
+                            <div class="offtitle">
+                                <h3><a>Surprised By Grace</a></h3>
+                                <span>Author: <a>Kevin Patrick Joyce</a></span>
+                            </div>
+                            <div class="pricerating">
+                                <div class="price">$$14.97</div>
+                                <div class="review">
+                                    @{
+                                        var ratingPercent = 0;
+                                        ratingPercent = 5 / 5;
+                                        <div class="product-rating-box">
+                                            <div class="rating">
+                                                <div style="width: @(ratingPercent)%">
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                                <div class="total-review">0 Review</div>
+                                    }
+                                    <div class="total-review">0 Review</div>
+                                </div>
                             </div>
+                            <a class="btn-1">View Detail</a>
                         </div>
-                        <a class="btn-1">View Detail</a>
                     </div>
                 </div>
-            </div><div class="row">
-                <div class="col-sm-5 col-md-4 col-lg-3">
-                    <div class="offimgbg">
-                        <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
-                            <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-7 col-md-8 col-lg-9">
-                    <div class="offering-info">
-                        <h2>Offerings</h2>
-                        <div class="offtitle">
-                            <h3><a>Surprised By Grace</a></h3>
-                            <span>Author: <a>Kevin Patrick Joyce</a></span>
+            </div>
+            <div class="item">
+                <div class="row">
+                    <div class="col-sm-5 col-md-4 col-lg-3">
+                        <div class="offimgbg">
+                            <a href="https://crossroadpublishing.com/product/all-saints/" tabindex="0">
+                                <img src="https://crossroadpublishing.com/wp-content/uploads/2021/02/9780824516796-195x300.jpg" alt="All Saints">
+                            </a>
                         </div>
-                        <div class="pricerating">
-                            <div class="price">$$14.97</div>
-                            <div class="review">
-                                @{
-                                    var ratingPercent1 = 0;
-                                    ratingPercent1 = 5 / 5;
-                                    <div class="product-rating-box">
-                                        <div class="rating">
-                                            <div style="width: @(ratingPercent1)%">
+                    </div>
+                    <div class="col-sm-7 col-md-8 col-lg-9">
+                        <div class="offering-info">
+                            <h2>Offerings</h2>
+                            <div class="offtitle">
+                                <h3><a>Surprised By Grace</a></h3>
+                                <span>Author: <a>Kevin Patrick Joyce</a></span>
+                            </div>
+                            <div class="pricerating">
+                                <div class="price">$$14.97</div>
+                                <div class="review">
+                                    @{
+                                        var ratingPercent1 = 0;
+                                        ratingPercent1 = 5 / 5;
+                                        <div class="product-rating-box">
+                                            <div class="rating">
+                                                <div style="width: @(ratingPercent1)%">
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                                <div class="total-review">0 Review</div>
+                                    }
+                                    <div class="total-review">0 Review</div>
+                                </div>
                             </div>
+                            <a class="btn-1">View Detail</a>
                         </div>
-                        <a class="btn-1">View Detail</a>
                     </div>
                 </div>
             </div>

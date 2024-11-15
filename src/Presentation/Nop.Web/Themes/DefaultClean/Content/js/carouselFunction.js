@@ -7,6 +7,10 @@ $(window).on('load', function () {
     loop: true,
     margin: 25,
     nav: true,
+    navText: [
+      "<i class='fa fa-angle-left'></i>",
+      "<i class='fa fa-angle-right'></i>"
+    ],
     dots: false,
     responsive: {
       0: {
@@ -26,6 +30,10 @@ $(window).on('load', function () {
     loop: true,
     margin: 25,
     nav: true,
+    navText: [
+      "<i class='fa fa-angle-left'></i>",
+      "<i class='fa fa-angle-right'></i>"
+    ],
     dots: false,
     responsive: {
       0: {
@@ -66,6 +74,20 @@ $(window).on('load', function () {
       },
       768: {
         items: 3,
+      },
+    }
+  });
+
+  var owl5 = $(".homemain-slider  .owl-carousel");
+  owl5.owlCarousel({
+    stagePadding: 0,
+    margin: 5,
+    loop: true,
+    nav: false,
+    dots: false,
+    responsive: {
+      0: {
+        items: 1,
       },
     }
   });

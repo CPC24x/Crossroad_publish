@@ -354,23 +354,23 @@ label, label + * {
   .owl-carousel .owl-nav .owl-prev,
   .owl-carousel .owl-nav .owl-next {
     position: absolute;
-    width: .75rem;
     height: 100%;
+    z-index: 1;
+  }
+
+  .owl-carousel .owl-nav i {
+    color: #0097bd;
+    font-size: 40px;
   }
 
   .owl-carousel .owl-nav .owl-next {
     right: -.75rem;
-    background: url('../images/chevron-right.svg') center no-repeat !important;
   }
 
   .owl-carousel .owl-nav .owl-prev {
     left: -.75rem;
-    background: url('../images/chevron-left.svg') center no-repeat !important;
   }
 
-  .owl-carousel .owl-nav span {
-    display: none;
-  }
 
 /*********** GLOBAL FORMS ***********/
 .fieldset, .section {
@@ -1542,7 +1542,6 @@ label, label + * {
 
     .blogsec .blogbox .blogcontent {
       padding: 20px 10px 0px 10px;
-      height: 100%;
     }
 
     .blogsec .blogbox .blogtitledate h3 {
