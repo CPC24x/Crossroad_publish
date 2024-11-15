@@ -4,6 +4,7 @@ $(window).on('load', function () {
   //owl carousels settings on site
   var owl1 = $(".home-page-product-grid .owl-carousel");
   owl1.owlCarousel({
+    stagePadding: 20,
     loop: true,
     margin: 25,
     nav: true,
@@ -80,7 +81,6 @@ $(window).on('load', function () {
 
   var owl5 = $(".homemain-slider  .owl-carousel");
   owl5.owlCarousel({
-    stagePadding: 0,
     margin: 5,
     loop: true,
     nav: false,
