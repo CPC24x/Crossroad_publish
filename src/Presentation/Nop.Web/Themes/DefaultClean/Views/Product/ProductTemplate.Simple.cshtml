@@ -302,7 +302,7 @@
                                                 <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
 
                                                 data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Table of content");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@Html.Raw(data.Item2)</li>
 
                                                 data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Trim size");
                                                 <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>

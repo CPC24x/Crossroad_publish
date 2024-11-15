@@ -40,11 +40,15 @@ namespace Nop.Web.BookHelpers
         public async Task<(string, string)> GetProductSpecificationAttributeAsync(int productId, string attributeName)
         {
             var psa = await GetSpecificationAttributeOptionByAttributeNameAsync(productId, attributeName);
-            var data = string.Empty;
-            if (psa != null)
-                data = string.Join(";", psa.Values.Select(x => x.ValueRaw));
 
-            return (attributeName, data);
+            if (psa == null)
+                return (string.Empty, string.Empty);
+
+            var data = string.Empty;
+            data = string.Join(",", psa.Values.Select(x => x.ValueRaw));
+
+
+            return (psa.Name, data);
         }
 
         private async Task<ProductSpecificationAttributeModel> GetSpecificationAttributeOptionByAttributeNameAsync(int productId, string attributeName, bool? showOnProductPage = null)
