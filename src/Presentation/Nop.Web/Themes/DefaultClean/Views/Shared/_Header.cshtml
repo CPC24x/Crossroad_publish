@@ -10,17 +10,19 @@
                 </div>
                 <div class="header-upper-links col-lg-8 align-self-center">
                     @* d-flex flex-column align-items-start align-items-lg-end justify-content-center position-relative *@
-                    <div class="row header-links">
-                        <div class="col-md-7 search-box store-search-box">
+                    <div class="header-links d-flex flex-wrap flex-md-wrap align-items-center justify-content-lg-end">
+                        <div class="search-box store-search-box">
                             @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
                         </div>
-                        <div class="header-menu-right col-md-5 d-flex align-items-center justify-content-lg-end">
+
+                        <div class="header-menu-right d-flex align-items-center justify-content-lg-end">
                             @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
                             @await Component.InvokeAsync(typeof(CurrencySelectorViewComponent))
                             @await Component.InvokeAsync(typeof(LanguageSelectorViewComponent))
                             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderSelectors })
                             @await Component.InvokeAsync(typeof(HeaderLinksViewComponent))
                         </div>
+
                     </div>
                     @await Component.InvokeAsync(typeof(FlyoutShoppingCartViewComponent))
                 </div>

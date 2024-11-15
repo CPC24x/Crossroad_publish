@@ -5,6 +5,8 @@
 @using Nop.Core.Domain.Seo
 @using Nop.Services.Html
 @using Nop.Web.BookHelpers
+@addTagHelper *, Nop.Web.TagHelpers
+
 
 @inject IHtmlFormatter htmlFormatter
 @inject IWebHelper webHelper
@@ -257,24 +259,57 @@
                                 <div class="row">
                                     <div class="col-md-6 lefttab">
                                         <ul>
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Title")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthorNameInverted")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthoRole")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Endorsement")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Formats")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Imprint")))
+                                            @{
+                                                (string, string) data;
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Title");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthorNameInverted");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthoRole");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Endorsement");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Formats");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Imprint");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+                                            }
                                         </ul>
                                     </div>
                                     <div class="col-md-6 righttab">
                                         <ul>
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Keywords")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Language")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Number of pages")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Publication date")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "PublishingStatus")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Table of content")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Trim size")))
-                                            @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Type")))
+                                            @{
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Keywords");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Language");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Number of pages");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Publication date");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "PublishingStatus");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Table of content");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@Html.Raw(data.Item2)</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Trim size");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+
+                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Type");
+                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
+                                            }
                                         </ul>
                                     </div>
                                 </div>

@@ -8,15 +8,19 @@
 @inject IUserAgentHelper userAgentHelper
 
 @{
-    Layout ="";
+    Layout = "";
     var themeName = await themeContext.GetWorkingThemeNameAsync();
     var supportRtl = await Html.ShouldUseRtlThemeAsync();
 
     //add main CSS file
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/stylesResponsive.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/styles{(supportRtl ? ".rtl" : "")}.css");
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/owl.carousel.min.css");
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/owl.theme.default.min.css");
     NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/bootstrap.css");
-     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="magnific-popup/magnific-popup.css" />
     //add swiper css file
     if (catalogSettings.DisplayAllPicturesOnCatalogPages)
     {
