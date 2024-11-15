@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using LinqToDB.Common;
 using Nop.Core.Domain.Catalog;
 using Nop.Data;
 using Nop.Services.Catalog;
 using Nop.Services.Localization;
-using Nop.Web.Factories;
 using Nop.Web.Models.Catalog;
-using Org.BouncyCastle.Asn1.Cms;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Nop.Web.BookHelpers
 {
@@ -19,58 +17,75 @@ namespace Nop.Web.BookHelpers
     {
         private readonly ISpecificationAttributeService _specificationAttributeService;
         private readonly ILocalizationService _localizationService;
+        private readonly IRepository<SpecificationAttribute> _specificationAttributeRepository;
+        private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
+        private readonly IRepository<SpecificationAttributeOption> _specificationAttributeOptionRepository;
+
 
         public BookHelpers(
             ISpecificationAttributeService specificationAttributeService,
-            ILocalizationService localizationService
+            ILocalizationService localizationService,
+            IRepository<SpecificationAttribute> specificationAttributeRepository,
+            IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
+            IRepository<SpecificationAttributeOption> specificationAttributeOptionRepository
             )
         {
             _specificationAttributeService = specificationAttributeService;
             _localizationService = localizationService;
+            _specificationAttributeRepository = specificationAttributeRepository;
+            _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
+            _specificationAttributeOptionRepository = specificationAttributeOptionRepository;
         }
 
-        public async Task<string> GetProductSpecificationAttributeAsync(int productId, string attributeName)
+        public async Task<(string, string)> GetProductSpecificationAttributeAsync(int productId, string attributeName)
         {
             var psa = await GetSpecificationAttributeOptionByAttributeNameAsync(productId, attributeName);
-
+            var data = string.Empty;
             if (psa != null)
-                return $"<li><strong>{psa.Name} :</strong> {string.Join(";", psa.Values.Select(x => x.ValueRaw))}</li>";
-            return "";
+                data = string.Join(";", psa.Values.Select(x => x.ValueRaw));
+
+            return (attributeName, data);
         }
 
-        private async Task<ProductSpecificationAttributeModel> GetSpecificationAttributeOptionByAttributeNameAsync(int productId, string attributeName)
+        private async Task<ProductSpecificationAttributeModel> GetSpecificationAttributeOptionByAttributeNameAsync(int productId, string attributeName, bool? showOnProductPage = null)
         {
-            var productSpecificationAttributes = await _specificationAttributeService.GetProductSpecificationAttributesAsync(
-                   productId, showOnProductPage: true);
 
-            var result = new List<ProductSpecificationAttributeModel>();
+            var model = new ProductSpecificationAttributeModel();
 
-            foreach (var psa in productSpecificationAttributes)
-            {
-                var option = await _specificationAttributeService.GetSpecificationAttributeOptionByIdAsync(psa.SpecificationAttributeOptionId);
+            var dataList = from sao in _specificationAttributeOptionRepository.Table
+                           join sa in _specificationAttributeRepository.Table on sao.SpecificationAttributeId equals sa.Id
+                           join psa in _productSpecificationAttributeRepository.Table on sao.Id equals psa.SpecificationAttributeOptionId
+                           where sa.Name == attributeName && psa.ProductId == productId
+                           select new
+                           {
+                               Psa = psa,
+                               Sa = sa,
+                               Sao = sao,
+                               ShowOnProductPage = psa.ShowOnProductPage,
+                           };
 
-                var model = result.FirstOrDefault(model => model.Id == option.SpecificationAttributeId);
-                if (model == null)
+            if (showOnProductPage.HasValue)
+                dataList = dataList.Where(psa => psa.ShowOnProductPage == showOnProductPage.Value);
+
+            if (dataList.Any())
+                model = new ProductSpecificationAttributeModel
                 {
-                    var attribute = await _specificationAttributeService.GetSpecificationAttributeByIdAsync(option.SpecificationAttributeId);
-                    model = new ProductSpecificationAttributeModel
-                    {
-                        Id = attribute.Id,
-                        Name = await _localizationService.GetLocalizedAsync(attribute, x => x.Name)
-                    };
-                    result.Add(model);
-                }
+                    Id = dataList.FirstOrDefault().Sa.Id,
+                    Name = await _localizationService.GetLocalizedAsync(dataList.FirstOrDefault().Sa, x => x.Name)
+                };
 
+            foreach (var data in dataList)
+            {
                 var value = new ProductSpecificationAttributeValueModel
                 {
-                    AttributeTypeId = psa.AttributeTypeId,
-                    ColorSquaresRgb = option.ColorSquaresRgb,
-                    ValueRaw = psa.AttributeType switch
+                    AttributeTypeId = data.Psa.AttributeTypeId,
+                    ColorSquaresRgb = data.Sao.ColorSquaresRgb,
+                    ValueRaw = data.Psa.AttributeType switch
                     {
-                        SpecificationAttributeType.Option => WebUtility.HtmlEncode(await _localizationService.GetLocalizedAsync(option, x => x.Name)),
-                        SpecificationAttributeType.CustomText => WebUtility.HtmlEncode(await _localizationService.GetLocalizedAsync(psa, x => x.CustomValue)),
-                        SpecificationAttributeType.CustomHtmlText => await _localizationService.GetLocalizedAsync(psa, x => x.CustomValue),
-                        SpecificationAttributeType.Hyperlink => $"<a href='{psa.CustomValue}' target='_blank'>{psa.CustomValue}</a>",
+                        SpecificationAttributeType.Option => WebUtility.HtmlEncode(await _localizationService.GetLocalizedAsync(data.Sao, x => x.Name)),
+                        SpecificationAttributeType.CustomText => WebUtility.HtmlEncode(await _localizationService.GetLocalizedAsync(data.Psa, x => x.CustomValue)),
+                        SpecificationAttributeType.CustomHtmlText => await _localizationService.GetLocalizedAsync(data.Psa, x => x.CustomValue),
+                        SpecificationAttributeType.Hyperlink => $"<a href='{data.Psa.CustomValue}' target='_blank'>{data.Psa.CustomValue}</a>",
                         _ => null
                     }
                 };
@@ -78,7 +93,7 @@ namespace Nop.Web.BookHelpers
                 model.Values.Add(value);
             }
 
-            return result.FirstOrDefault(x => x.Name.ToLowerInvariant() == attributeName.ToLowerInvariant());
+            return model;
         }
     }
 }
