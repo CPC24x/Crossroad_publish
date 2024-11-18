@@ -69,6 +69,12 @@
     <Folder Include="Areas\Admin\Extensions\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
  
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
