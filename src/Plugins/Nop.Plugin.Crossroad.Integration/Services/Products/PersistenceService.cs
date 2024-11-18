@@ -62,6 +62,8 @@ public class PersistenceService : IPersistenceService
         {
             if (catalogue.SortFields.PublishingStatus == IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY)
             {
+                Console.WriteLine("Syncing book with ISBN: " + catalogue.SortFields.ISBN13);
+
                 var bookDescriptions = catalogue.CollateralDetail
                                                                      .TextContent
                                                                      .Where(tt => tt.TextType.Type != IntegrationDefaults.BOOK_REVIEWS_KEY &&
@@ -124,6 +126,10 @@ public class PersistenceService : IPersistenceService
 
                 // product types
                 await InsertProductTypesAsync(catalogue, productId);
+            }
+            else
+            {
+                Console.WriteLine("Syncing skipped book with ISBN: " + catalogue.SortFields.ISBN13);
             }
         }
     }

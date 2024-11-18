@@ -22,7 +22,7 @@ public static class StringExtensions
     {
         using HttpClient client = new();
 
-        using var response = await client.GetAsync(url);
+        using var response = await client.GetAsync(url.Replace("_thumb.", "."));
 
         return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
     }

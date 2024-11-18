@@ -55,7 +55,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
 
             services.AddHttpClient<OnixLoginService>(client => client.BaseAddress = new Uri(onixEditSettings.Url));
 
-            services.AddHttpClient<OnixEditService>(client => client.BaseAddress = new Uri(onixEditSettings.Url))
+            services.AddHttpClient<OnixEditService>(client => { client.BaseAddress = new Uri(onixEditSettings.Url); client.Timeout = TimeSpan.FromSeconds(600); })
                 .AddHttpMessageHandler<TokenHandler>();
 
             var openKmSettings = settingsService.LoadSetting<OpenKMSettings>();
