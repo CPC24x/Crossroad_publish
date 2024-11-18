@@ -8,6 +8,7 @@ using Nop.Core.Infrastructure;
 using Nop.Plugin.Crossroad.Integration.Areas.Admin.Factories;
 using Nop.Plugin.Crossroad.Integration.Domains.Onix;
 using Nop.Plugin.Crossroad.Integration.Domains.OpenKm;
+using Nop.Plugin.Crossroad.Integration.Helpers;
 using Nop.Plugin.Crossroad.Integration.Infrastructure.Handlers;
 using Nop.Plugin.Crossroad.Integration.Services.Manufacturer;
 using Nop.Plugin.Crossroad.Integration.Services.Onix;
@@ -23,16 +24,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            Log.Logger = new LoggerConfiguration()
-              .MinimumLevel.Debug()  // Set minimum log level to Debug
-              .WriteTo.File("Logs/plugin-log-.txt", rollingInterval: RollingInterval.Day)  // Log to rolling files
-              .CreateLogger();  // Create the logger
-
-            // Step 2: Add Serilog as the logging provider for the application
-            services.AddLogging(builder =>
-            {
-                builder.AddSerilog();  // This uses Serilog as the logging provider
-            });
+            services.AddSingleton<IndexingTaskManager>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
@@ -81,8 +73,9 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
             });
         }
 
-        public void Configure(IApplicationBuilder application) { 
-      
+        public void Configure(IApplicationBuilder application)
+        {
+
         }
 
         public int Order => 3500;
