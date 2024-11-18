@@ -25,12 +25,12 @@ public class OnixEditService
 
         return deserilizedResponse.Any() ? deserilizedResponse.FirstOrDefault()!.Id : throw new ArgumentOutOfRangeException();
     }
-    
-    public async Task<List<Contracts.CatalogueProductsResponse>> GetOnixProductsAsync()
+
+    public async Task<List<Contracts.CatalogueProductsResponse>> GetOnixProductsAsync(int page = 0, int pageSize = int.MaxValue)
     {
         var catalogueId = await GetCatalogueIdAsync();
 
-        var apiResult = await _client.GetAsync($"3.0/product/{catalogueId}");
+        var apiResult = await _client.GetAsync($"3.0/product/{catalogueId}?/page=" + page + "&pageSize=" + pageSize);
 
         apiResult.EnsureSuccessStatusCode();
 
