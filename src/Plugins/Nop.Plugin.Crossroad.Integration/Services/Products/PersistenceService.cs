@@ -56,81 +56,94 @@ public class PersistenceService : IPersistenceService
         _specificationAttributeService = specificationAttributeService;
     }
 
-    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues)
+    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<List<string>> messages)
     {
         foreach (var catalogue in catalogues)
         {
+            var progressMessage = new List<string>
+            {
+                $"Start sync {catalogue.SortFields.Title}"
+            };
+
             if (catalogue.SortFields.PublishingStatus == IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY)
             {
-                Console.WriteLine("Syncing book with ISBN: " + catalogue.SortFields.ISBN13);
-
-                var bookDescriptions = catalogue.CollateralDetail
-                                                                     .TextContent
-                                                                     .Where(tt => tt.TextType.Type != IntegrationDefaults.BOOK_REVIEWS_KEY &&
-                                                                                            tt.TextType.Type != IntegrationDefaults.BOOK_ENDORSMENT_KEY)
-                                                                     .ToDictionary(tt => tt.TextType.Type,
-                                                                                   tv => tv.Text.Description);
-
-                int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions[IntegrationDefaults.BOOK_DESCRIPTION_KEY]);
-
-                if (catalogue.SortFields.CoverImage is not null &&
-                    !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
+                try
                 {
-                    int pictureId = await InsertOrUpdatePictureAsync(catalogue);
+                    var bookDescriptions = catalogue.CollateralDetail
+                                                                    .TextContent
+                                                                    .Where(tt => tt.TextType.Type != IntegrationDefaults.BOOK_REVIEWS_KEY &&
+                                                                                           tt.TextType.Type != IntegrationDefaults.BOOK_ENDORSMENT_KEY)
+                                                                    .ToDictionary(tt => tt.TextType.Type,
+                                                                                  tv => tv.Text.Description);
 
-                    await InsertProductPictureAsync(pictureId, productId);
+                    int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions[IntegrationDefaults.BOOK_DESCRIPTION_KEY]);
+
+                    if (catalogue.SortFields.CoverImage is not null &&
+                        !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
+                    {
+                        int pictureId = await InsertOrUpdatePictureAsync(catalogue);
+
+                        await InsertProductPictureAsync(pictureId, productId);
+                    }
+
+                    await InsertProductReviewAsync(productId, catalogue);
+
+                    await InsertBookAuthorsAsync(catalogue,
+                                                _catalogSettings.DefaultManufacturerPageSize,
+                                                _catalogSettings.DefaultManufacturerPageSizeOptions,
+                                                productId);
+
+                    // publish date
+                    await AddSpecificationAttributeAsync("Publication date", catalogue.SortFields.PublicationDate.GetValueOrDefault().ToShortDateString(), productId, showOnProductPage: true);
+
+                    // title
+                    await AddSpecificationAttributeAsync("Title", catalogue.SortFields.Title, productId, showOnProductPage: true);
+
+                    // language
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Language, productId);
+
+                    // number of pages
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Extent, productId);
+
+                    // imprint
+                    await AddSpecificationAttributeFromListAsync(catalogue.PublishingDetail.Imprint, productId);
+
+                    string tableOfContent = string.Empty;
+
+                    if (bookDescriptions.TryGetValue(IntegrationDefaults.BOOK_TABLE_OF_CONTENT_KEY, out var tob))
+                    {
+                        tableOfContent = tob;
+                    }
+
+                    // table of content
+                    await AddSpecificationAttributeAsync("Table of content", tableOfContent, productId);
+
+                    // endorsement
+                    await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail
+                                                                                          .TextContent
+                                                                                          .Where(tc => tc.TextType.Type == IntegrationDefaults.BOOK_ENDORSMENT_KEY)
+                                                                                          .ToList(), productId);
+                    // publish status
+                    await InsertOrUpdatePublishingStatusAsync(catalogue, productId);
+
+                    // keywords
+                    await InsertOrUpdateProductKeywordsAsync(catalogue, "Keywords", productId);
+
+                    // product types
+                    await InsertProductTypesAsync(catalogue, productId);
+
+                    progressMessage.Add($"{catalogue.SortFields.Title} complete");
+                }
+                catch (Exception ex)
+                {
+                    progressMessage.Add(ex.Message);
                 }
 
-                await InsertProductReviewAsync(productId, catalogue);
-
-                await InsertBookAuthorsAsync(catalogue,
-                                            _catalogSettings.DefaultManufacturerPageSize,
-                                            _catalogSettings.DefaultManufacturerPageSizeOptions,
-                                            productId);
-
-                // publish date
-                await AddSpecificationAttributeAsync("Publication date", catalogue.SortFields.PublicationDate.GetValueOrDefault().ToShortDateString(), productId, showOnProductPage: true);
-
-                // title
-                await AddSpecificationAttributeAsync("Title", catalogue.SortFields.Title, productId, showOnProductPage: true);
-
-                // language
-                await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Language, productId);
-
-                // number of pages
-                await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Extent, productId);
-
-                // imprint
-                await AddSpecificationAttributeFromListAsync(catalogue.PublishingDetail.Imprint, productId);
-
-                string tableOfContent = string.Empty;
-
-                if (bookDescriptions.TryGetValue(IntegrationDefaults.BOOK_TABLE_OF_CONTENT_KEY, out var tob))
-                {
-                    tableOfContent = tob;
-                }
-
-                // table of content
-                await AddSpecificationAttributeAsync("Table of content", tableOfContent, productId);
-
-                // endorsement
-                await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail
-                                                                                      .TextContent
-                                                                                      .Where(tc => tc.TextType.Type == IntegrationDefaults.BOOK_ENDORSMENT_KEY)
-                                                                                      .ToList(), productId);
-                // publish status
-                await InsertOrUpdatePublishingStatusAsync(catalogue, productId);
-
-                // keywords
-                await InsertOrUpdateProductKeywordsAsync(catalogue, "Keywords", productId);
-
-                // product types
-                await InsertProductTypesAsync(catalogue, productId);
             }
             else
-            {
-                Console.WriteLine("Syncing skipped book with ISBN: " + catalogue.SortFields.ISBN13);
-            }
+                progressMessage.Add($"{catalogue.SortFields.Title} not Publish");
+
+            messages.Invoke(progressMessage);
         }
     }
 
@@ -365,7 +378,9 @@ public class PersistenceService : IPersistenceService
 
         Dictionary<string, string> keywordsDictionary = GetBookSubjects(onixProduct);
 
-        if (keywordsDictionary.TryGetValue("Keywords", out var keywords))
+        var keywords = keywordsDictionary["Keywords"];
+
+        if (keywords is not null)
         {
             string[] splitKeywords = keywords.StringToArray();
 

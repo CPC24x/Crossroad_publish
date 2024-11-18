@@ -8,6 +8,7 @@ using Nop.Core.Infrastructure;
 using Nop.Plugin.Crossroad.Integration.Areas.Admin.Factories;
 using Nop.Plugin.Crossroad.Integration.Domains.Onix;
 using Nop.Plugin.Crossroad.Integration.Domains.OpenKm;
+using Nop.Plugin.Crossroad.Integration.Helpers;
 using Nop.Plugin.Crossroad.Integration.Infrastructure.Handlers;
 using Nop.Plugin.Crossroad.Integration.Services.Manufacturer;
 using Nop.Plugin.Crossroad.Integration.Services.Onix;
@@ -23,6 +24,8 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<IndexingTaskManager>();
+
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.ViewLocationExpanders.Add(new ViewLocationExpander());
@@ -70,8 +73,9 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
             });
         }
 
-        public void Configure(IApplicationBuilder application) { 
-      
+        public void Configure(IApplicationBuilder application)
+        {
+
         }
 
         public int Order => 3500;
