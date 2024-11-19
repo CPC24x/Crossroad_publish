@@ -59,15 +59,11 @@
     @await Html.PartialAsync("_ProductBreadcrumb", Model.Breadcrumb)
 } *@
 
-@functions {
-    public async Task<string> ProductSpecificationAttribute(string specificationAttributeName)
+@{
+    async Task ProductSpecificationAttribute(string specificationAttributeName)
     {
         var data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, specificationAttributeName);
-
-        if (string.IsNullOrWhiteSpace(data.Item1) || string.IsNullOrWhiteSpace(data.Item2))
-            return string.Empty;
-
-        return $"<li hide-empty=\"{data.Item1}\"><strong> {data.Item1}: </strong>{data.Item2}</li>";
+        <li hide-empty="@data.Item1"><strong>@data.Item1 : </strong>@data.Item2</li>
     }
 }
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsAfterBreadcrumb, additionalData = Model })
@@ -270,24 +266,29 @@
                                 <div class="row">
                                     <div class="col-md-6 lefttab">
                                         <ul>
-                                            @Html.Raw(await ProductSpecificationAttribute("Title"))
-                                            @Html.Raw(await ProductSpecificationAttribute("AuthorNameInverted"))
-                                            @Html.Raw(await ProductSpecificationAttribute("AuthoRole"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Endorsement"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Formats"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Imprint"))
+                                            @{
+                                                await ProductSpecificationAttribute("Title");
+                                                await ProductSpecificationAttribute("AuthorNameInverted");
+                                                await ProductSpecificationAttribute("AuthoRole");
+                                                await ProductSpecificationAttribute("Endorsement");
+                                                await ProductSpecificationAttribute("Formats");
+                                                await ProductSpecificationAttribute("Imprint");
+                                            }
                                         </ul>
                                     </div>
                                     <div class="col-md-6 righttab">
                                         <ul>
-                                            @Html.Raw(await ProductSpecificationAttribute("Keywords"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Language"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Number of pages"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Publication date"))
-                                            @Html.Raw(await ProductSpecificationAttribute("PublishingStatus"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Table of content"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Trim size"))
-                                            @Html.Raw(await ProductSpecificationAttribute("Type"))
+                                            @{
+                                                await ProductSpecificationAttribute("Keywords");
+                                                await ProductSpecificationAttribute("Language");
+                                                await ProductSpecificationAttribute("Number of pages");
+                                                await ProductSpecificationAttribute("Publication date");
+                                                await ProductSpecificationAttribute("PublishingStatus");
+                                                await ProductSpecificationAttribute("Table of content");
+                                                await ProductSpecificationAttribute("Trim size");
+                                                await ProductSpecificationAttribute("Type");
+                                            }
+
                                         </ul>
                                     </div>
                                 </div>
