@@ -11,6 +11,7 @@ using Nop.Plugin.Crossroad.Integration.Services.SpecificationAttributes;
 using Nop.Services.Catalog;
 using Nop.Services.Media;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.Contracts;
+using static Nop.Plugin.Crossroad.Integration.Services.Onix.OnixEditProductsUpdateTask;
 
 namespace Nop.Plugin.Crossroad.Integration.Services.Products;
 
@@ -56,14 +57,11 @@ public class PersistenceService : IPersistenceService
         _specificationAttributeService = specificationAttributeService;
     }
 
-    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<List<string>> messages)
+    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<ProgressReport> reportProgress)
     {
         foreach (var catalogue in catalogues)
         {
-            var progressMessage = new List<string>
-            {
-                $"Start sync {catalogue.SortFields.Title}"
-            };
+            reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title}"));
 
             if (catalogue.SortFields.PublishingStatus == IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY)
             {
@@ -132,22 +130,21 @@ public class PersistenceService : IPersistenceService
                     // product types
                     await InsertProductTypesAsync(catalogue, productId);
 
-                    progressMessage.Add($"{catalogue.SortFields.Title} complete");
+                    reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title} sync complete"));
                 }
                 catch (Exception ex)
                 {
-                    progressMessage.Add(ex.Message);
+                    reportProgress(new ProgressReport($"{catalogue.SortFields.Title} sync exception {ex.Message}", false));
                 }
 
             }
             else
-                progressMessage.Add($"{catalogue.SortFields.Title} not Publish");
+                reportProgress(new ProgressReport($"{catalogue.SortFields.Title} no publish", false));
 
-            messages.Invoke(progressMessage);
         }
     }
 
-    public async Task UpdatePricesForBooksBasedOnTypes()
+    public async Task UpdatePricesForBooksBasedOnTypes(Action<ProgressReport> reportProgress)
     {
         var productPrices = await _productAttributeServiceExtended.GetProductIds();
 
@@ -183,168 +180,178 @@ public class PersistenceService : IPersistenceService
 
         foreach (var productPrice in productPrices)
         {
-            var productId = await _productAttributeServiceExtended.GetProductIdByName(productPrice.Name);
-
-            bool isProductAttributeExists = await _productAttributeServiceExtended.IsProductAttributeExists(IntegrationDefaults.ProductAttributeColumnName);
-
-            ProductAttribute productAttribute = new()
+            try
             {
-                Name = IntegrationDefaults.ProductAttributeColumnName
-            };
+                var productId = await _productAttributeServiceExtended.GetProductIdByName(productPrice.Name);
 
-            int productAttributeId;
+                bool isProductAttributeExists = await _productAttributeServiceExtended.IsProductAttributeExists(IntegrationDefaults.ProductAttributeColumnName);
 
-            if (!isProductAttributeExists)
-            {
-                await _productAttributeServiceExtended.InsertProductAttributeAsync(productAttribute);
-
-                productAttributeId = productAttribute.Id;
-            }
-            else
-            {
-                productAttributeId = await _productAttributeServiceExtended.GetProductAttributeIdByName(IntegrationDefaults.ProductAttributeColumnName);
-            }
-
-            bool isProductAttributeMappingExists = await _productAttributeServiceExtended.IsProductAttributeMappingExists(productAttributeId, productId);
-
-            ProductAttributeMapping productAttributeMapping = new()
-            {
-                ProductAttributeId = productAttributeId,
-                ProductId = productId,
-                IsRequired = false,
-                AttributeControlType = AttributeControlType.DropdownList,
-                DisplayOrder = 0
-            };
-
-            int productAttributeMappingId;
-
-            if (!isProductAttributeMappingExists)
-            {
-                await _productAttributeServiceExtended.InsertProductAttributeMappingAsync(productAttributeMapping);
-
-                productAttributeMappingId = productAttributeMapping.Id;
-
-                var prod = await _productService.GetProductByIdAsync(productId);
-
-                await _productService.UpdateProductAsync(prod);
-            }
-            else
-            {
-                productAttributeMappingId = await _productAttributeServiceExtended.GetProductAttributeMappingByProductIdAndProductAttributeId(productAttributeId, productId);
-            }
-
-            foreach (var (priceKey, priceValue) in productPrice.Prices)
-            {
-                if (priceKey is "Paperback" or "Hardcover")
+                ProductAttribute productAttribute = new()
                 {
-                    // keys
-                    var productAttributeValueFromDb = await _productAttributeServiceExtended.GetProductAttributeValueByNameAndProductAttributeMappingId(priceKey, productAttributeMappingId);
+                    Name = IntegrationDefaults.ProductAttributeColumnName
+                };
 
-                    ProductAttributeValue productAttributeValue = new()
+                int productAttributeId;
+
+                if (!isProductAttributeExists)
+                {
+                    await _productAttributeServiceExtended.InsertProductAttributeAsync(productAttribute);
+
+                    productAttributeId = productAttribute.Id;
+                }
+                else
+                {
+                    productAttributeId = await _productAttributeServiceExtended.GetProductAttributeIdByName(IntegrationDefaults.ProductAttributeColumnName);
+                }
+
+                bool isProductAttributeMappingExists = await _productAttributeServiceExtended.IsProductAttributeMappingExists(productAttributeId, productId);
+
+                ProductAttributeMapping productAttributeMapping = new()
+                {
+                    ProductAttributeId = productAttributeId,
+                    ProductId = productId,
+                    IsRequired = false,
+                    AttributeControlType = AttributeControlType.DropdownList,
+                    DisplayOrder = 0
+                };
+
+                int productAttributeMappingId;
+
+                if (!isProductAttributeMappingExists)
+                {
+                    await _productAttributeServiceExtended.InsertProductAttributeMappingAsync(productAttributeMapping);
+
+                    productAttributeMappingId = productAttributeMapping.Id;
+
+                    var prod = await _productService.GetProductByIdAsync(productId);
+
+                    await _productService.UpdateProductAsync(prod);
+                }
+                else
+                {
+                    productAttributeMappingId = await _productAttributeServiceExtended.GetProductAttributeMappingByProductIdAndProductAttributeId(productAttributeId, productId);
+                }
+
+                foreach (var (priceKey, priceValue) in productPrice.Prices)
+                {
+                    if (priceKey is "Paperback" or "Hardcover")
                     {
-                        Name = priceKey,
-                        ProductAttributeMappingId = productAttributeMappingId
-                    };
+                        // keys
+                        var productAttributeValueFromDb = await _productAttributeServiceExtended.GetProductAttributeValueByNameAndProductAttributeMappingId(priceKey, productAttributeMappingId);
 
-                    if (productAttributeValueFromDb == null)
-                    {
-                        await _productAttributeServiceExtended.InsertProductAttributeValueAsync(productAttributeValue);
-                    }
-                    else
-                    {
-                        productAttributeValueFromDb.UpdateProductAttributeValueFromOnix(priceKey);
-
-                        await _productAttributeServiceExtended.UpdateProductAttributeValueAsync(productAttributeValueFromDb);
-                    }
-
-                    // combination
-
-                    var productAttributeMappings = await _productAttributeServiceExtended.GetProductAttributeMappingsByProductIdAsync(productId);
-
-                    var existingCombinations = await _productAttributeServiceExtended.GetAllProductAttributeCombinationsAsync(productId);
-
-                    foreach (var attributeMapping in productAttributeMappings)
-                    {
-                        var productAttributeValues = await _productAttributeServiceExtended.GetProductAttributeValuesAsync(attributeMapping.Id);
-
-                        foreach (var attributeValue in productAttributeValues)
+                        ProductAttributeValue productAttributeValue = new()
                         {
-                            bool combinationExists = false;
+                            Name = priceKey,
+                            ProductAttributeMappingId = productAttributeMappingId
+                        };
 
-                            foreach (var existingCombination in existingCombinations)
+                        if (productAttributeValueFromDb == null)
+                        {
+                            await _productAttributeServiceExtended.InsertProductAttributeValueAsync(productAttributeValue);
+                        }
+                        else
+                        {
+                            productAttributeValueFromDb.UpdateProductAttributeValueFromOnix(priceKey);
+
+                            await _productAttributeServiceExtended.UpdateProductAttributeValueAsync(productAttributeValueFromDb);
+                        }
+
+                        // combination
+
+                        var productAttributeMappings = await _productAttributeServiceExtended.GetProductAttributeMappingsByProductIdAsync(productId);
+
+                        var existingCombinations = await _productAttributeServiceExtended.GetAllProductAttributeCombinationsAsync(productId);
+
+                        foreach (var attributeMapping in productAttributeMappings)
+                        {
+                            var productAttributeValues = await _productAttributeServiceExtended.GetProductAttributeValuesAsync(attributeMapping.Id);
+
+                            foreach (var attributeValue in productAttributeValues)
                             {
-                                var parsedValues = (await _productAttributeParser.ParseProductAttributeValuesAsync(existingCombination.AttributesXml)).Select(pa => pa.Id);
+                                bool combinationExists = false;
 
-                                if (parsedValues.Contains(attributeValue.Id))
+                                foreach (var existingCombination in existingCombinations)
                                 {
-                                    combinationExists = true;
+                                    var parsedValues = (await _productAttributeParser.ParseProductAttributeValuesAsync(existingCombination.AttributesXml)).Select(pa => pa.Id);
 
-                                    var attributeValueById = await _productAttributeServiceExtended.GetProductAttributeValueByIdAsync(attributeValue.Id);
+                                    if (parsedValues.Contains(attributeValue.Id))
+                                    {
+                                        combinationExists = true;
 
-                                    var prodId = (await _productAttributeServiceExtended.GetProductAttributeMappingByIdAsync(attributeValueById.ProductAttributeMappingId)).ProductId;
+                                        var attributeValueById = await _productAttributeServiceExtended.GetProductAttributeValueByIdAsync(attributeValue.Id);
 
-                                    var productName = (await _productService.GetProductByIdAsync(prodId)).Name;
+                                        var prodId = (await _productAttributeServiceExtended.GetProductAttributeMappingByIdAsync(attributeValueById.ProductAttributeMappingId)).ProductId;
 
-                                    var typePricesByKey = productPrices.FirstOrDefault(pp => pp.Name == productName);
+                                        var productName = (await _productService.GetProductByIdAsync(prodId)).Name;
 
-                                    var typePrice = typePricesByKey!.Prices[attributeValueById.Name];
+                                        var typePricesByKey = productPrices.FirstOrDefault(pp => pp.Name == productName);
 
-                                    var productAttributeCombinationFromDb = await _productAttributeServiceExtended.GetProductAttributeCombinationByXmlAndProductId(existingCombination.AttributesXml, productId);
+                                        var typePrice = typePricesByKey!.Prices[attributeValueById.Name];
 
-                                    productAttributeCombinationFromDb.UpdateProductAttributeCombination(typePrice.Prices);
+                                        var productAttributeCombinationFromDb = await _productAttributeServiceExtended.GetProductAttributeCombinationByXmlAndProductId(existingCombination.AttributesXml, productId);
 
-                                    await _productAttributeServiceExtended.UpdateProductAttributeCombinationAsync(productAttributeCombinationFromDb);
+                                        productAttributeCombinationFromDb.UpdateProductAttributeCombination(typePrice.Prices);
 
-                                    break;
+                                        await _productAttributeServiceExtended.UpdateProductAttributeCombinationAsync(productAttributeCombinationFromDb);
+
+                                        break;
+                                    }
                                 }
-                            }
 
-                            if (!combinationExists)
-                            {
-                                var attributesXml = string.Empty;
-
-                                attributesXml = _productAttributeParser.AddProductAttribute(attributesXml, attributeMapping, attributeValue.Id.ToString());
-
-                                var productAttributeCombinationFromDb = await _productAttributeServiceExtended.GetProductAttributeCombinationByXmlAndProductId(attributesXml, productId);
-
-                                ProductAttributeCombination productAttributeCombination = new()
+                                if (!combinationExists)
                                 {
-                                    ProductId = productId,
-                                    PictureId = 0,
-                                    OverriddenPrice = priceValue.Prices,
-                                    StockQuantity = 100,
-                                    MinStockQuantity = 1,
-                                    Sku = priceValue.Sku,
-                                    AttributesXml = attributesXml,
-                                };
+                                    var attributesXml = string.Empty;
 
-                                if (productAttributeCombinationFromDb == null)
-                                {
-                                    await _productAttributeServiceExtended.InsertProductAttributeCombinationAsync(productAttributeCombination);
+                                    attributesXml = _productAttributeParser.AddProductAttribute(attributesXml, attributeMapping, attributeValue.Id.ToString());
+
+                                    var productAttributeCombinationFromDb = await _productAttributeServiceExtended.GetProductAttributeCombinationByXmlAndProductId(attributesXml, productId);
+
+                                    ProductAttributeCombination productAttributeCombination = new()
+                                    {
+                                        ProductId = productId,
+                                        PictureId = 0,
+                                        OverriddenPrice = priceValue.Prices,
+                                        StockQuantity = 100,
+                                        MinStockQuantity = 1,
+                                        Sku = priceValue.Sku,
+                                        AttributesXml = attributesXml,
+                                    };
+
+                                    if (productAttributeCombinationFromDb == null)
+                                    {
+                                        await _productAttributeServiceExtended.InsertProductAttributeCombinationAsync(productAttributeCombination);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+                // formats
+                await AddSpecificationAttributeAsync("Formats",
+                    await _productAttributeServiceExtended.GetProductIsbnAndTypeAsync(productId),
+                    productId, showOnProductPage: true);
+
+                var product = await _productAttributeServiceExtended.GetTrimSizesByProductName(productId);
+
+                // trim size
+                await AddSpecificationAttributeAsync("Trim size", $"{product.height} x {product.width}", productId, showOnProductPage: true);
+
+                var prd = await _productService.GetProductByIdAsync(productId);
+
+                prd.Published = true;
+                prd.ShowOnHomepage = true;
+                prd.VisibleIndividually = true;
+
+                await _productService.UpdateProductAsync(prd);
+
+                reportProgress(new ProgressReport($"{productPrice.Name} sync complete"));
+            }
+            catch (Exception ex)
+            {
+                reportProgress(new ProgressReport($"{productPrice.Name} sync exception {ex.Message}", false));
             }
 
-            // formats
-            await AddSpecificationAttributeAsync("Formats",
-                await _productAttributeServiceExtended.GetProductIsbnAndTypeAsync(productId),
-                productId, showOnProductPage: true);
-
-            var product = await _productAttributeServiceExtended.GetTrimSizesByProductName(productId);
-
-            // trim size
-            await AddSpecificationAttributeAsync("Trim size", $"{product.height} x {product.width}", productId, showOnProductPage: true);
-
-            var prd = await _productService.GetProductByIdAsync(productId);
-
-            prd.Published = true;
-            prd.ShowOnHomepage = true;
-            prd.VisibleIndividually = true;
-
-            await _productService.UpdateProductAsync(prd);
         }
     }
 
