@@ -58,6 +58,18 @@
 {
     @await Html.PartialAsync("_ProductBreadcrumb", Model.Breadcrumb)
 } *@
+
+@functions {
+    public async Task<string> ProductSpecificationAttribute(string specificationAttributeName)
+    {
+        var data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, specificationAttributeName);
+
+        if (string.IsNullOrWhiteSpace(data.Item1) || string.IsNullOrWhiteSpace(data.Item2))
+            return string.Empty;
+
+        return $"<li hide-empty=\"{data.Item1}\"><strong> {data.Item1}: </strong>{data.Item2}</li>";
+    }
+}
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsAfterBreadcrumb, additionalData = Model })
 <div class="page product-details-page">
     <div class="page-body">
@@ -258,57 +270,24 @@
                                 <div class="row">
                                     <div class="col-md-6 lefttab">
                                         <ul>
-                                            @{
-                                                (string, string) data;
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Title");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthorNameInverted");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "AuthoRole");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Endorsement");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Formats");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Imprint");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-                                            }
+                                            @Html.Raw(await ProductSpecificationAttribute("Title"))
+                                            @Html.Raw(await ProductSpecificationAttribute("AuthorNameInverted"))
+                                            @Html.Raw(await ProductSpecificationAttribute("AuthoRole"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Endorsement"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Formats"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Imprint"))
                                         </ul>
                                     </div>
                                     <div class="col-md-6 righttab">
                                         <ul>
-                                            @{
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Keywords");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Language");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Number of pages");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Publication date");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "PublishingStatus");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Table of content");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@Html.Raw(data.Item2)</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Trim size");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-
-                                                data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Type");
-                                                <li hide-empty="@data.Item1"><strong> @data.Item1: </strong>@data.Item2</li>
-                                            }
+                                            @Html.Raw(await ProductSpecificationAttribute("Keywords"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Language"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Number of pages"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Publication date"))
+                                            @Html.Raw(await ProductSpecificationAttribute("PublishingStatus"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Table of content"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Trim size"))
+                                            @Html.Raw(await ProductSpecificationAttribute("Type"))
                                         </ul>
                                     </div>
                                 </div>
