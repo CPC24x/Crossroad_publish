@@ -112,6 +112,7 @@ namespace Nop.Web.Infrastructure
 
             // panorazzi
             services.AddScoped<BookHelpers.BookHelpers>();
+            services.AddScoped<TagHelpers.HideEmptyTagHelper>();
 
             //helpers classes
             services.AddScoped<ITinyMceHelper, TinyMceHelper>();

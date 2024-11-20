@@ -5,6 +5,7 @@
 @removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Nop.Web.Framework
 @addTagHelper *, MiniProfiler.AspNetCore.Mvc
+@addTagHelper *, Nop.Web
 @inject INopHtmlHelper NopHtml
 @inject Nop.Services.Html.IHtmlFormatter htmlFormatter
 @inject ILocalizationService localizationService
@@ -48,3 +49,4 @@
 @using Nop.Services.Localization
 @using Nop.Core.Domain.Catalog
 @using Nop.Web.Components
+@using Nop.Web.TagHelpers

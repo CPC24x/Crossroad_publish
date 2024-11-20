@@ -1,43 +1,42 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Plugin.Crossroad.Integration.Services.Onix;
 using Nop.Plugin.Crossroad.Integration.Services.Products;
 using Nop.Services.Helpers;
-using Nop.Services.Messages;
 using Serilog;
 
 namespace Nop.Plugin.Crossroad.Integration.Helpers;
 
-public class IndexingTaskManager
+public class OnixSyncTaskManager
 {
     private readonly IServiceProvider _serviceProvider;
     private bool _isRunning = false;
     private ILogger? _logger;
 
-    public IndexingTaskManager(IServiceProvider serviceProvider)
+    public OnixSyncTaskManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _logger = null;
     }
-    private void StartRunning(string batchId)
+    private void StartRunning()
     {
         _isRunning = true;
+        string batchId = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         Log.CloseAndFlush();
         _logger = new LoggerConfiguration()
              .WriteTo.File($"Logs/Batch_{batchId}.log", rollingInterval: RollingInterval.Infinite)
             .CreateLogger();
-
     }
-    private void Complete(DateTime dateTime)
+    private void Complete()
     {
-        var now = dateTime.ToString("yyyy-MM-dd HH:mm:ss");
-        //Progress = new IndexingProgress($"Indexing done on {now}");
+        var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         LogInformation($"Onix edit product update done on {now}");
         _isRunning = false;
+        Log.CloseAndFlush();
+        _logger = null;
     }
 
     private void LogInformation(string message)
@@ -45,24 +44,18 @@ public class IndexingTaskManager
         _logger?.Information(message);
     }
 
-    private void LogError(string message, Exception ex)
+    private void LogError(string message)
     {
-        _logger?.Error(ex, message);
+        _logger?.Error(message);
     }
 
-    public async Task<IList<(NotifyType Type, string Message)>> StartSync()
+    public async Task<bool> TryStartSync()
     {
-        var messages = new List<(NotifyType, string)>();
         if (_isRunning)
-        {
-            LogInformation("Onix edit product update is already running");
-            messages.Add((NotifyType.Error, "Onix edit product update is already running"));
-            return messages;
-        }
+            return false;
 
 
-        string batchId = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        StartRunning(batchId);
+        StartRunning();
 
         // TBA cancellation token
         _ = Task.Run(async () =>
@@ -78,37 +71,51 @@ public class IndexingTaskManager
                     LogInformation("Onix start");
 
                     await onixLoginService.GetTokenAsync();
-                    var i = 1;
-                    LogInformation($"in Page {i}");
+                    var i = 0;
+                    LogInformation($"Processing Page {i}");
                     while (_isRunning)
                     {
+                        LogInformation($"Getting Product From OnixEdit");
                         var onixProducts = await onixEditService.GetOnixProductsAsync(page: i, pageSize: 100);
-                        await persistenceService.PersistProducts(onixProducts, messages =>
+                        LogInformation($"Number of Products obtained from OnixEdit: {onixProducts.Count}");
+
+                        LogInformation($"Start persisting Product");
+                        await persistenceService.PersistProducts(onixProducts, progress =>
                         {
-                            foreach (var message in messages)
-                                LogInformation(message);
+                            if (progress.Successful)
+                                LogInformation(progress.Message);
+                            else
+                                LogError(progress.Message);
                         });
-                        await persistenceService.UpdatePricesForBooksBasedOnTypes();
+
+                        LogInformation($"Start Update Prices For Books Based On Types");
+                        await persistenceService.UpdatePricesForBooksBasedOnTypes(progress =>
+                        {
+                            if (progress.Successful)
+                                LogInformation(progress.Message);
+                            else
+                                LogError(progress.Message);
+                        });
 
                         if (onixProducts.Count < 100)
                         {
-                            var now = dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, TimeZoneInfo.Utc, dateTimeHelper.DefaultStoreTimeZone);
-                            Complete(now);
+                            Complete();
                         }
 
                         i++;
                     }
-
                 }
             }
             catch (Exception ex)
             {
-                LogError(ex.Message, ex);
+                LogError(ex.Message);
+                _isRunning = false;
+                Log.CloseAndFlush();
+                _logger = null;
             }
         });
 
-        messages.Add((NotifyType.Success, "Onix edit product update is started"));
-        return messages;
+        return true;
     }
 }
 
