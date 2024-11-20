@@ -62,8 +62,8 @@
 @{
     async Task ProductSpecificationAttribute(string specificationAttributeName)
     {
-        var data = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, specificationAttributeName);
-        <li hide-empty="@data.Item1"><strong>@data.Item1 : </strong>@data.Item2</li>
+        var (name, value) = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, specificationAttributeName);
+        <li hide-empty="@name"><strong>@name : </strong>@value</li>
     }
 }
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsAfterBreadcrumb, additionalData = Model })

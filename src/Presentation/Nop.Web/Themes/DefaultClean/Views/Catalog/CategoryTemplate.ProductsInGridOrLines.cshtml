@@ -81,12 +81,12 @@
         <div class="page-body">
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsTop, additionalData = Model })
             @*description*@
-            @if (!string.IsNullOrWhiteSpace(Model.Description))
+           @*  @if (!string.IsNullOrWhiteSpace(Model.Description))
             {
                 <div class="category-description">
                     @Html.Raw(Model.Description)
                 </div>
-            }
+            } *@
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeSubcategories, additionalData = Model })
             @*subcategories*@
            @*  @if (Model.SubCategories.Count > 0)

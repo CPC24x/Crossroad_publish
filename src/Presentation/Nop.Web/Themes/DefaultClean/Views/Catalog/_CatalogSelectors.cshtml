@@ -11,7 +11,8 @@
 <div class="product-selectors d-flex flex-column justify-content-between flex-md-row ">
     @*view mode*@
     <div class="total-result">
-        @{
+        @if (Model.TotalItems > 0)
+        {
             int start = (Model.PageIndex * Model.PageSize) + 1;
             int end = Math.Min(start + Model.PageSize - 1, Model.TotalItems);
             <span>Showing @start – @end of @Model.TotalItems results</span>
