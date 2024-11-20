@@ -185,7 +185,7 @@ button, .button-1, .button-2 {
 .btn-1 {
   display: inline-block;
   padding: 10px 25px;
-  border-radius: 30px;
+  border-radius: 4px;
   color: #fff;
   background-color: #0097bd;
   font-size: 14px;
@@ -265,6 +265,7 @@ label, label + * {
   padding: 0 0 15px;
   font-size: 30px;
   color: #111111;
+  text-transform: uppercase;
 }
 
 .title-center h2 {
@@ -1189,7 +1190,7 @@ label, label + * {
   padding: 10px 25px 10px 18px;
   background-color: #fff;
   border: 1px solid #d5d5d5;
-  border-radius: 30px;
+  border-radius: 4px;
   -webkit-appearance: none;
   -moz-appearance: none;
   background-repeat: no-repeat;
@@ -1203,12 +1204,12 @@ label, label + * {
   padding-left: 18px;
   background-color: #fff;
   border: 1px solid #d5d5d5;
-  border-radius: 30px;
+  border-radius: 4px;
 }
 
 .search-box .search-box-button {
   position: absolute;
-  top: 12px;
+  top: 10px;
   right: 12px;
   width: 20px;
   height: 20px;
@@ -1310,7 +1311,7 @@ label, label + * {
 .slidercont h5 {
   font-size: 22px;
   color: #0097bd;
-  font-weight: 6000;
+  font-weight: 600;
   margin-bottom: 7px;
   text-transform: uppercase;
 }
@@ -1324,7 +1325,7 @@ label, label + * {
 .slibtn a {
   display: inline-block;
   padding: 13px 35px;
-  border-radius: 30px;
+  border-radius: 4px;
   color: #fff;
   background-color: #0097bd;
   font-size: 20px;
@@ -1416,6 +1417,7 @@ label, label + * {
   background-position: center center;
   background-size: cover;
   position: relative;
+  background-color: rgba(0, 0, 0, 0.9);
   color: #fff;
 }
 
@@ -1427,16 +1429,6 @@ label, label + * {
     position: relative;
   }
 
-  .offerings:before {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    content: "";
-  }
-
 .offimgbg {
   background-color: #313131;
   text-align: center;
@@ -1444,12 +1436,9 @@ label, label + * {
   padding: 15px;
 }
 
-.offerings h2 {
-  font-size: 42px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, .15);
+.offerings .title h2 {
+  color: #FFFFFF;
+  border-color: #CCCCCC;
 }
 
 .offerings .offtitle {
@@ -1496,6 +1485,12 @@ label, label + * {
     height: 14px;
   }
 
+.offerings .button-group {
+  width: fit-content;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .offerings .btn-1 {
   padding: 13px 25px;
   color: #111111;
@@ -1526,6 +1521,7 @@ label, label + * {
     height: 100%;
     display: flex;
     flex-direction: column;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.1);
   }
 
     .blogsec .blogbox .blogtitledate {
@@ -1560,7 +1556,7 @@ label, label + * {
 
     .blogsec .blogbox .readmorelink {
       margin-top: auto;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
 /*********** Books and Authors ***********/
@@ -1703,6 +1699,7 @@ label, label + * {
 
 .follow-us .social ul {
   margin: 0px;
+  margin-top: 20px;
   padding: 0px;
 }
 
@@ -1774,7 +1771,7 @@ label, label + * {
   .newsletter-email input[type="email"] {
     background-color: #fff;
     border: none;
-    border-radius: 30px !important;
+    border-radius: 4px !important;
     padding: 10px 35px;
     height: 58px;
   }

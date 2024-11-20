@@ -10,7 +10,7 @@
 <div class="footer">
     <div class="container">
         <div class="footer-upper row">
-            <div class="footer-block about-us col-sm-12 col-md-6 col-lg-3">
+            <div class="footer-block about-us col-sm-12 col-md-6 col-lg-6">
                 <div class="footer-logo">
                     <img src="../Themes/DefaultClean/Content/images/ft-logo.png" alt="">
                 </div>
@@ -37,12 +37,6 @@
                         <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a></li>
                     }
                 </ul>
-            </div>
-            <div class="footer-block information col-sm-12 col-md-6 col-lg-3">
-                <div class="title">
-                    <strong>@T("Footer.Information")</strong>
-                </div>
-                <a href="mailto:@T("Footer.Information.Email")">@T("Footer.Information.Email")</a>
             </div>
             @* <div class="footer-block customer-service">
             <div class="title">
@@ -127,6 +121,7 @@
                     <div class="title">
                         <strong>@T("Footer.FollowUs")</strong>
                     </div>
+                    <a href="mailto:@T("Footer.Information.Email")">@T("Footer.Information.Email")</a>
                     @await Component.InvokeAsync(typeof(SocialButtonsViewComponent))
                 </div>
                 @* @await Component.InvokeAsync(typeof(NewsletterBoxViewComponent)) *@
