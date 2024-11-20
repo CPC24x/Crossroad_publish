@@ -180,6 +180,8 @@ public class PersistenceService : IPersistenceService
 
         foreach (var productPrice in productPrices)
         {
+            reportProgress(new ProgressReport($"Updating price for {productPrice.Name}"));
+
             try
             {
                 var productId = await _productAttributeServiceExtended.GetProductIdByName(productPrice.Name);
@@ -345,11 +347,11 @@ public class PersistenceService : IPersistenceService
 
                 await _productService.UpdateProductAsync(prd);
 
-                reportProgress(new ProgressReport($"{productPrice.Name} sync complete"));
+                reportProgress(new ProgressReport($"Price update for {productPrice.Name} complete"));
             }
             catch (Exception ex)
             {
-                reportProgress(new ProgressReport($"{productPrice.Name} sync exception {ex.Message}", false));
+                reportProgress(new ProgressReport($"Price update for {productPrice.Name} failed with exception. {ex.Message}", false));
             }
 
         }

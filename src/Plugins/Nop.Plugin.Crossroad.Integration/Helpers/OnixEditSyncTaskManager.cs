@@ -10,26 +10,33 @@ using Serilog;
 
 namespace Nop.Plugin.Crossroad.Integration.Helpers;
 
-public class OnixSyncTaskManager
+public class OnixEditSyncTaskManager
 {
     private readonly IServiceProvider _serviceProvider;
     private bool _isRunning = false;
     private ILogger? _logger;
 
-    public OnixSyncTaskManager(IServiceProvider serviceProvider)
+    public OnixEditSyncTaskManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _logger = null;
     }
-    private void StartRunning()
+
+    private bool TryStart()
     {
+        if (_isRunning)
+            return false;
+
         _isRunning = true;
         string batchId = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         Log.CloseAndFlush();
         _logger = new LoggerConfiguration()
              .WriteTo.File($"Logs/Batch_{batchId}.log", rollingInterval: RollingInterval.Infinite)
             .CreateLogger();
+
+        return true;
     }
+
     private void Complete()
     {
         var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -51,11 +58,8 @@ public class OnixSyncTaskManager
 
     public async Task<bool> TryStartSync()
     {
-        if (_isRunning)
+        if (!TryStart())
             return false;
-
-
-        StartRunning();
 
         // TBA cancellation token
         _ = Task.Run(async () =>
@@ -68,11 +72,11 @@ public class OnixSyncTaskManager
                     var persistenceService = scope.ServiceProvider.GetRequiredService<IPersistenceService>();
                     var onixLoginService = scope.ServiceProvider.GetRequiredService<OnixLoginService>();
                     var onixEditService = scope.ServiceProvider.GetRequiredService<OnixEditService>();
-                    LogInformation("Onix start");
+                    LogInformation("OnixEditSync start");
 
                     await onixLoginService.GetTokenAsync();
                     var i = 0;
-                    LogInformation($"Processing Page {i}");
+                    LogInformation($"Processing Page {i + 1}");
                     while (_isRunning)
                     {
                         LogInformation($"Getting Product From OnixEdit");

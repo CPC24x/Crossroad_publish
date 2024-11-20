@@ -24,7 +24,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<OnixSyncTaskManager>();
+            services.AddSingleton<OnixEditSyncTaskManager>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
