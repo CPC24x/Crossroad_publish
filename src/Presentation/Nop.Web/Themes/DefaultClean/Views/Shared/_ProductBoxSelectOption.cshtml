@@ -63,9 +63,6 @@
         <h2 class="product-title">
             <a href="@(Url.RouteUrl<Product>(new {SeName = Model.SeName }))">@Model.Name</a>
         </h2>
-        <h3 class="product-author">
-            <a href="">Author Arnold Benz</a>
-        </h3>
         @if (catalogSettings.ShowSkuOnCatalogPages && !string.IsNullOrEmpty(Model.Sku))
         {
             <div class="sku">
@@ -141,6 +138,6 @@
             </div>
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBoxAddinfoAfter, additionalData = Model })
         </div>
-        <a href="@(Url.RouteUrl<Product>(new {SeName = Model.SeName }))" class="btn-1 read-more">Read More</a>
+        <a href="@(Url.RouteUrl<Product>(new {SeName = Model.SeName }))" class="btn-1 select-option">Select Option</a>
     </div>
 </div>
