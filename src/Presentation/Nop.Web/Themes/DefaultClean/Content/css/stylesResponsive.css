@@ -273,6 +273,11 @@
     height: 500px;
   }
 
+  /*** Carousel ***/
+  .owl-carousel .owl-item .picture {
+    height: 304px;
+  }
+
   /*** MOBILE NAVIGATION ***/
 
   .header-menu .menu-toggle {
