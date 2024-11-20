@@ -7,9 +7,9 @@ namespace Nop.Plugin.Crossroad.Integration.Services.Onix;
 
 public class OnixEditProductsUpdateTask : IScheduleTask
 {
-    private readonly OnixSyncTaskManager _onixSyncTaskManager;
+    private readonly OnixEditSyncTaskManager _onixSyncTaskManager;
 
-    public OnixEditProductsUpdateTask(OnixSyncTaskManager onixSyncTaskManager)
+    public OnixEditProductsUpdateTask(OnixEditSyncTaskManager onixSyncTaskManager)
     {
         _onixSyncTaskManager = onixSyncTaskManager;
     }

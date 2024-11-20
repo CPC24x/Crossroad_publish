@@ -24,7 +24,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<OnixSyncTaskManager>();
+            services.AddSingleton<OnixEditSyncTaskManager>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
@@ -59,7 +59,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
 
             services.AddHttpClient<OnixLoginService>(client => client.BaseAddress = new Uri(onixEditSettings.Url));
 
-            services.AddHttpClient<OnixEditService>(client => client.BaseAddress = new Uri(onixEditSettings.Url))
+            services.AddHttpClient<OnixEditService>(client => { client.BaseAddress = new Uri(onixEditSettings.Url); client.Timeout = TimeSpan.FromSeconds(600); })
                 .AddHttpMessageHandler<TokenHandler>();
 
             var openKmSettings = settingsService.LoadSetting<OpenKMSettings>();
