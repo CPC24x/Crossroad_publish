@@ -1587,6 +1587,7 @@ label, label + * {
     .book-and-authors .container .content h4 {
       font-size: 14px;
       font-weight: 300;
+      margin: 0;
     }
 
     .book-and-authors .container .content img {
