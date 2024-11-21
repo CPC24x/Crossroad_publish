@@ -90,22 +90,21 @@
 
                         @await Html.PartialAsync("_Discontinued", Model)
                         <div class="product-name">
-                            <h1>
-                                @Model.Name
-                            </h1>
+                            <h1>@Model.Name</h1>
+                            <h2>@Model.Name</h2>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.ShortDescription))
                         {
                             <div class="description-section">
                                 <div class="hidden-menu" style="display: none;">
-                                    @Html.Raw(Model.ShortDescription + "<br/><br/><a onclick='hidefullText(this)'>Read Less</a>")
+                                    @Html.Raw("<p>" + Model.ShortDescription + " </p><a onclick = 'hidefullText(this)' > Read Less </a> ")
                                 </div>
                                 <div class="show-menu">
                                     @{
                                         string[] words = Model.ShortDescription.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                                        string result = string.Join(" ", words.Take(100));
+                                        string result = "<p>" + string.Join(" ", words.Take(100));
                                         result += " ...";
-                                        result += "<br/><br/><a onclick='showfullText(this)'>Read more</a>";
+                                        result += "</p><a onclick='showfullText(this)'>Read more</a>";
                                     }
                                     @Html.Raw(result)
                                 </div>
@@ -113,15 +112,15 @@
 
                             <script asp-location="Footer">
                                 function showfullText(e) {
-                                    var ele = $(e).parent().parent().find(".hidden-menu");
-                                    ele.slideToggle('slow');
-                                    $(e).parent().slideToggle('slow');
+                                var ele = $(e).parent().parent().find(".hidden-menu");
+                                ele.slideToggle('slow');
+                                $(e).parent().slideToggle('slow');
                                 }
 
                                 function hidefullText(e) {
-                                    var ele = $(e).parent().parent().find(".show-menu");
-                                    ele.slideToggle('slow');
-                                    $(e).parent().slideToggle('slow');
+                                var ele = $(e).parent().parent().find(".show-menu");
+                                ele.slideToggle('slow');
+                                $(e).parent().slideToggle('slow');
 
                                 }
                             </script>
@@ -129,14 +128,14 @@
 
                         <div class="endoresement">
                             <div class="hidden-menu" style="display: none;">
-                                @Html.Raw(Model.ShortDescription + "<br/><br/><a onclick='hidefullText(this)'>Read Less</a>")
+                                @Html.Raw("<p>" + Model.ShortDescription + " </p><a onclick = 'hidefullText(this)' > Read Less </a> ")
                             </div>
                             <div class="show-menu">
                                 @{
                                     string[] words1 = Model.ShortDescription.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                                    string result1 = string.Join(" ", words1.Take(100));
+                                    string result1 = "<p>" + string.Join(" ", words1.Take(100));
                                     result1 += " ...";
-                                    result1 += "<br/><br/><a onclick='showfullText(this)'>Read more</a>";
+                                    result1 += "</p><a onclick='showfullText(this)'>Read more</a>";
                                 }
                                 @Html.Raw(result1)
                             </div>
@@ -144,21 +143,24 @@
 
                         <script asp-location="Footer">
                             function showfullText(e) {
-                                var ele = $(e).parent().parent().find(".hidden-menu");
-                                ele.slideToggle('slow');
-                                $(e).parent().slideToggle('slow');
+                            var ele = $(e).parent().parent().find(".hidden-menu");
+                            ele.slideToggle('slow');
+                            $(e).parent().slideToggle('slow');
                             }
 
                             function hidefullText(e) {
-                                var ele = $(e).parent().parent().find(".show-menu");
-                                ele.slideToggle('slow');
-                                $(e).parent().slideToggle('slow');
+                            var ele = $(e).parent().parent().find(".show-menu");
+                            ele.slideToggle('slow');
+                            $(e).parent().slideToggle('slow');
 
                             }
                         </script>
                         <div class="productviewbookdetail">
                             <ul class="p-0">
-                                @(Html.Raw(await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Title")))
+                                @{
+                                    var (name, value) = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, "Imprint");
+                                    <li>@name : @value</li>
+                                }
                             </ul>
 
                         </div>
@@ -173,12 +175,59 @@
                         @await Html.PartialAsync("_DeliveryInfo", Model)
                         <!--sample download-->
                         @await Html.PartialAsync("_DownloadSample", Model)
-                        <!--attributes-->
-                        @{
-                            var dataDictAttributes = new ViewDataDictionary(ViewData);
-                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = $"attributes_{Model.Id}";
-                            @await Html.PartialAsync("_ProductAttributes", Model, dataDictAttributes)
-                        }
+                        <div class="row formatAndAddtoCartSection">
+                            <div class="col-12 col-md-6">
+                                <!--attributes-->
+                                @{
+                                    var dataDictAttributes = new ViewDataDictionary(ViewData);
+                                    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = $"attributes_{Model.Id}";
+                                    @await Html.PartialAsync("_ProductAttributes", Model, dataDictAttributes)
+
+                                    var dataDictPrice = new ViewDataDictionary(ViewData);
+                                    dataDictPrice.TemplateInfo.HtmlFieldPrefix = $"price_{Model.Id}";
+                                    @await Html.PartialAsync("_ProductPrice", Model.ProductPrice, dataDictPrice)
+                                    <div class="text-center">
+                                        <span class="isbn-text">ISBN:9780824517809</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <!--price & add to cart & estimate shipping-->
+                                @{
+
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceTop, additionalData = Model })
+
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceBottom, additionalData = Model })
+
+                                    @await Html.PartialAsync("_ProductTierPrices", Model.TierPrices)
+
+                                    var dataDictAddToCart = new ViewDataDictionary(ViewData);
+                                    dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
+                                    @await Html.PartialAsync("_AddToCart", Model.AddToCart, dataDictAddToCart)
+
+                                    @await Html.PartialAsync("_ProductEstimateShipping", Model.ProductEstimateShipping)
+                                    <!--wishlist, compare, email a friend-->
+                                    <div class="overview-buttons">
+                                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsBefore, additionalData = Model })
+                                        @{
+                                            var dataDictAddToWishlist = new ViewDataDictionary(ViewData);
+                                            dataDictAddToWishlist.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
+                                            @await Html.PartialAsync("_AddToWishlist", Model.AddToCart, dataDictAddToWishlist)
+                                        }
+                                        @*@await Html.PartialAsync("_CompareProductsButton", Model)*@
+                                        @* @await Html.PartialAsync("_ProductEmailAFriendButton", Model)*@
+                                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsAfter, additionalData = Model })
+                                    </div>
+                                    @await Html.PartialAsync("_ShareButton", Model)
+                                    <div class="product-bulk-email">
+                                        <span>
+                                            For bulk and special orders please email <br />
+                                            <a href="mailto:@T("Product.Details.BulkContactEmail")">@T("Product.Details.BulkContactEmail")</a>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
                         <!--gift card-->
                         @{
                             var dataDictGiftCard = new ViewDataDictionary(ViewData);
@@ -191,41 +240,7 @@
                             dataDictRental.TemplateInfo.HtmlFieldPrefix = $"rental_{Model.Id}";
                             @await Html.PartialAsync("_RentalInfo", Model, dataDictRental)
                         }
-                        <!--price & add to cart & estimate shipping-->
-                        @{
-                            var dataDictPrice = new ViewDataDictionary(ViewData);
-                            dataDictPrice.TemplateInfo.HtmlFieldPrefix = $"price_{Model.Id}";
-                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceTop, additionalData = Model })
-                            @await Html.PartialAsync("_ProductPrice", Model.ProductPrice, dataDictPrice)
-                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceBottom, additionalData = Model })
 
-                            @await Html.PartialAsync("_ProductTierPrices", Model.TierPrices)
-
-                            var dataDictAddToCart = new ViewDataDictionary(ViewData);
-                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
-                            @await Html.PartialAsync("_AddToCart", Model.AddToCart, dataDictAddToCart)
-
-                            @await Html.PartialAsync("_ProductEstimateShipping", Model.ProductEstimateShipping)
-                        }
-                        <!--wishlist, compare, email a friend-->
-                        <div class="overview-buttons">
-                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsBefore, additionalData = Model })
-                            @{
-                                var dataDictAddToWishlist = new ViewDataDictionary(ViewData);
-                                dataDictAddToWishlist.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
-                                @await Html.PartialAsync("_AddToWishlist", Model.AddToCart, dataDictAddToWishlist)
-                            }
-                            @await Html.PartialAsync("_CompareProductsButton", Model)
-                            @await Html.PartialAsync("_ProductEmailAFriendButton", Model)
-                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsAfter, additionalData = Model })
-                        </div>
-                        @await Html.PartialAsync("_ShareButton", Model)
-                        <div class="product-bulk-email">
-                            <a href="mailto:@T("Product.Details.BulkContactEmail")">
-                                For bulk and special orders please email <br />
-                                </><span>@T("Product.Details.BulkContactEmail")</span>
-                            </a>
-                        </div>
                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsOverviewBottom, additionalData = Model })
                     </div>
                     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsEssentialBottom, additionalData = Model })
