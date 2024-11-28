@@ -14,6 +14,8 @@ public interface IProductSpecificationAttributeService : ISpecificationAttribute
 
     public Task<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttributeId(int specificationAttributeId);
 
+    public Task<SpecificationAttributeOption> GetSpecificationAttributeOptionIdByNameBySpecificationAttributeIdAsync(string attributeName, int specificationAttributeId);
+
     public Task<bool> IsSpecificationAttributeOptionsExists(string columnName, int specificationAttributeId);
 
     public Task<bool> IsSpecificationAttributeMappingExists(int productId, int specificationAttributeOptionId);

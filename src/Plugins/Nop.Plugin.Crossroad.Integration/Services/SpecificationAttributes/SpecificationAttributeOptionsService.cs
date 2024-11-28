@@ -39,6 +39,10 @@ public class ProductSpecificationAttributeService : SpecificationAttributeServic
         _specificationAttributeRepository.Table.AnyAsync(specificationAttribute => specificationAttribute.Name == colName);
 
     public async Task<SpecificationAttribute> GetSpecificationAttributeByName(string attributeName) => await _specificationAttributeRepository.Table.FirstOrDefaultAsync(sa => sa.Name == attributeName);
+
+    public async Task<SpecificationAttributeOption> GetSpecificationAttributeOptionIdByNameBySpecificationAttributeIdAsync(string attributeName, int specificationAttributeId) => await _specificationAttributeOptionRepository.Table.FirstOrDefaultAsync(sa => sa.Name == attributeName && sa.SpecificationAttributeId == specificationAttributeId);
+
+
     public async Task<int> GetSpecificationAttributeOptionIdByName(string name) => (await _specificationAttributeOptionRepository.Table.FirstOrDefaultAsync(sao => sao.Name == name)).Id;
 
     public async Task<SpecificationAttributeOption> GetSpecificationAttributeOptionsBySpecificationAttributeId(

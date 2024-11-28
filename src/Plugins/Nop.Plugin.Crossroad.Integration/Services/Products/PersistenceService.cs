@@ -63,23 +63,22 @@ public class PersistenceService : IPersistenceService
         {
             reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title}"));
 
-            if (catalogue.SortFields.PublishingStatus == IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY)
+            if (new OE_PublishingStatus_Enum().GetKeys("Active").Contains(catalogue.SortFields.PublishingStatus))
             {
                 try
                 {
                     var bookDescriptions = catalogue.CollateralDetail
                                                                     .TextContent
-                                                                    .Where(tt => tt.TextType.Type != IntegrationDefaults.BOOK_REVIEWS_KEY &&
-                                                                                           tt.TextType.Type != IntegrationDefaults.BOOK_ENDORSMENT_KEY)
+                                                                    .Where(tt => !new OE_TextType_Enum().GetKeys("Review quote").Contains(tt.TextType.Type) && !new OE_TextType_Enum().GetKeys("Endorsement").Contains(tt.TextType.Type))
                                                                     .ToDictionary(tt => tt.TextType.Type,
                                                                                   tv => tv.Text.Description);
 
-                    int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions[IntegrationDefaults.BOOK_DESCRIPTION_KEY]);
+                    int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions);
 
                     if (catalogue.SortFields.CoverImage is not null &&
                         !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
                     {
-                        int pictureId = await InsertOrUpdatePictureAsync(catalogue);
+                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue.SortFields.CoverImage, seoName: catalogue.SortFields.Title);
 
                         await InsertProductPictureAsync(pictureId, productId);
                     }
@@ -108,9 +107,9 @@ public class PersistenceService : IPersistenceService
 
                     string tableOfContent = string.Empty;
 
-                    if (bookDescriptions.TryGetValue(IntegrationDefaults.BOOK_TABLE_OF_CONTENT_KEY, out var tob))
+                    foreach (var item in bookDescriptions.Where(x => new OE_TextType_Enum().GetKeys("Table of contents").Contains(x.Key)))
                     {
-                        tableOfContent = tob;
+                        tableOfContent = item.Value;
                     }
 
                     // table of content
@@ -119,8 +118,30 @@ public class PersistenceService : IPersistenceService
                     // endorsement
                     await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail
                                                                                           .TextContent
-                                                                                          .Where(tc => tc.TextType.Type == IntegrationDefaults.BOOK_ENDORSMENT_KEY)
+                                                                                          .Where(tc => new OE_TextType_Enum().GetKeys("Endorsement").Contains(tc.TextType.Type))
                                                                                           .ToList(), productId);
+
+                    //26/11/2024 add
+
+                    await AddSpecificationAttributeAsync("ISBN13", catalogue.SortFields?.ISBN13 ?? "", productId, showOnProductPage: true);
+                    await AddSpecificationAttributeAsync("ISBN10", catalogue.SortFields?.ISBN10 ?? "", productId, showOnProductPage: true);
+                    await AddSpecificationAttributeAsync("Edition Number", catalogue.DescriptiveDetail?.EditionNumber?.Value ?? "", productId, showOnProductPage: true);
+                    await AddSpecificationAttributeAsync("Edition Statement", catalogue.DescriptiveDetail?.EditionStatement?.Value ?? "", productId, showOnProductPage: true);
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.ProductFormDetail, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.TitleDetail, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Contributor, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.AncillaryContent, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail.SupportingResource, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.PublishingDetail.PublishingDate, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.ProductSupply, productId);
+                    //BISAC
+                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Subject, productId);
+
+
+
+
+                    //26/11/2024 add
+
                     // publish status
                     await InsertOrUpdatePublishingStatusAsync(catalogue, productId);
 
@@ -438,33 +459,29 @@ public class PersistenceService : IPersistenceService
         }
     }
 
-    private async Task<int> InsertOrUpdateProductAsync(CatalogueProductsResponse onixProduct, string bookDescription)
+    private async Task<int> InsertOrUpdateProductAsync(CatalogueProductsResponse onixProduct, Dictionary<string, string> bookDescriptions)
     {
         var measures = onixProduct.DescriptiveDetail.Measure;
+        var bookFullDescription = bookDescriptions.FirstOrDefault(x => new OE_TextType_Enum().GetKeys("Description").Contains(x.Key)).Value;
+        //var bookShortDescription = bookDescriptions.FirstOrDefault(x => new OE_TextType_Enum().GetKeys("Description").Contains(x.Key)).Value;
+        decimal width = 0;
 
-        decimal width = default;
-
-        decimal height = default;
+        decimal height = 0;
 
         if (measures is not null)
         {
             var bookSize = measures.ToDictionary(key => key.Type.Value, value => value.Measurement.Measure!);
 
-            if (bookSize.ContainsKey(IntegrationDefaults.BOOK_WIDTH_KEY))
+            foreach (var item in bookSize.Where(x => new OE_MeasureType_Enum().GetKeys("Weight").Contains(x.Key)))
             {
-                if (bookSize.TryGetValue(IntegrationDefaults.BOOK_WIDTH_KEY, out var widthByKey))
-                {
-                    width = decimal.TryParse(widthByKey, out var widthValue) ? widthValue : 0;
-                }
+                width = decimal.TryParse(item.Value, out var widthValue) ? widthValue : 0;
             }
 
-            if (bookSize.ContainsKey(IntegrationDefaults.BOOK_HEIGHT_KEY))
+            foreach (var item in bookSize.Where(x => new OE_MeasureType_Enum().GetKeys("Height").Contains(x.Key)))
             {
-                if (bookSize.TryGetValue(IntegrationDefaults.BOOK_HEIGHT_KEY, out var heightByKey))
-                {
-                    height = decimal.TryParse(heightByKey, out var heightValue) ? heightValue : 0;
-                }
+                height = decimal.TryParse(item.Value, out var heightValue) ? heightValue : 0;
             }
+
         }
 
         Product product = new()
@@ -478,13 +495,14 @@ public class PersistenceService : IPersistenceService
                 .PriceAmount.Price!),
             Width = width,
             Height = height,
-            ShortDescription = bookDescription,
-            FullDescription = bookDescription,
-            DisableBuyButton = onixProduct.SortFields.PublishingStatus != IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY,
+            ShortDescription = bookFullDescription,
+            FullDescription = bookFullDescription,
+            DisableBuyButton = !new OE_PublishingStatus_Enum().GetKeys("Active").Contains(onixProduct.SortFields.PublishingStatus),
             ManageInventoryMethod = ManageInventoryMethod.ManageStock,
             StockQuantity = int.MaxValue,
             OrderMinimumQuantity = 1,
-            OrderMaximumQuantity = int.MaxValue
+            OrderMaximumQuantity = int.MaxValue,
+            Published = true,
         };
 
         var productFromDb = await _productService.GetProductBySkuAsync(product.Sku);
@@ -496,18 +514,18 @@ public class PersistenceService : IPersistenceService
             return product.Id;
         }
 
-        productFromDb.UpdateProductFromOnix(onixProduct, width, height, bookDescription);
+        productFromDb.UpdateProductFromOnix(onixProduct, width, height, bookFullDescription);
 
         await _productService.UpdateProductAsync(productFromDb);
 
         return productFromDb.Id;
     }
 
-    private async Task<int> InsertOrUpdatePictureAsync(CatalogueProductsResponse onixProduct)
+    private async Task<int> InsertOrUpdatePictureAsync(string url, string seoName)
     {
-        var imageBytes = await onixProduct.SortFields.CoverImage.GetBytesFromUrlAsync();
+        var imageBytes = await url.GetBytesFromUrlAsync();
 
-        var seoName = onixProduct.SortFields.Title.ToLower().Replace(" ", "_");
+        seoName = seoName.ToLower().Replace(" ", "_");
 
         Core.Domain.Media.Picture pictureFromDb = await _pictureExtendedService.GetPictureBySeoName(seoName);
 
@@ -550,7 +568,7 @@ public class PersistenceService : IPersistenceService
 
         var reviews = response.CollateralDetail
                                                  .TextContent
-                                                 .Where(tt => tt.TextType.Type == IntegrationDefaults.BOOK_REVIEWS_KEY)
+                                                 .Where(tt => new OE_TextType_Enum().GetKeys("Review quote").Contains(tt.TextType.Type))
                                                  .ToLookup(tt => tt.TextType.Type,
                                                            tv => tv.Text.Description);
 
@@ -617,9 +635,9 @@ public class PersistenceService : IPersistenceService
 
                 manufacturerId = manufacturer.Id;
 
-                await AddSpecificationAttributeAsync(nameof(author.AuthorNameInverted), author.AuthorNameInverted, productId);
+                await AddSpecificationAttributeAsync("Person Name Inverted", author.AuthorNameInverted, productId);
 
-                await AddSpecificationAttributeAsync(nameof(author.AuthoRole), author.AuthoRole, productId);
+                await AddSpecificationAttributeAsync("Contributor Role", new OE_ContributorRole_Enum().GetValue(author.AuthoRole), productId);
             }
             else
             {
@@ -715,33 +733,103 @@ public class PersistenceService : IPersistenceService
         {
             case List<Language> languages:
                 foreach (var language in languages)
-                    await AddSpecificationAttributeAsync(nameof(language.LanguageCode.Language), language.LanguageCode.Language, productId, showOnProductPage: true);
+                    await AddSpecificationAttributeAsync("Language", language.LanguageCode.Language, productId, showOnProductPage: true);
                 break;
 
-            case List<Extent> numbersOfPage:
-                foreach (var extent in numbersOfPage)
-                    await AddSpecificationAttributeAsync("Number of pages", extent.NumberOfPages.Number, productId, showOnProductPage: true);
+            case List<Extent> extents:
+                foreach (var extent in extents)
+                    await AddSpecificationAttributeAsync(new OE_ExtentType_Enum().GetValue(extent.ExtentType.Value), extent.ExtentValue.Value + new OE_ExtentUnit_Enum().GetValue(extent.ExtentUnit.Value), productId, showOnProductPage: true);
                 break;
 
             case List<Imprint> imprints:
                 foreach (var imprint in imprints)
-                    await AddSpecificationAttributeAsync("Imprint", imprint.ImprintName.Name, productId, showOnProductPage: true);
+                    await AddSpecificationAttributeAsync("Imprint name", imprint.ImprintName.Name, productId, showOnProductPage: true);
+                break;
+
+            case List<PublishingDate> publishingDates:
+                foreach (var publishingDate in publishingDates)
+                    await AddSpecificationAttributeAsync("Publishing Date", publishingDate.Date?.ISODate.GetValueOrDefault().ToShortDateString(), productId, showOnProductPage: true);
                 break;
 
             case List<TextContent> texts:
                 foreach (var text in texts)
                     await AddSpecificationAttributeAsync("Endorsement", text.Text.Description, productId);
                 break;
+
+            case List<ProductFormDetail> productFormDetails:
+                foreach (var productFormDetail in productFormDetails)
+                    await AddSpecificationAttributeAsync("Product Form", new OE_ProductFormDetail_Enum().GetValue(productFormDetail.ProductFormCode), productId, showOnProductPage: true);
+                break;
+
+            case List<TitleDetail> titleDetails:
+                foreach (var titleDetail in titleDetails)
+                {
+                    foreach (var titleElement in titleDetail.TitleElement)
+                    {
+                        await AddSpecificationAttributeAsync("Without Prefix", titleElement?.TitleWithoutPrefix?.TitleWithoutPrefixValue, productId, showOnProductPage: true);
+                        await AddSpecificationAttributeAsync("With Prefix", titleElement?.TitlePrefix?.TitlePrefixValue ?? "", productId, showOnProductPage: true);
+                        await AddSpecificationAttributeAsync("Subtitle", titleElement?.Subtitle?.SubtitleValue ?? "", productId, showOnProductPage: true);
+                    }
+
+                }
+                break;
+
+            case List<Contributor> contributors:
+                foreach (var contributor in contributors)
+                {
+                    await AddSpecificationAttributeAsync("Contributor Role", new OE_ContributorRole_Enum().GetValue(contributor?.ContributorRole?.Value), productId);
+                    await AddSpecificationAttributeAsync("Person name", contributor?.AuthorName?.Value ?? "", productId);
+                    await AddSpecificationAttributeAsync("Biographical Note", contributor?.BiographicalNote?.Value ?? "", productId);
+                }
+                break;
+
+            case List<AncillaryContent> ancillaryContents:
+                foreach (var ancillaryContent in ancillaryContents)
+                {
+                    await AddSpecificationAttributeAsync("Ancillary content/Type", new OE_AncillaryContentType_Enum().GetValue(ancillaryContent?.AncillaryContentType?.Value) ?? "", productId);
+                    await AddSpecificationAttributeAsync("Number of illustrations", ancillaryContent?.Number?.Value ?? "", productId);
+                }
+                break;
+
+            case List<SupportingResource> supportingResources:
+                foreach (var supportingResource in supportingResources)
+                {
+                    foreach (var resourceVersion in supportingResource.ResourceVersion)
+                    {
+                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: "");
+                        await InsertProductPictureAsync(pictureId, productId);
+                    }
+                }
+                break;
+
+            case List<ProductSupply> productSupplies:
+                foreach (var productSupply in productSupplies)
+                {
+                    foreach (var supplyDetails in productSupply.SupplyDetail)
+                    {
+                        await AddSpecificationAttributeAsync("Product Availability", supplyDetails?.ProductAvailability?.Value ?? "", productId);
+                        foreach (var supplier in supplyDetails.Supplier)
+                        {
+                            await AddSpecificationAttributeAsync("Supplier Name", supplier?.SupplierName?.Value ?? "", productId);
+                        }
+                    }
+                }
+                break;
+            case List<Subject> subjects:
+                var biascList = subjects.Where(x => !new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier?.Value));
+                foreach (var biasc in biascList)
+                    await AddSpecificationAttributeAsync(new OE_SubjectSchemeIdentifier_Enum().GetValue(biasc.SubjectSchemeIdentifier?.Value), biasc?.Keywords?.KeywordsValues ?? "", productId);
+                break;
         }
     }
 
     private async Task InsertOrUpdatePublishingStatusAsync(CatalogueProductsResponse onixProduct, int productId)
     {
-        var columName = nameof(onixProduct.SortFields.PublishingStatus);
+        var columName = "Publishing Status";
 
         var specificationAttribute = await _specificationAttributeOptionsService.GetSpecificationAttributeByName(columName);
 
-        string publishStatusValue = (onixProduct.SortFields.PublishingStatus == IntegrationDefaults.BOOK_PUBLISH_STATUS_KEY).ToString();
+        string publishStatusValue = (new OE_PublishingStatus_Enum().GetKeys("Active").Contains(onixProduct.SortFields.PublishingStatus)).ToString();
 
         if (specificationAttribute == null)
         {
@@ -772,7 +860,7 @@ public class PersistenceService : IPersistenceService
 
     private Dictionary<string, string> GetBookSubjects(CatalogueProductsResponse response)
     {
-        var onixKeywords = response.DescriptiveDetail.Subject;
+        var onixKeywords = response.DescriptiveDetail.Subject.Where(x => new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier.Value));
 
         Dictionary<string, string> keywords = new();
 
@@ -834,7 +922,7 @@ public class PersistenceService : IPersistenceService
         }
         else
         {
-            specificationAttributeOptionId = (await _specificationAttributeOptionsService.GetSpecificationAttributeOptionIdByName(columnValue));
+            specificationAttributeOptionId = (await _specificationAttributeOptionsService.GetSpecificationAttributeOptionIdByNameBySpecificationAttributeIdAsync(columnValue, specificationAttributeId)).Id;
         }
 
         // specification attribute mapping
