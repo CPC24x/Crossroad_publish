@@ -14,9 +14,9 @@ public static class OnixExtension
         decimal height,
         string bookDescription)
     {
-        product.Sku = onixResponse.Id;
+        product.Sku = onixResponse.SortFields.ISBN13;
         product.Name = onixResponse.SortFields.Title;
-        product.ManufacturerPartNumber = onixResponse.SortFields.ISBN13;
+        product.ManufacturerPartNumber = onixResponse.Id;
         product.Price = decimal.Parse(onixResponse.ProductSupply.FirstOrDefault()!
             .SupplyDetail.FirstOrDefault()!
             .Price.FirstOrDefault()!

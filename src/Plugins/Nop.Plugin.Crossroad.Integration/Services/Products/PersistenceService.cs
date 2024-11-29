@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Math;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Plugin.Crossroad.Integration.Infrastructure.Extensions;
@@ -127,6 +128,7 @@ public class PersistenceService : IPersistenceService
                     await AddSpecificationAttributeAsync("ISBN10", catalogue.SortFields?.ISBN10 ?? "", productId, showOnProductPage: true);
                     await AddSpecificationAttributeAsync("Edition Number", catalogue.DescriptiveDetail?.EditionNumber?.Value ?? "", productId, showOnProductPage: true);
                     await AddSpecificationAttributeAsync("Edition Statement", catalogue.DescriptiveDetail?.EditionStatement?.Value ?? "", productId, showOnProductPage: true);
+                    await AddSpecificationAttributeFromListAsync(catalogue.ProductIdentifier, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.ProductFormDetail, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.TitleDetail, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Contributor, productId);
@@ -175,13 +177,13 @@ public class PersistenceService : IPersistenceService
             {
                 switch (prdPrice.Key)
                 {
-                    case "Epub":
+                    case "Epub": //{"E101", "EPUB"},
                         prodPrice.Prices.Remove("Epub");
                         break;
-                    case "AudioCD":
+                    case "AudioCD": //CD standard audio format
                         prodPrice.Prices.Remove("AudioCD");
                         break;
-                    case "AudioMP3":
+                    case "AudioMP3": //MP3 format
                         prodPrice.Prices.Remove("AudioMP3");
                         break;
                 }
@@ -656,7 +658,7 @@ public class PersistenceService : IPersistenceService
 
     private async Task InsertProductTypesAsync(CatalogueProductsResponse onixProduct, int productId)
     {
-        var productFormTypes = onixProduct.DescriptiveDetail.ProductFormDetail.ProductFromTypesToDictionary();
+        var productFormTypes = new OE_ProductFormDetail_Enum().GetDictionary(onixProduct.DescriptiveDetail.ProductFormDetail.Select(x => x.ProductFormCode).ToList());
 
         foreach (var productFormType in productFormTypes.Values)
         {
@@ -770,7 +772,6 @@ public class PersistenceService : IPersistenceService
                         await AddSpecificationAttributeAsync("With Prefix", titleElement?.TitlePrefix?.TitlePrefixValue ?? "", productId, showOnProductPage: true);
                         await AddSpecificationAttributeAsync("Subtitle", titleElement?.Subtitle?.SubtitleValue ?? "", productId, showOnProductPage: true);
                     }
-
                 }
                 break;
 
@@ -815,10 +816,27 @@ public class PersistenceService : IPersistenceService
                     }
                 }
                 break;
+
             case List<Subject> subjects:
                 var biascList = subjects.Where(x => !new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier?.Value));
                 foreach (var biasc in biascList)
                     await AddSpecificationAttributeAsync(new OE_SubjectSchemeIdentifier_Enum().GetValue(biasc.SubjectSchemeIdentifier?.Value), biasc?.Keywords?.KeywordsValues ?? "", productId);
+                break;
+
+            case List<ProductIdentifier> productIdentifiers:
+                foreach (var productIdentifier in productIdentifiers)
+                {
+
+                    if (new OE_ProductIdentifierType_Enum().GetKeys("Proprietary").Contains(productIdentifier.ProductIDType.Value))
+                    {
+                        await AddSpecificationAttributeAsync("Title Code", productIdentifier?.IDValue?.Value ?? "", productId);
+                        await CreateOrJoinParent(productId, productIdentifier?.IDValue?.Value ?? "");
+                    }
+                    else
+                        await AddSpecificationAttributeAsync(new OE_ProductIdentifierType_Enum().GetValue(productIdentifier.ProductIDType.Value), productIdentifier?.IDValue?.Value ?? "", productId);
+
+                }
+
                 break;
         }
     }
@@ -942,5 +960,40 @@ public class PersistenceService : IPersistenceService
                 DisplayOrder = 1
             });
         }
+    }
+
+    private async Task CreateOrJoinParent(int childProductId, string parentTitleCode)
+    {
+        if (string.IsNullOrWhiteSpace(parentTitleCode))
+            return;
+
+        var parentProduct = await _productService.GetProductBySkuAsync(parentTitleCode);
+        var childProduct = await _productService.GetProductByIdAsync(childProductId);
+
+        if (parentProduct == null)
+        {
+            parentProduct = new Product
+            {
+                Name = childProduct.Name + " (Parent)",
+                FullDescription = childProduct.FullDescription,
+                ShortDescription = childProduct.ShortDescription,
+                Sku = parentTitleCode,
+                ProductType = ProductType.GroupedProduct,
+                ProductTypeId = (int)ProductType.GroupedProduct,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            await _productService.InsertProductAsync(parentProduct);
+
+            childProduct.ParentGroupedProductId = parentProduct.Id;
+            await _productService.UpdateProductAsync(childProduct);
+        }
+        else
+        {
+            childProduct.ParentGroupedProductId = parentProduct.Id;
+            await _productService.UpdateProductAsync(childProduct);
+        }
+
     }
 }

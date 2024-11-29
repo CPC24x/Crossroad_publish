@@ -92,14 +92,14 @@ public class OnixEditSyncTaskManager
                                 LogError(progress.Message);
                         });
 
-                        LogInformation($"Start Update Prices For Books Based On Types");
-                        await persistenceService.UpdatePricesForBooksBasedOnTypes(progress =>
-                        {
-                            if (progress.Successful)
-                                LogInformation(progress.Message);
-                            else
-                                LogError(progress.Message);
-                        });
+                        //LogInformation($"Start Update Prices For Books Based On Types");
+                        //await persistenceService.UpdatePricesForBooksBasedOnTypes(progress =>
+                        //{
+                        //    if (progress.Successful)
+                        //        LogInformation(progress.Message);
+                        //    else
+                        //        LogError(progress.Message);
+                        //});
 
                         if (onixProducts.Count < 100)
                         {

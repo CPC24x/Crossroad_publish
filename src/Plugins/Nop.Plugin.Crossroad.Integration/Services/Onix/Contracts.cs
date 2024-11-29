@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using DocumentFormat.OpenXml.Office2010.Ink;
+using Nop.Core.Domain.Catalog;
 using Svg;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -28,6 +29,7 @@ public class Contracts
         [property: JsonPropertyName("SortFields")] SortFields SortFields,
         [property: JsonPropertyName("DescriptiveDetail")] DescriptiveDetail DescriptiveDetail,
         [property: JsonPropertyName("CollateralDetail")] CollateralDetail CollateralDetail,
+        [property: JsonPropertyName("ProductIdentifier")] List<ProductIdentifier> ProductIdentifier,
         [property: JsonPropertyName("PublishingDetail")] PublishingDetail PublishingDetail,
         [property: JsonPropertyName("ProductSupply")] List<ProductSupply> ProductSupply);
 
@@ -172,6 +174,15 @@ public class Contracts
 
     #endregion
 
+    #region Product Identifier
+    public record ProductIdentifier([property: JsonPropertyName("ProductIDType")] ProductIDType ProductIDType,
+       [property: JsonPropertyName("IDTypeName")] IDTypeName IDTypeName,
+       [property: JsonPropertyName("IDValue")] IDValue IDValue);
+    public record ProductIDType([property: JsonPropertyName("Value")] string Value);
+    public record IDTypeName([property: JsonPropertyName("Value")] string Value);
+    public record IDValue([property: JsonPropertyName("Value")] string Value);
+
+    #endregion
     #region Publish deatils
 
     public record PublishingDetail([property: JsonPropertyName("Imprint")] List<Imprint> Imprint,
