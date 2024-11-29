@@ -872,8 +872,6 @@
   }
 
   .cart-footer .totals {
-    float: right;
-    width: 45%;
     margin: 0 2.5%;
   }
 
@@ -886,16 +884,10 @@
     text-align: right;
   }
 
-  .cart-footer .cart-collaterals {
-    float: left;
-    width: 45%;
-    margin: 0 2.5%;
+  .cart-footer .cart-collaterals div,
+  .cart-footer .cart-collaterals label {
+    text-align: left;
   }
-
-    .cart-footer .cart-collaterals div,
-    .cart-footer .cart-collaterals label {
-      text-align: left;
-    }
 
   .cart-footer .estimate-shipping label {
     display: block;
@@ -916,7 +908,6 @@
   }
 
   .checkout-page .cart-footer .totals {
-    max-width: 350px;
     margin: 0;
   }
 
@@ -1807,10 +1798,6 @@
     margin: 10px auto;
   }
 
-  .login-page .customer-blocks {
-    overflow: hidden;
-  }
-
   .login-page .new-wrapper {
     float: left;
     width: 49%;
@@ -1821,25 +1808,11 @@
       min-height: 200px;
     }
 
-  .login-page .returning-wrapper {
-    float: right;
-    width: 49%;
+  .login-page .returning-wrapper input[type="text"],
+  .login-page .returning-wrapper input[type="email"],
+  .login-page .returning-wrapper input[type="password"] {
+    width: 100%;
   }
-
-    .login-page .returning-wrapper .form-fields {
-      min-height: 200px;
-      padding: 30px 0 0;
-    }
-
-    .login-page .returning-wrapper .inputs label {
-      width: 110px;
-    }
-
-    .login-page .returning-wrapper input[type="text"],
-    .login-page .returning-wrapper input[type="email"],
-    .login-page .returning-wrapper input[type="password"] {
-      width: 300px;
-    }
 
   .address-list-page .section,
   .order-list-page .section,
@@ -2096,13 +2069,6 @@
 
   /*** REGISTRATION, LOGIN, ACCOUNT ***/
 
-
-  .login-page .returning-wrapper input[type="text"],
-  .login-page .returning-wrapper input[type="email"],
-  .login-page .returning-wrapper input[type="password"] {
-    width: 360px;
-  }
-
   .registration-page .vat-note {
     margin-left: 385px;
   }
@@ -2116,24 +2082,12 @@
 
 
   .cart-footer .totals {
-    width: 395px;
     margin: 0;
   }
 
   .cart-footer .cart-collaterals {
-    width: 760px;
     margin: 0;
   }
-
-    .cart-footer .cart-collaterals .deals {
-      float: left;
-      width: 360px;
-    }
-
-    .cart-footer .cart-collaterals .shipping {
-      float: right;
-      width: 360px;
-    }
 
   .cart-footer .estimate-shipping .inputs label {
     display: inline-block;

@@ -65,7 +65,7 @@ input[type="email"],
 input[type="tel"],
 input[type="password"],
 textarea {
-  border-radius: 0;
+  border-radius: 4px;
 }
 
 button,
@@ -149,7 +149,7 @@ textarea, select {
 
 input, textarea, select, button {
   font-size: inherit;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat',Arial, Helvetica, sans-serif;
   line-height: 1;
 }
 
@@ -235,8 +235,9 @@ label, label + * {
 }
 
 .page-title {
+  margin-top: 60px;
+  margin-bottom: 25px;
   min-height: 50px;
-  margin: 0 0 25px;
   text-align: left;
   padding: 20px 0 0;
   text-align: left;
@@ -391,8 +392,6 @@ label, label + * {
 
 .form-fields {
   position: relative;
-  border-top: 1px solid #e6e6e6;
-  background-color: #f9f9f9;
   padding: 30px 15px;
 }
 
@@ -505,6 +504,8 @@ label, label + * {
 
 
 .table-wrapper {
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
   overflow-x: auto;
 }
 
@@ -529,13 +530,9 @@ label, label + * {
 .cart th,
 .data-table th,
 .forum-table th {
-  border-width: 1px 1px 0;
-  border-style: solid;
-  border-color: #ddd;
-  background-color: #f6f6f6;
-  padding: 10px;
-  white-space: nowrap;
-  font-weight: normal;
+  border-bottom: 1px solid #E5E5E5;
+  padding: 13px 0;
+  font-weight: 700;
 }
 
   .forum-table th.replies,
@@ -560,12 +557,8 @@ label, label + * {
 .cart td,
 .data-table td,
 .forum-table td {
-  min-width: 50px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: transparent #ddd #ddd;
-  background-color: #fff;
-  padding: 20px;
+  min-width: 100px;
+  padding: 5px 10px;
   color: #444;
 }
 
@@ -607,8 +600,7 @@ label, label + * {
 .cart .product a,
 .data-table .product a,
 .data-table .info a {
-  font-weight: bold;
-  color: #444;
+  font-weight: 400;
 }
 
   .cart .product a:hover,
@@ -4441,12 +4433,19 @@ label, label + * {
 
 .login-page .returning-wrapper {
   margin: 0;
+  padding: 25px;
+  border-radius: 4px;
+  border: 1px solid #E5E5E5;
 }
 
   .login-page .returning-wrapper .form-fields {
-    overflow: hidden;
-    padding: 30px 15px 0;
+    padding: 0;
   }
+
+    .login-page .returning-wrapper .form-fields .inputs > * {
+      text-align: left;
+      display: block;
+    }
 
   .login-page .returning-wrapper .inputs.reversed {
     white-space: normal;
@@ -4457,7 +4456,6 @@ label, label + * {
       width: auto;
       margin: 5px;
       font-size: 14px; /*reset zeroing*/
-      color: #444;
     }
 
     .login-page .returning-wrapper .inputs.reversed a:hover,
@@ -4470,9 +4468,27 @@ label, label + * {
 }
 
 .login-page .returning-wrapper .buttons {
+  display: flex;
   background-color: #fff;
-  padding: 30px 0;
+  align-items: flex-end;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
 }
+
+  .login-page .returning-wrapper .buttons button {
+    padding: 13px 20px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .login-page .returning-wrapper .buttons a {
+    text-decoration: underline;
+    font-size: 14px;
+    font-weight: 400;
+    color: #0097BD;
+  }
 
 .external-authentication {
   margin: 0 0 50px;
@@ -4483,7 +4499,6 @@ label, label + * {
   .external-authentication .title {
     margin: 0 0 15px;
     font-size: 20px;
-    color: #444;
   }
 
   .external-authentication .buttons {
@@ -4829,8 +4844,7 @@ label, label + * {
   }
 
 .shopping-cart-page .page-title {
-  margin: 0 0 -1px;
-  padding: 10px;
+  padding: 10px 0;
 }
 
 .shopping-cart-page .message-error {
@@ -4867,7 +4881,6 @@ label, label + * {
 
 .shopping-cart-page .common-buttons {
   margin: 0 0 60px;
-  background-color: #f6f6f6;
   padding: 20px;
   font-size: 0;
 }
@@ -4953,8 +4966,12 @@ label, label + * {
 
 .cart-footer {
   margin: 0 0 50px;
-  border-top: 1px solid #ddd;
 }
+
+  .cart-footer button {
+    font-size: 16px;
+    font-weight: 600;
+  }
 
   .cart-footer:after {
     content: "";
@@ -4962,47 +4979,36 @@ label, label + * {
     clear: both;
   }
 
-  .cart-footer .totals {
-    width: 350px;
-    max-width: 100%;
-    margin: 0 auto 50px;
-    background-color: #f9f9f9;
-    padding: 10px;
-    color: #444;
+  .cart-footer .totals .totals-container {
+    border-radius: 4px;
+    margin: 10px 0 10px;
+    border: 1px solid #E5E5E5;
+    padding: 10px 20px;
   }
 
-  .cart-footer .total-info {
-    margin: 0 0 20px;
-    border-bottom: 1px solid #ddd;
-    padding: 5px 30px 15px;
-  }
 
 .cart-total td {
   width: 50%;
-  padding: 5px 0;
   text-align: right;
+  padding: 15.5px 20px;
 }
 
-  .cart-total td:first-child {
-    text-align: left;
-  }
+.cart-total tr:not(:last-child) {
+  border-bottom: 1px solid #E5E5E5;
+}
+
+.cart-total td:first-child {
+  text-align: left;
+  font-weight: 700;
+}
 
 .cart-total .giftcard-remaining {
   display: block;
   font-style: italic;
 }
 
-.cart-total .order-total {
-  font-size: 20px;
-  color: #4ab2f1;
-}
-
-  .cart-total .order-total strong {
-    font-weight: normal;
-  }
-
-.cart-total .earn-reward-points {
-  font-style: italic;
+.cart-total .order-total strong {
+  font-weight: normal;
 }
 
 .min-amount-warning {
@@ -5039,20 +5045,12 @@ label, label + * {
 }
 
 .cart-footer .checkout-button {
-  display: inline-block;
-  min-width: 160px;
-  border: none;
-  background-color: #4ab2f1;
-  padding: 10px 20px;
+  min-width: 300px;
+  padding: 13px 20px;
   font-size: 16px;
-  color: #fff;
   text-transform: uppercase;
+  font-weight: 600;
 }
-
-  .cart-footer .checkout-button:hover,
-  .cart-footer .checkout-button:focus {
-    background-color: #248ece;
-  }
 
 .cart-footer .addon-buttons {
   margin: 20px 0 0;
@@ -5060,65 +5058,50 @@ label, label + * {
 }
 
 .cart-collaterals {
-  width: 350px;
-  max-width: 100%;
   margin: 0 auto 50px;
-  padding: 25px 0 0;
 }
 
-  .cart-collaterals > div {
-    max-width: 400px;
-    margin: 0 0 50px;
-  }
-
-  .cart-collaterals .button-2 {
-    display: inline-block;
-    border: none;
-    background-color: #aaa;
-    padding: 10px 15px;
-    color: #fff;
+  .cart-collaterals > .title, .totals > .title {
+    font-size: 30px;
+    color: #111;
+    margin-bottom: 0;
     text-transform: uppercase;
+    border-bottom: 2px solid #0097bd;
+    font-weight: 700;
   }
 
-    .cart-collaterals .button-2:hover,
-    .cart-collaterals .button-2:focus {
-      background-color: #999;
-    }
-
-  .cart-collaterals .title {
+  .cart-collaterals div .title {
     margin: 0 0 5px;
     font-size: 18px;
     color: #444;
   }
 
-    .cart-collaterals .title strong {
-      font-weight: normal;
-    }
+  .cart-collaterals .title strong {
+    font-weight: normal;
+  }
 
   .cart-collaterals .hint {
     margin: 0 0 10px;
   }
 
   .cart-collaterals .deals > div {
-    margin: 0 0 20px;
+    margin: 10px 0 20px;
   }
 
   .cart-collaterals .coupon-code {
-    overflow: hidden;
+    display: flex;
+    gap: 10px;
   }
 
     .cart-collaterals .coupon-code input[type="text"] {
-      float: left;
-      width: 60%;
-      height: 36px; /*safari padding fix*/
-      margin: 0 -1px 0 0;
+      width: 70%;
     }
 
     .cart-collaterals .coupon-code button[type="submit"] {
-      float: left;
-      width: 40%;
-      height: 36px; /*safari padding fix*/
-      padding: 0;
+      text-transform: uppercase;
+      padding: 13px 20px;
+      white-space: nowrap;
+      width: 30%;
     }
 
   .cart-collaterals .message-failure {
