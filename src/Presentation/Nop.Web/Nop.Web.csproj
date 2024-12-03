@@ -82,10 +82,22 @@
     <Content Update="Themes\DefaultClean\Views\Catalog\_ProductsInGridOrLines.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
+    <Content Update="Themes\DefaultClean\Views\Checkout\BillingAddress.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DefaultClean\Views\Checkout\Completed.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DefaultClean\Views\Checkout\OnePageCheckout.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Themes\DefaultClean\Views\Customer\Login.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DefaultClean\Views\Home\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DefaultClean\Views\Order\Details.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DefaultClean\Views\Product\ProductTemplate.Simple.cshtml">
@@ -119,6 +131,9 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DefaultClean\Views\Shared\Components\SearchBox\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Themes\DefaultClean\Views\Shared\Components\ShoppingCartEstimateShipping\Default.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Themes\DefaultClean\Views\Shared\Components\SocialButtons\Default.cshtml">

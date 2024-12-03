@@ -213,9 +213,9 @@
                 @if (Model.IsEditable)
                 {
                     <div class="common-buttons">
-                        <button type="submit" name="updatecart" id="updatecart" class="button-2 update-cart-button">@T("ShoppingCart.UpdateCart")</button>
+                        <button type="submit" name="updatecart" id="updatecart" class="btn-1 update-cart-button">@T("ShoppingCart.UpdateCart")</button>
 
-                        <button type="submit" name="continueshopping" class="button-2 continue-shopping-button">@T("ShoppingCart.ContinueShopping")</button>
+                        <button type="submit" name="continueshopping" class="btn-2 continue-shopping-button">@T("ShoppingCart.ContinueShopping")</button>
                         @await Component.InvokeAsync(typeof(ShoppingCartEstimateShippingViewComponent))
                     </div>
                 }
@@ -238,7 +238,7 @@
                         </div>
                     </div>
                 }
-                <div class="totals col-12 col-md-6">
+                <div class="totals col-12 col-md-6 p-0">
                     <div class="title">CART TOTALS</div>
                     <div class="totals-container">
                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryTotals, additionalData = Model })
@@ -261,26 +261,29 @@
                                 </div>
                                 <div class="terms-of-service">
                                     <input id="termsofservice" type="checkbox" name="termsofservice" />
-                                    <label for="termsofservice">@T("Checkout.TermsOfService.IAccept")</label>
-                                    @if (Model.TermsOfServicePopup)
-                                    {
-                                        <a class="read" id="read-terms">@T("Checkout.TermsOfService.Read")</a>
-                                        <script asp-location="Footer">
-                                            $(document).ready(function() {
-                                                $('#read-terms').on('click',
-                                                    function(e) {
-                                                        e.preventDefault();
-                                                        displayPopupContentFromUrl(
-                                                            '@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })',
-                                                            '@T("Checkout.TermsOfService")');
-                                                    });
-                                            });
-                                        </script>
-                                    }
-                                    else
-                                    {
-                                        <a class="read" id="read-terms" href="@Url.RouteTopicUrl("conditionsofuse")">@T("Checkout.TermsOfService.Read")</a>
-                                    }
+                                    <div>
+                                        <label for="termsofservice">@T("Checkout.TermsOfService.IAccept")</label>
+                                        @if (Model.TermsOfServicePopup)
+                                        {
+                                            <a class="read" id="read-terms">@T("Checkout.TermsOfService.Read")</a>
+                                            <script asp-location="Footer">
+                                                $(document).ready(function() {
+                                                    $('#read-terms').on('click',
+                                                        function(e) {
+                                                            e.preventDefault();
+                                                            displayPopupContentFromUrl(
+                                                                '@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })',
+                                                                '@T("Checkout.TermsOfService")');
+                                                        });
+                                                });
+                                            </script>
+                                        }
+                                        else
+                                        {
+                                            <a class="read" id="read-terms" href="@Url.RouteTopicUrl("conditionsofuse")">@T("Checkout.TermsOfService.Read")</a>
+                                        }
+                                    </div>
+
                                 </div>
                             }
                             <div class="checkout-buttons">
@@ -313,6 +316,23 @@
                                     else
                                     {
                                         <button type="submit" id="checkout" name="checkout" value="checkout" class="btn-1 checkout-button">
+                                            <svg width="26.857178" height="24.000000" viewBox="0 0 26.8572 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                <rect id="Frame 128" width="26.857038" height="24.000000" fill="#FFFFFF" fill-opacity="0" />
+                                                <rect id="Frame 129" width="26.857038" height="24.000000" fill="#FFFFFF" fill-opacity="0" />
+                                                <path id="path" d="M22.96 7.8L2.58 7.8C1.15 7.8 0 6.64 0 5.22C0 3.79 1.15 2.64 2.58 2.64L11.93 2.64L11.93 3.29L2.58 3.29C1.51 3.29 0.65 4.16 0.65 5.22C0.65 6.28 1.51 7.14 2.58 7.14L22.3 7.14L22.3 4.03C22.3 3.62 21.97 3.29 21.56 3.29L17.76 3.29L17.76 2.64L21.56 2.64C22.33 2.64 22.96 3.26 22.96 4.04L22.96 7.8Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M24.2 23.99L1.62 23.99C0.72 23.99 0 23.27 0 22.37L0 8.77L0.65 8.77L0.65 22.37C0.65 22.9 1.09 23.34 1.62 23.34L24.2 23.34C24.67 23.34 25.05 22.96 25.05 22.48L25.05 17.48L25.71 17.48L25.71 22.48C25.71 23.32 25.03 23.99 24.2 23.99Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M25.71 13.66L25.05 13.66L25.05 8.66C25.05 8.18 24.67 7.8 24.19 7.8L2.58 7.8L2.58 7.14L24.2 7.14C25.03 7.14 25.71 7.82 25.71 8.65L25.71 13.66Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M19.01 4.89L22.63 4.89L22.63 5.55L19.01 5.55L19.01 4.89Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M0.65 16.87L0 16.87L0 4.89L7.96 4.89L7.96 5.55L0.65 5.55L0.65 16.87Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M4.15 7.76L3.83 7.19L16.49 0L20.55 7.31L19.98 7.63L16.24 0.89L4.15 7.76Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M25.68 17.81L21.63 17.81C20.69 17.81 19.93 17.05 19.93 16.11L19.93 15.02C19.93 14.09 20.69 13.33 21.63 13.33L25.68 13.33C26.33 13.33 26.85 13.86 26.85 14.51L26.85 16.63C26.85 17.28 26.33 17.81 25.68 17.81ZM21.63 13.99C21.05 13.99 20.59 14.45 20.59 15.03L20.59 16.12C20.59 16.69 21.05 17.15 21.63 17.15L25.68 17.15C25.97 17.15 26.2 16.92 26.2 16.63L26.2 14.51C26.2 14.22 25.96 13.99 25.68 13.99L21.63 13.99Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M12.85 16.55C11.43 16.55 10.27 15.39 10.27 13.97C10.27 12.54 11.43 11.38 12.85 11.38C14.28 11.38 15.43 12.54 15.43 13.97L14.78 13.97C14.78 12.9 13.92 12.04 12.85 12.04C11.79 12.04 10.92 12.9 10.92 13.97C10.92 15.03 11.79 15.89 12.85 15.89L12.85 16.55Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M12.85 21.05C11.43 21.05 10.27 19.9 10.27 18.47L10.93 18.47C10.93 19.54 11.79 20.4 12.85 20.4C13.92 20.4 14.78 19.54 14.78 18.47C14.78 17.41 13.92 16.55 12.85 16.55L12.85 15.89C14.28 15.89 15.43 17.05 15.43 18.47C15.43 19.9 14.28 21.05 12.85 21.05Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M12.52 10.6L13.18 10.6L13.18 21.84L12.52 21.84L12.52 10.6Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M3.11 10.6L3.77 10.6L3.77 21.84L3.11 21.84L3.11 10.6Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                                <path id="path" d="M5.88 10.6L6.54 10.6L6.54 21.84L5.88 21.84L5.88 10.6Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="nonzero" />
+                                            </svg>
+
                                             @T("Checkout.Button")
                                         </button>
                                     }

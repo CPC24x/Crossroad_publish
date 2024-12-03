@@ -487,11 +487,6 @@
   /*** GLOBAL ***/
 
 
-  .master-wrapper-content {
-    width: 92.5%;
-  }
-
-
   /*** GLOBAL TABLES ***/
 
 
@@ -638,10 +633,6 @@
   /**** GLOBAL ***/
 
 
-  .master-wrapper-content {
-    width: 94%;
-  }
-
   .home-page-polls li {
     min-width: 100px;
   }
@@ -786,11 +777,6 @@
 
   /*** PRODUCT PAGE ***/
 
-
-  .gallery {
-    width: 550px;
-  }
-
   .variant-picture {
     float: left;
   }
@@ -907,10 +893,6 @@
     text-align: right;
   }
 
-  .checkout-page .cart-footer .totals {
-    margin: 0;
-  }
-
   .checkout-page .address-grid {
     overflow: hidden;
   }
@@ -949,25 +931,6 @@
     margin: 10px 0 0;
     text-align: center;
   }
-
-  .payment-info .info {
-    padding: 30px 75px;
-  }
-
-  .order-review-data,
-  .order-details-area,
-  .shipment-details-area {
-    overflow: hidden;
-  }
-
-    .order-review-data > div,
-    .order-details-area > div,
-    .shipment-details-area > div {
-      float: left;
-      width: 48%;
-      margin: 0 1% 40px;
-    }
-
 
   /*** ORDER DETAILS & SHIPPING DETAILS ***/
 
@@ -1268,12 +1231,6 @@
     max-height: 335px;
   }
   /*** GLOBAL STYLES ***/
-
-
-  .master-wrapper-content {
-    width: 980px;
-    margin: auto;
-  }
 
   .side-2 {
     float: left;
@@ -1663,12 +1620,6 @@
 
   /*** PRODUCT PAGE ***/
 
-
-  .gallery {
-    float: left;
-    width: 46%;
-  }
-
   .picture-gallery .picture {
     width: auto;
   }
@@ -1886,19 +1837,9 @@
     text-align: center;
   }
 
-  .payment-info .info {
-    padding: 30px 15px;
+  .payment-info .info td:only-child {
+    width: 100% !important;
   }
-
-    .payment-info .info td:first-child {
-      width: 265px !important;
-      margin: 0 10px 0 0;
-      text-align: right;
-    }
-
-    .payment-info .info td:only-child {
-      width: 100% !important;
-    }
 
   .order-review-data .title,
   .order-details-area .title,
@@ -2027,10 +1968,6 @@
     max-width: 1170px;
   }
 
-  .master-wrapper-content {
-    width: 1200px;
-  }
-
   .inputs label {
     width: 375px;
   }
@@ -2102,23 +2039,16 @@
 
   /*** CHECKOUT ***/
 
-
   .shipping-method .method-list li,
   .payment-method .method-list li {
     margin: 20px 1%;
-  }
-
-  .payment-info .info td:first-child {
-    width: 375px !important;
   }
 
   .payment-info .info td:only-child {
     width: 100% !important;
   }
 
-
   /*** FORUM & PROFILE ***/
-
 
   .forum-actions .pager,
   .topic-actions .pager {

@@ -143,6 +143,7 @@ input[type="tel"],
 input[type="password"],
 textarea, select {
   border: 1px solid #ddd;
+  border-radius: 4px;
   padding: 8px;
   vertical-align: middle;
 }
@@ -184,16 +185,36 @@ button, .button-1, .button-2 {
 
 .btn-1 {
   display: inline-block;
-  padding: 10px 25px;
+  padding: 10px 20px;
   border-radius: 4px;
   color: #fff;
   background-color: #0097bd;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   border: none;
+  text-transform: uppercase;
+  border: 1px solid #0097bd;
 }
 
   .btn-1:hover {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+  }
+
+.btn-2 {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 4px;
+  color: #000000;
+  background-color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #111111;
+  text-transform: uppercase;
+}
+
+  .btn-2:hover {
     background-color: #000;
     color: #fff;
   }
@@ -202,12 +223,6 @@ label, label + * {
   vertical-align: middle;
 }
 
-.master-wrapper-content {
-  position: relative;
-  z-index: 0;
-  width: 90%;
-  margin: 0 auto;
-}
 
 .master-column-wrapper {
   position: relative;
@@ -379,8 +394,6 @@ label, label + * {
 
   .fieldset .title,
   .section .title {
-    margin: 0 0 15px;
-    padding: 0 10px;
     font-size: 20px;
     color: #444;
   }
@@ -400,7 +413,7 @@ label, label + * {
   margin: 0 0 15px;
   text-align: center;
   white-space: nowrap; /*fix for 'required' elements*/
-  font-size: 0;
+  font-size: 16px;
 }
 
   .inputs:after {
@@ -414,48 +427,52 @@ label, label + * {
     width: 100%;
     margin: 0 0 10px;
     text-align: center;
-    font-size: 14px; /*reset zeroing*/
-    color: #444;
+    color: #111111;
   }
 
-  .inputs input[type="text"],
-  .inputs input[type="email"],
-  .inputs input[type="tel"],
-  .inputs input[type="password"],
-  .inputs select, .inputs textarea {
-    width: 400px;
-    max-width: 100%;
-    background-color: #fff;
-  }
+input[type="checkbox"] {
+  width: 30px;
+  height: 30px;
+}
 
-  .inputs.custom-attributes {
-    white-space: normal;
-  }
+.inputs input[type="text"],
+.inputs input[type="email"],
+.inputs input[type="tel"],
+.inputs input[type="password"],
+.inputs select, .inputs textarea {
+  width: 400px;
+  max-width: 100%;
+  background-color: #fff;
+}
 
-  .inputs .option-list {
+.inputs.custom-attributes {
+  white-space: normal;
+}
+
+.inputs .option-list {
+  display: inline-block;
+  max-width: 95%;
+  vertical-align: middle;
+}
+
+  .inputs .option-list li {
     display: inline-block;
-    max-width: 95%;
-    vertical-align: middle;
+    margin: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 8px 10px;
   }
 
-    .inputs .option-list li {
-      display: inline-block;
-      margin: 5px;
-      border: 1px solid #ddd;
-      background-color: #fff;
-      padding: 8px 10px;
-    }
-
-    .inputs .option-list label {
-      display: inline-block;
-      width: auto !important;
-      margin: 0 0 0 5px;
-    }
-
-  .inputs.reversed {
-    margin: 0 0 20px;
-    text-align: center;
+  .inputs .option-list label {
+    display: inline-block;
+    width: auto !important;
+    margin: 0 0 0 5px;
   }
+
+.inputs.reversed {
+  margin: 0 0 20px;
+  text-align: center;
+}
 
 .required {
   margin: 0 -8px 0 3px; /*siblings offset*/
@@ -470,7 +487,7 @@ label, label + * {
 .username-not-available-status,
 .poll-vote-error, .password-error {
   display: block;
-  text-align: center;
+  text-align: left;
   font-size: 13px;
   color: #e4434b;
   margin-top: 5px;
@@ -567,22 +584,6 @@ label, label + * {
   padding: 10px;
 }
 
-.cart a,
-.data-table a,
-.forum-table a {
-  font-weight: normal;
-  color: #4ab2f1;
-}
-
-  .cart a:hover,
-  .cart a:focus,
-  .data-table a:hover,
-  .data-table a:focus,
-  .forum-table a:hover,
-  .forum-table a:focus {
-    text-decoration: underline;
-  }
-
 .cart .product,
 .data-table .product,
 .data-table .message,
@@ -601,6 +602,7 @@ label, label + * {
 .data-table .product a,
 .data-table .info a {
   font-weight: 400;
+  font-style: normal;
 }
 
   .cart .product a:hover,
@@ -665,11 +667,6 @@ label, label + * {
     font-style: italic;
     color: #4ab2f1;
   }
-
-.data-table em a {
-  font-weight: bold;
-  color: #444;
-}
 
 .data-table div.download {
   margin: 10px 0 0;
@@ -2643,6 +2640,7 @@ label, label + * {
   .product-details-page .formatAndAddtoCartSection {
     border: 1px solid #E5E5E5;
     border-radius: 4px;
+    margin: 0;
   }
 
     .product-details-page .formatAndAddtoCartSection .isbn-text {
@@ -2796,45 +2794,40 @@ label, label + * {
     border-left: 1px solid #d2d2d2;
   }
 
-.overview {
-  position: relative;
-  margin: 0 0 50px;
+.overview .discontinued-product {
+  background: #f3f3f3;
+  margin: 0 0 20px;
 }
 
-  .overview .discontinued-product {
-    background: #f3f3f3;
-    margin: 0 0 20px;
+  .overview .discontinued-product h4 {
+    display: inline-block;
+    font-size: 14px;
+    padding: 17px 17px 17px 40px;
+    background: url('../images/discontinued-product-icon.png') no-repeat 13px center;
+    color: #de444c;
   }
 
-    .overview .discontinued-product h4 {
-      display: inline-block;
-      font-size: 14px;
-      padding: 17px 17px 17px 40px;
-      background: url('../images/discontinued-product-icon.png') no-repeat 13px center;
-      color: #de444c;
-    }
+.overview .product-name {
+  margin-bottom: 10px;
+}
 
-  .overview .product-name {
+  .overview .product-name h1 {
+    font-size: 30px;
+    font-weight: 700;
     margin-bottom: 10px;
   }
 
-    .overview .product-name h1 {
-      font-size: 30px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .overview .product-name h2 {
-      font-size: 18px;
-      font-weight: 400;
-      margin-bottom: 0;
-    }
-
-  .overview .short-description {
-    margin: 0 0 25px;
-    line-height: 22px;
-    color: #666;
+  .overview .product-name h2 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 0;
   }
+
+.overview .short-description {
+  margin: 0 0 25px;
+  line-height: 22px;
+  color: #666;
+}
 
 .product-no-reviews,
 .product-reviews-overview {
@@ -4468,7 +4461,6 @@ label, label + * {
 }
 
 .login-page .returning-wrapper .buttons {
-  display: flex;
   background-color: #fff;
   align-items: flex-end;
   padding: 0;
@@ -4477,6 +4469,7 @@ label, label + * {
 }
 
   .login-page .returning-wrapper .buttons button {
+    display: block;
     padding: 13px 20px;
     text-transform: uppercase;
     font-size: 16px;
@@ -4484,6 +4477,8 @@ label, label + * {
   }
 
   .login-page .returning-wrapper .buttons a {
+    margin-top: 10px;
+    display: block;
     text-decoration: underline;
     font-size: 14px;
     font-weight: 400;
@@ -4880,35 +4875,13 @@ label, label + * {
     }
 
 .shopping-cart-page .common-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
   margin: 0 0 60px;
   padding: 20px;
   font-size: 0;
 }
-
-  .shopping-cart-page .common-buttons button {
-    display: inline-block;
-    min-width: 180px;
-    margin: 5px;
-    border: none;
-    background-color: #aaa;
-    padding: 10px 20px;
-    font-size: 15px;
-    color: #fff;
-  }
-
-    .shopping-cart-page .common-buttons button:hover,
-    .shopping-cart-page .common-buttons button:focus {
-      background-color: #999;
-    }
-
-    .shopping-cart-page .common-buttons button:first-child {
-      background-color: #4ab2f1;
-    }
-
-      .shopping-cart-page .common-buttons button:first-child:hover,
-      .shopping-cart-page .common-buttons button:first-child:focus {
-        background-color: #248ece;
-      }
 
 .checkout-attributes {
   margin: -30px 0 30px;
@@ -4990,7 +4963,7 @@ label, label + * {
 .cart-total td {
   width: 50%;
   text-align: right;
-  padding: 15.5px 20px;
+  padding: 10px 0px;
 }
 
 .cart-total tr:not(:last-child) {
@@ -5019,17 +4992,24 @@ label, label + * {
 
 .terms-of-service {
   margin: 0 0 20px;
-  padding: 0 30px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
 }
 
-  .terms-of-service label {
-    cursor: pointer;
-  }
+#termsofservice {
+  height: 30px;
+  width: 30px;
+}
 
-  .terms-of-service a {
-    margin: 0 0 0 3px;
-    color: #4ab2f1;
-  }
+.terms-of-service label {
+  cursor: pointer;
+}
+
+.terms-of-service a {
+  margin: 0 0 0 3px;
+  color: #4ab2f1;
+}
 
 .cart-footer .checkout-buttons {
   padding: 0 10px;
@@ -5051,6 +5031,10 @@ label, label + * {
   text-transform: uppercase;
   font-weight: 600;
 }
+
+  .cart-footer .checkout-button svg {
+    padding: 0 0 4px;
+  }
 
 .cart-footer .addon-buttons {
   margin: 20px 0 0;
@@ -5098,10 +5082,7 @@ label, label + * {
     }
 
     .cart-collaterals .coupon-code button[type="submit"] {
-      text-transform: uppercase;
-      padding: 13px 20px;
       white-space: nowrap;
-      width: 30%;
     }
 
   .cart-collaterals .message-failure {
@@ -5362,24 +5343,6 @@ label, label + * {
 /*** SHOPPING CART ESTIMATE SHIPPING ***/
 
 
-.shopping-cart-page .common-buttons .estimate-shipping-button {
-  display: inline-block;
-  min-width: 180px;
-  margin: 5px;
-  border: none;
-  background-color: #aaa;
-  padding: 10px 20px;
-  font-size: 15px;
-  text-align: center;
-  color: #fff;
-}
-
-  .shopping-cart-page .common-buttons .estimate-shipping-button:hover,
-  .shopping-cart-page .common-buttons .estimate-shipping-button:focus {
-    background-color: #999;
-  }
-
-
 /*** PRODUCT ESTIMATE SHIPPING ***/
 
 
@@ -5413,16 +5376,6 @@ label, label + * {
       display: inline-block;
     }
 
-  .product-estimate-shipping .open-estimate-shipping-popup .arrow-down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    margin: 0 0 3px 6px;
-    border: solid black;
-    border-width: 0 1px 1px 0;
-    display: inline-block;
-    padding: 3px;
-  }
-
 
 /********** CHECKOUT **********/
 
@@ -5431,6 +5384,12 @@ label, label + * {
 .checkout-page .section {
   margin: 0 0 30px;
 }
+
+  .checkout-page .section.order-completed {
+    padding: 25px;
+    border-radius: 4px;
+    border: 1px solid rgb(229, 229, 229);
+  }
 
   .checkout-page .section.order-summary {
     margin: 100px 0 30px;
@@ -5443,12 +5402,6 @@ label, label + * {
 
 .checkout-page .cart-footer {
   border-top: none;
-}
-
-.checkout-page .total-info {
-  margin: 0;
-  border-bottom: none;
-  padding: 5px 20px 10px;
 }
 
 .checkout-page .button-1 {
@@ -5503,14 +5456,7 @@ label, label + * {
 
 .checkout-page .ship-to-same-address {
   padding: 30px 0;
-  text-align: center;
 }
-
-  .checkout-page .ship-to-same-address .selector {
-    margin: 0 0 5px;
-    font-weight: bold;
-    color: #444;
-  }
 
 .vat-number-warning {
   text-align: center;
@@ -5604,48 +5550,43 @@ label, label + * {
   vertical-align: middle;
 }
 
-.payment-info .info {
-  padding: 30px 15px;
-  color: #444;
+.payment-info .info tr {
+  display: block;
+  margin: 0 0 15px;
+  font-size: 0;
 }
 
-  .payment-info .info tr {
-    display: block;
-    margin: 0 0 15px;
-    font-size: 0;
-  }
+.payment-info .info td {
+  display: inline-block;
+  width: 100% !important;
+  font-size: 16px; /*reset zeroing*/
+}
 
-  .payment-info .info td {
-    display: inline-block;
+  .payment-info .info td:only-child {
     width: 100% !important;
-    max-width: 400px !important;
-    font-size: 14px; /*reset zeroing*/
+    max-width: 100% !important;
   }
 
-    .payment-info .info td:only-child {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    .payment-info .info td input[type="text"] {
-      width: 100% !important;
-    }
-
-    .payment-info .info td input[name="CardCode"] {
-      width: 65px !important;
-    }
-
-    .payment-info .info td select {
-      min-width: 70px;
-    }
-
-    .payment-info .info td:first-child {
-      margin: 0 0 10px;
-    }
-
-  .payment-info .info p {
-    text-align: center;
+  .payment-info .info td input[type="text"] {
+    width: 100% !important;
   }
+
+  .payment-info .info td select {
+    width: 100%;
+  }
+
+    .payment-info .info td select#ExpireMonth,
+    .payment-info .info td select#ExpireYear {
+      width: calc(50%-(14px/2));
+    }
+
+  .payment-info .info td:first-child {
+    margin: 0 0 10px;
+  }
+
+.payment-info .info p {
+  text-align: center;
+}
 
 .confirm-order .buttons {
   padding: 10px 0;
@@ -5655,95 +5596,90 @@ label, label + * {
   font-size: 16px;
 }
 
-.order-review-data > div,
-.order-details-area > div,
-.shipment-details-area > div {
-  width: 350px;
-  max-width: 100%;
-  margin: 0 auto 40px;
-  background-color: #f9f9f9;
-  padding: 20px;
-  color: #444;
+.order-review-data,
+.order-details-area,
+.shipment-details-area {
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 25px;
+  margin-bottom: 20px;
 }
 
-.order-review-data li,
-.order-details-area li,
-.shipment-details-area li {
-  padding: 3px 0;
-}
+  .order-review-data ul,
+  .order-details-area ul,
+  .shipment-details-area ul {
+    padding: 0;
+    margin: 0;
+  }
 
-.order-review-data .title,
-.order-details-area .title,
-.shipment-details-area .title {
-  margin: 0 0 5px;
-  padding: 0;
-  font-size: 16px;
-  font-weight: bold;
-}
+  .order-overview-content li,
+  .order-review-data li,
+  .order-details-area li,
+  .shipment-details-area li {
+    padding: 10px 0;
+  }
 
   .order-review-data .title strong,
   .order-details-area .title strong,
   .shipment-details-area .title strong {
     font-weight: 700;
+    font-size: 16px;
   }
 
-.order-review-data .payment-method-info,
-.order-review-data .shipping-method-info,
-.order-details-area .payment-method-info,
-.order-details-area .shipping-method-info {
-  margin-top: 20px;
+  .order-review-data .payment-method-info,
+  .order-review-data .shipping-method-info,
+  .order-details-area .payment-method-info,
+  .order-details-area .shipping-method-info {
+    margin-top: 20px;
+  }
+
+.order-completed .details div {
+  margin: 5px 0;
 }
 
-.order-completed .details {
-  margin: 0 0 30px;
-  padding: 30px 15px;
-  text-align: center;
-  color: #444;
+.order-completed .details strong {
+  font-weight: 700;
 }
 
-  .order-completed .details div {
-    margin: 5px 0;
+.order-completed .details a {
+  color: #4ab2f1;
+}
+
+  .order-completed .details a:hover,
+  .order-completed .details a:focus {
+    text-decoration: underline;
   }
 
-  .order-completed .details strong {
-    font-weight: normal;
-    text-transform: uppercase;
-  }
-
-  .order-completed .details a {
-    color: #4ab2f1;
-  }
-
-    .order-completed .details a:hover,
-    .order-completed .details a:focus {
-      text-decoration: underline;
-    }
+.opc .active .step-title {
+  background-color: #0097BD;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0px;
+  color: #fff;
+}
 
 .opc .step-title {
-  margin: 0 0 1px;
   overflow: hidden;
-  background-color: #f6f6f6;
+  background-color: rgba(0, 152, 191, 0.1);
+  color: rgb(0, 151, 189);
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
 
 .opc .allow .step-title {
-  background-color: #4ab2f1;
   cursor: pointer;
 }
 
 .opc .step-title .number,
 .opc .step-title .title {
   float: left;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0;
   min-height: 40px;
   padding: 10px 15px;
   line-height: 20px;
-  font-size: 16px;
-  font-weight: normal;
-}
-
-.opc .allow .step-title .number,
-.opc .allow .step-title .title {
-  color: #fff;
-  cursor: pointer;
 }
 
 .opc .step-title .number {
@@ -5752,19 +5688,40 @@ label, label + * {
   text-align: center;
 }
 
-.opc .allow .step-title .number {
-  background-color: #248ece;
+.opc .active .step-title .number,
+.opc .active .step-title .title {
+  float: left;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 0;
+  min-height: 40px;
+  padding: 10px 15px;
+  line-height: 20px;
+}
+
+.opc .step-title .number {
+  width: 42px;
+  border-right: 1px solid #fff;
+  text-align: center;
 }
 
 .opc .step {
-  margin: 10px 0;
-  padding: 30px 15px;
-  text-align: center;
+  padding: 25px;
+  margin-bottom: 20px;
+  border: 1px solid #E5E5E5;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 
 .opc .section {
   margin: 0 0 30px;
 }
+
+  .opc .section ul {
+    padding-left: 0;
+  }
 
   .opc .section > label {
     display: block;
@@ -5828,50 +5785,27 @@ label, label + * {
 
 /****** ORDER DETAILS & SHIPPING DETAILS ******/
 
-
-
-.order-details-page .page-title {
-  border-bottom: none;
+.order-details-page .page-title a:hover,
+.order-details-page .page-title a:focus {
+  background-color: #999;
 }
 
-  .order-details-page .page-title h1 {
-    margin: 0 0 30px;
-    border-bottom: 1px solid #ddd;
-    padding: 0 0 10px;
+.order-details-page .page-title a.print-order-button {
+  background-color: #4ab2f1;
+}
+
+  .order-details-page .page-title a.print-order-button:hover,
+  .order-details-page .page-title a.print-order-button:focus {
+    background-color: #248ece;
   }
-
-  .order-details-page .page-title a {
-    display: inline-block;
-    min-width: 180px;
-    margin: 5px 0;
-    border: none;
-    background-color: #aaa;
-    background-image: none;
-    padding: 10px 20px;
-    font-size: 15px;
-    color: #fff;
-  }
-
-    .order-details-page .page-title a:hover,
-    .order-details-page .page-title a:focus {
-      background-color: #999;
-    }
-
-    .order-details-page .page-title a.print-order-button {
-      background-color: #4ab2f1;
-    }
-
-      .order-details-page .page-title a.print-order-button:hover,
-      .order-details-page .page-title a.print-order-button:focus {
-        background-color: #248ece;
-      }
 
 .order-details-page .order-overview {
-  margin: 0 0 50px;
+  padding: 25px;
+  margin: 0 0 20px;
   line-height: 26px;
-  text-align: center;
   font-size: 16px;
-  color: #444;
+  border: 1px solid rgb(229, 229, 229);
+  border-radius: 4px;
 }
 
   .order-details-page .order-overview .order-number {
@@ -5947,34 +5881,17 @@ label, label + * {
 
 .order-details-page .actions {
   margin: 30px 0 0;
-  font-size: 0;
+  display: flex;
+  gap: 20px;
+  text-transform: uppercase;
 }
 
-  .order-details-page .actions button {
-    display: inline-block;
-    min-width: 165px;
-    margin: 5px;
-    border: none;
-    background-color: #aaa;
-    background-image: none;
-    padding: 10px 20px;
-    font-size: 15px;
-    color: #fff;
-  }
-
-    .order-details-page .actions button:hover,
-    .order-details-page .actions button:focus {
-      background-color: #999;
-    }
-
-    .order-details-page .actions button:first-child {
-      background-color: #4ab2f1;
-    }
-
-      .order-details-page .actions button:first-child:hover,
-      .order-details-page .actions button:first-child:focus {
-        background-color: #248ece;
-      }
+.order-details-page .section.products {
+  border-radius: 4px;
+  border: 1px solid #E5E5E5;
+  padding: 25px;
+  margin-top: 20px;
+}
 
 .order-details-page .totals.section {
   width: 370px;
@@ -5984,9 +5901,11 @@ label, label + * {
 }
 
 .order-details-page .total-info {
-  background-color: #f9f9f9;
-  padding: 15px 20px;
-  color: #444;
+  max-width: 500px;
+  margin-top: 20px;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  padding: 3px 20px;
 }
 
 

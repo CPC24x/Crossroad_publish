@@ -76,15 +76,15 @@
                 @await Html.PartialAsync("_Microdata", Model)
             }
             <div data-productid="@Model.Id">
-                <div class="product-essential">
+                <div class="product-essential row">
                     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsEssentialTop, additionalData = Model })
-                    <div class="gallery">
+                    <div class="gallery col-12 col-lg-6">
                         <!--product pictures-->
                         @await Html.PartialAsync("_ProductDetailsPictures", Model)
                         <!--product videos-->
                         @await Html.PartialAsync("_ProductDetailsVideos", Model)
                     </div>
-                    <div class="overview">
+                    <div class="overview col-12 col-lg-6">
                         <!--manufacturers-->
                         @await Html.PartialAsync("_ProductManufacturers", Model.ProductManufacturers)
 
