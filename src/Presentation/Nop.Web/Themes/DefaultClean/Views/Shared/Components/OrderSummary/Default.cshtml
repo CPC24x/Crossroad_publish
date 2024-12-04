@@ -229,7 +229,7 @@
                 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryCartFooter, additionalData = Model })
                 @if (Model.IsEditable)
                 {
-                    <div class="cart-collaterals col-12 col-md-6">
+                    <div class="cart-collaterals col-12 col-md-6 ps-md-0">
                         <div class="title">COUPON</div>
                         <div class="deals">
                             @await Html.PartialAsync("_DiscountBox", Model.DiscountBox)
@@ -238,7 +238,7 @@
                         </div>
                     </div>
                 }
-                <div class="totals col-12 col-md-6 p-0">
+                <div class="totals col-12 col-md-6 pe-md-0">
                     <div class="title">CART TOTALS</div>
                     <div class="totals-container">
                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryTotals, additionalData = Model })

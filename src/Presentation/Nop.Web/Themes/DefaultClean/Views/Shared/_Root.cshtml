@@ -30,7 +30,7 @@
         {
             @RenderSection("Breadcrumb")
         }
-        <div class="master-column-wrapper">
+        <div class="master-column-wrapper row">
             @RenderBody()
         </div>
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentAfter })

@@ -45,7 +45,7 @@ namespace Nop.Web.BookHelpers
                 return (string.Empty, string.Empty);
 
             var data = string.Empty;
-            data = string.Join(",", psa.Values.Select(x => x.ValueRaw));
+            data = string.Join(", ", psa.Values.Select(x => x.ValueRaw));
 
 
             return (psa.Name, data);

@@ -622,9 +622,6 @@
 
   /*** ESTIMATE SHIPPING POPUP ***/
 
-  .estimate-shipping-popup {
-    padding: 25px;
-  }
 }
 
 @media all and (min-width: 768px) {
@@ -857,21 +854,7 @@
     padding: 0 10px;
   }
 
-  .cart-footer .totals {
-    margin: 0 2.5%;
-  }
-
   .cart-footer .terms-of-service {
-    text-align: left;
-  }
-
-  .cart-footer .checkout-buttons,
-  .cart-footer .addon-buttons {
-    text-align: right;
-  }
-
-  .cart-footer .cart-collaterals div,
-  .cart-footer .cart-collaterals label {
     text-align: left;
   }
 
@@ -1246,10 +1229,9 @@
   }
 
     .inputs label {
-      display: inline-block;
+      display: block;
       width: 265px;
       margin: 0 10px 0 0;
-      text-align: right;
     }
 
     .inputs input[type="text"],
@@ -1761,7 +1743,10 @@
 
   .login-page .returning-wrapper input[type="text"],
   .login-page .returning-wrapper input[type="email"],
-  .login-page .returning-wrapper input[type="password"] {
+  .login-page .returning-wrapper input[type="password"],
+  .registration-page .fieldset input[type="text"],
+  .registration-page .fieldset input[type="email"],
+  .registration-page .fieldset input[type="password"] {
     width: 100%;
   }
 
@@ -2016,15 +2001,6 @@
   }
 
   /*** SHOPPING CART ***/
-
-
-  .cart-footer .totals {
-    margin: 0;
-  }
-
-  .cart-footer .cart-collaterals {
-    margin: 0;
-  }
 
   .cart-footer .estimate-shipping .inputs label {
     display: inline-block;
