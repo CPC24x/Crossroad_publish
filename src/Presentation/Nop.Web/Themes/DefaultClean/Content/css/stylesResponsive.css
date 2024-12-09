@@ -1309,7 +1309,7 @@
 
   .flyout-cart {
     position: absolute;
-    top: 100%;
+    top: 24px;
     right: 0;
     z-index: 100;
     width: 300px;
