@@ -934,3 +934,23 @@ public class OE_ProductIdentifierType_Enum : OE_Enum
     })
     { }
 }
+
+public class OE_ResourceVersionFeatureType_Enum : OE_Enum
+{
+    public OE_ResourceVersionFeatureType_Enum() : base(new Dictionary<string, string>
+    {
+        {"", "undefined"},
+        {"01", "File format"},
+        {"02", "Image height in pixels"},
+        {"03", "Image width in pixels"},
+        {"04", "Filename"},
+        {"05", "Approximate download file size in megabytes"},
+        {"06", "MD5 hash value"},
+        {"07", "Exact download file size in bytes"},
+        {"08", "SHA-256 hash value"},
+        {"09", "ISCC"},
+        {"10", "Previous filename"},
+    })
+    {
+    }
+}

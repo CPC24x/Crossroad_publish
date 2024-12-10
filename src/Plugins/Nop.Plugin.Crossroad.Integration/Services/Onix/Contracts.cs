@@ -146,7 +146,15 @@ public class Contracts
     public record ResourceFeatureType([property: JsonPropertyName("Value")] string Value);
 
     public record FeatureNote([property: JsonPropertyName("Value")] string Value);
-    public record ResourceVersion([property: JsonPropertyName("ResourceLink")] ResourceLink ResourceLink);
+    public record ResourceVersion([property: JsonPropertyName("ResourceVersionFeature")] List<ResourceVersionFeature> ResourceVersionFeature,
+        [property: JsonPropertyName("ResourceLink")] ResourceLink ResourceLink);
+
+    public record ResourceVersionFeature([property: JsonPropertyName("ResourceVersionFeatureType")] ResourceVersionFeatureType ResourceVersionFeatureType,
+        [property: JsonPropertyName("FeatureValue")] FeatureValue FeatureValue);
+
+    public record ResourceVersionFeatureType([property: JsonPropertyName("Value")] string Value);
+
+    public record FeatureValue([property: JsonPropertyName("Value")] string Value);
 
     public record ResourceLink([property: JsonPropertyName("Value")] string Value);
 
@@ -161,7 +169,6 @@ public class Contracts
     public record SupplyDetail([property: JsonPropertyName("Supplier")] List<Supplier> Supplier,
         [property: JsonPropertyName("ProductAvailability")] ProductAvailability ProductAvailability,
         [property: JsonPropertyName("Price")] List<Price> Price);
-
 
     public record Supplier([property: JsonPropertyName("SupplierName")] SupplierName SupplierName);
 
@@ -217,7 +224,6 @@ public class Contracts
 
 
     #endregion
-
     #endregion
 
     public record SortFields([property: JsonPropertyName("ISBN13")] string ISBN13,
