@@ -32,7 +32,7 @@
                     <span>@Model.OldPrice</span>
                 </div>
             }
-            <div class="@if (string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
+            <div x-text="productDetails.ProductPrice.Price" class="@if (string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
                         {
                             <text>product-price</text>
                         }

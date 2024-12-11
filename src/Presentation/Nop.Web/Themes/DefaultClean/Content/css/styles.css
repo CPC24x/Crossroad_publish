@@ -2622,6 +2622,14 @@ input[type="checkbox"] {
     font-weight: 500;
   }
 
+  .product-details-page .show-menu p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .product-details-page .hidden-menu p {
     border-left: 5px solid #0097BD;
     padding-left: 10px;
@@ -3330,6 +3338,7 @@ input[type="checkbox"] {
     }
 
     .attributes dd select {
+      display: inline-block;
       width: 80%;
       -webkit-appearance: none;
       line-height: 1;

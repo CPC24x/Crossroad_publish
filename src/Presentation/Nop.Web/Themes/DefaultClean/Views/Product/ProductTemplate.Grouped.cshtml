@@ -1,0 +1,323 @@
+﻿@model ProductDetailsModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Seo
+@using Nop.Services.Html
+@using Nop.Web.BookHelpers
+
+
+@inject IHtmlFormatter htmlFormatter
+@inject IWebHelper webHelper
+@inject SeoSettings seoSettings
+@inject BookHelpers bookHelpers
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    NopHtml.AddMetaDescriptionParts(Model.MetaDescription);
+    NopHtml.AddMetaKeywordParts(Model.MetaKeywords);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-product-details-page");
+
+    //canonical URL
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl<Product>(new { SeName = Model.SeName }, webHelper.GetCurrentRequestProtocol()).ToLowerInvariant();
+        NopHtml.AddCanonicalUrlParts(productUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
+    }
+
+    //open graph META tags
+    if (seoSettings.OpenGraphMetaTags)
+    {
+        NopHtml.AddHeadCustomParts("<meta property=\"og:type\" content=\"product\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:description\" content=\"" + Html.Encode(htmlFormatter.StripTags(Model.MetaDescription)) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:image:url\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:url\" content=\"" + webHelper.GetThisPageUrl(false) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"og:site_name\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+    }
+
+    //Twitter META tags
+    if (seoSettings.TwitterMetaTags)
+    {
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:card\" content=\"summary\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:site\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:description\" content=\"" + Html.Encode(htmlFormatter.StripTags(Model.MetaDescription)) + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        NopHtml.AddHeadCustomParts("<meta property=\"twitter:url\" content=\"" + webHelper.GetThisPageUrl(false) + "\" />");
+    }
+}
+@* <!--product breadcrumb-->
+@section Breadcrumb
+{
+    @await Html.PartialAsync("_ProductBreadcrumb", Model.Breadcrumb)
+} *@
+
+@{
+    async Task ProductSpecificationAttribute(string specificationAttributeName)
+    {
+        var (name, value) = await bookHelpers.GetProductSpecificationAttributeAsync(Model.Id, specificationAttributeName);
+        <li hide-empty="@name"><strong>@name : </strong>@value</li>
+    }
+}
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsAfterBreadcrumb, additionalData = Model })
+<div class="page product-details-page">
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsTop, additionalData = Model })
+        <form asp-route="Product" asp-route-sename="@Model.SeName" method="post" id="product-details-form" x-data="{ selectedProduct: '@(Model.AvailableChildProducts.FirstOrDefault().Value)',
+        data: '',
+enteredQuantity: 1,
+ mainImgSrc: '',  // Set initial default image
+    mainImgAlt: '',
+    mainImgTitle: '',
+    lightboxHref: '',
+        fetchProductDetails: async function() {
+            this.productDetails = {};
+            try {
+                // Fetch product details from the MVC controller via an API call
+                const response = await fetch(`@Url.ActionLink("ProductData","Product")?productId=${this.selectedProduct}`);
+
+                // Check if the response is ok (status code 200-299)
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Parse the JSON response
+                const data = await response.json();
+
+                if (data.error) {
+                    this.productDetails = { description: data.error };  // Handle error in case product is not found
+                } else {
+                    this.productDetails = data;  // Update the product details with the fetched data
+                    this.mainImgSrc= this.productDetails.PictureModels[0].ImageUrl;
+                    this.mainImgAlt= this.productDetails.PictureModels[0].AlternateText;
+                    this.mainImgTitle= this.productDetails.PictureModels[0].Title;
+                    this.lightboxHref=this.productDetails.PictureModels[0].FullSizeImageUrl;
+                }
+            } catch (error) {
+                // Handle errors like network issues
+                this.productDetails = { description: `Error: ${error.message}` };
+            }
+        }}" x-init="fetchProductDetails()">
+            @if (seoSettings.MicrodataEnabled)
+            {
+                @await Html.PartialAsync("_Microdata", Model)
+            }
+            <div data-productid="@Model.Id">
+                <div class="product-essential row">
+                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsEssentialTop, additionalData = Model })
+                    <div class="gallery col-12 col-lg-6">
+                        <!--product pictures-->
+                        @await Html.PartialAsync("_ProductDetailsPictures", Model)
+                        <!--product videos-->
+                        @await Html.PartialAsync("_ProductDetailsVideos", Model)
+                    </div>
+                    <div class="overview col-12 col-lg-6">
+                        <!--manufacturers-->
+                        @await Html.PartialAsync("_ProductManufacturers", Model.ProductManufacturers)
+                        @await Html.PartialAsync("_Discontinued", Model)
+                        <div class="product-name">
+                            <h1>@Model.Name</h1>
+                            <h2>@Model.Name</h2>
+                        </div>
+                        <div class="description-section" x-show="productDetails.FullDescription !=''">
+                            <div x-data="{ isExpanded: false }" x-bind:class="isExpanded ? 'hidden-menu' : 'show-menu'">
+                                <p x-text="productDetails.FullDescription"></p>
+                                <a @@click="isExpanded = !isExpanded" class="toggle-button">
+                                    <span x-show="isExpanded">Show less</span>
+                                    <span x-show="!isExpanded">Show more</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="endoresement" x-show="productDetails.FullDescription !=''">
+                            <div x-data="{ isExpanded: false }" x-bind:class="isExpanded ? 'hidden-menu' : 'show-menu'">
+                                <p x-text="productDetails.FullDescription"></p>
+                                <a @@click="isExpanded = !isExpanded" class="toggle-button">
+                                    <span x-show="isExpanded">Show less</span>
+                                    <span x-show="!isExpanded">Show more</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="productviewbookdetail">
+                            <ul class="p-0">
+                                <li x-text="'Imprint : '+ productDetails.ProductSpecificationModel.Groups[0].Attributes.find(item => item.Name == 'Imprint name').Values[0].ValueRaw"></li>
+                            </ul>
+                        </div>
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsOverviewTop, additionalData = Model })
+                        <!--product reviews-->
+                        @await Html.PartialAsync("_ProductReviewOverview", Model.ProductReviewOverview)
+                        <!--availability-->
+                        @await Html.PartialAsync("_Availability", Model)
+                        <!--SKU, MAN, GTIN, vendor-->
+                        @* @await Html.PartialAsync("_SKU_Man_GTIN_Ven", Model) *@
+                        <!--delivery-->
+                        @await Html.PartialAsync("_DeliveryInfo", Model)
+                        <!--sample download-->
+                        @await Html.PartialAsync("_DownloadSample", Model)
+                        <div class="row formatAndAddtoCartSection">
+                            <div class="col-12 col-md-6">
+                                <!--attributes-->
+                                @{
+                                    var dataDictAttributes = new ViewDataDictionary(ViewData);
+                                    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = $"attributes_{Model.Id}";
+                                    @await Html.PartialAsync("_ProductAttributes", Model, dataDictAttributes)
+                                    <div class="attributes">
+                                        <dl>
+                                            <dt id="">
+                                                <label class="text-prompt">
+                                                    Type
+                                                </label>
+                                            </dt>
+                                            <dd id="">
+                                                <nop-select asp-for="SelectedChildProduct" asp-items="Model.AvailableChildProducts" x-model="selectedProduct" x-on:change="fetchProductDetails()" />
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    var dataDictPrice = new ViewDataDictionary(ViewData);
+                                    dataDictPrice.TemplateInfo.HtmlFieldPrefix = $"price_{Model.Id}";
+                                    @await Html.PartialAsync("_ProductPrice", Model.ProductPrice, dataDictPrice)
+                                    <div class="text-center">
+                                        <span class="isbn-text" x-text="'ISBN:'+productDetails.Sku"></span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <!--price & add to cart & estimate shipping-->
+                                @{
+
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceTop, additionalData = Model })
+
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductPriceBottom, additionalData = Model })
+
+                                    @await Html.PartialAsync("_ProductTierPrices", Model.TierPrices)
+
+                                    var dataDictAddToCart = new ViewDataDictionary(ViewData);
+                                    dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
+                                    @await Html.PartialAsync("_AddToCart", Model.AddToCart, dataDictAddToCart)
+
+                                    @await Html.PartialAsync("_ProductEstimateShipping", Model.ProductEstimateShipping)
+                                    <!--wishlist, compare, email a friend-->
+                                    <div class="overview-buttons">
+                                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsBefore, additionalData = Model })
+                                        @{
+                                            var dataDictAddToWishlist = new ViewDataDictionary(ViewData);
+                                            dataDictAddToWishlist.TemplateInfo.HtmlFieldPrefix = $"addtocart_{Model.Id}";
+                                            @await Html.PartialAsync("_AddToWishlist", Model.AddToCart, dataDictAddToWishlist)
+                                        }
+                                        @*@await Html.PartialAsync("_CompareProductsButton", Model)*@
+                                        @* @await Html.PartialAsync("_ProductEmailAFriendButton", Model)*@
+                                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsInsideOverviewButtonsAfter, additionalData = Model })
+                                    </div>
+                                    @await Html.PartialAsync("_ShareButton", Model)
+                                    <div class="product-bulk-email">
+                                        <span>
+                                            For bulk and special orders please email <br />
+                                            <a href="mailto:@T("Product.Details.BulkContactEmail")">@T("Product.Details.BulkContactEmail")</a>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <!--gift card-->
+                        @{
+                            var dataDictGiftCard = new ViewDataDictionary(ViewData);
+                            dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = $"giftcard_{Model.Id}";
+                            @await Html.PartialAsync("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                        }
+                        <!--rental info-->
+                        @{
+                            var dataDictRental = new ViewDataDictionary(ViewData);
+                            dataDictRental.TemplateInfo.HtmlFieldPrefix = $"rental_{Model.Id}";
+                            @await Html.PartialAsync("_RentalInfo", Model, dataDictRental)
+                        }
+
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsOverviewBottom, additionalData = Model })
+                    </div>
+                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsEssentialBottom, additionalData = Model })
+                </div>
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsBeforeCollateral, additionalData = Model })
+                <div class="product-collateral">
+                    <ul class="nav nav-tabs justify-content-center justify-content-md-start" id="productInfoTab" role="tablist">
+                        @{
+                            var hasSpecification = await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel);
+                        }
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs-tab-pane" type="button" role="tab" aria-controls="specs-tab-pane" aria-selected="false">
+                                Specification
+                            </button>
+                        </li>
+
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="author-tab" data-bs-toggle="tab" data-bs-target="#author-tab-pane" type="button" role="tab" aria-controls="author-tab-pane" aria-selected="false">
+                                About the author
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="full-description-tab" data-bs-toggle="tab" data-bs-target="#full-description-tab-pane" type="button" role="tab" aria-controls="full-description-tab-pane" aria-selected="false">
+                                Description
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="productInfoTabContent">
+
+                        <div class="tab-pane fade show active" id="specs-tab-pane" role="tabpanel" aria-labelledby="specs-tab" tabindex="0">
+                            @*  @await Html.PartialAsync("_ProductSpecifications", Model.ProductSpecificationModel) *@
+                            <div class="row">
+                                <div class="col-md-6 lefttab">
+                                    <ul>
+                                        <template x-for="(item, index) in productDetails.ProductSpecificationModel.Groups[0].Attributes" :key="index">
+                                            <li x-show="item.Values[0].ValueRaw !=''"><strong x-text="item.Name+' : '"></strong><span x-text="item.Values[0].ValueRaw"></span></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 righttab">
+                                    <ul>
+                                        @{
+                                            await ProductSpecificationAttribute("Keywords");
+                                            await ProductSpecificationAttribute("Language");
+                                            await ProductSpecificationAttribute("Number of pages");
+                                            await ProductSpecificationAttribute("Publication date");
+                                            await ProductSpecificationAttribute("PublishingStatus");
+                                            await ProductSpecificationAttribute("Table of content");
+                                            await ProductSpecificationAttribute("Trim size");
+                                            await ProductSpecificationAttribute("Type");
+                                        }
+
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="tab-pane fade" id="author-tab-pane" role="tabpanel" aria-labelledby="author-tab" tabindex="0">
+                            <template x-for="(item, index) in productDetails.ProductManufacturers" :key="index">
+                                <div>
+                                    <h4 x-text="item.Name"></h4>
+                                    <p x-text="item.Name"></p>
+                                    <div class="text-center text-md-start">
+                                        <a class="btn-1">View Products</a>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="tab-pane fade" id="full-description-tab-pane" role="tabpanel" aria-labelledby="full-description-tab" tabindex="0">
+                            <div class="full-description" x-html="productDetails.FullDescription"></div>
+                        </div>
+                    </div>
+                </div>
+                @await Component.InvokeAsync(typeof(ProductsAlsoPurchasedViewComponent), new { productId = Model.Id })
+                @await Component.InvokeAsync(typeof(RelatedProductsViewComponent), new { productId = Model.Id })
+            </div>
+        </form>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsBottom, additionalData = Model })
+    </div>
+</div>

@@ -7,7 +7,6 @@ using Nop.Plugin.Crossroad.Integration.Services.Onix;
 using Nop.Plugin.Crossroad.Integration.Services.Products;
 using Nop.Services.Helpers;
 using Serilog;
-using static LinqToDB.SqlQuery.SqlPredicate;
 
 namespace Nop.Plugin.Crossroad.Integration.Helpers;
 
@@ -81,7 +80,7 @@ public class OnixEditSyncTaskManager
                     while (_isRunning)
                     {
                         LogInformation($"Getting Product From OnixEdit");
-                        var onixProducts = await onixEditService.GetOnixProductsAsync(page: i, pageSize: 100, isbn);
+                        var onixProducts = await onixEditService.GetOnixProductsAsync(page: i, pageSize: 10, isbn);
                         LogInformation($"Number of Products obtained from OnixEdit: {onixProducts.Count}");
 
                         LogInformation($"Start persisting Product");

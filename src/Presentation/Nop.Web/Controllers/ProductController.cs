@@ -157,6 +157,73 @@ namespace Nop.Web.Controllers
         #endregion
 
         #region Product details page
+        public virtual async Task<IActionResult> ProductData(int productId, int updatecartitemid = 0)
+        {
+            var product = await _productService.GetProductByIdAsync(productId);
+            if (product == null || product.Deleted)
+                return Json(new { error = "Product not found" });
+
+            var notAvailable =
+                //published?
+                (!product.Published && !_catalogSettings.AllowViewUnpublishedProductPage) ||
+                //ACL (access control list) 
+                !await _aclService.AuthorizeAsync(product) ||
+                //Store mapping
+                !await _storeMappingService.AuthorizeAsync(product) ||
+                //availability dates
+                !_productService.ProductIsAvailable(product);
+            //Check whether the current user has a "Manage products" permission (usually a store owner)
+            //We should allows him (her) to use "Preview" functionality
+            var hasAdminAccess = await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) && await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts);
+            if (notAvailable && !hasAdminAccess)
+                return Json(new { error = "Product not found" });
+
+
+            //update existing shopping cart or wishlist  item?
+            ShoppingCartItem updatecartitem = null;
+            if (_shoppingCartSettings.AllowCartItemEditing && updatecartitemid > 0)
+            {
+                var seName = await _urlRecordService.GetSeNameAsync(product);
+                var productUrl = await _nopUrlHelper.RouteGenericUrlAsync<Product>(new { SeName = seName });
+                var store = await _storeContext.GetCurrentStoreAsync();
+                var cart = await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), storeId: store.Id);
+                updatecartitem = cart.FirstOrDefault(x => x.Id == updatecartitemid);
+
+                //not found?
+                if (updatecartitem == null)
+                    return Json(new { error = "Product not found" });
+
+                //is it this product?
+                if (product.Id != updatecartitem.ProductId)
+                    return Json(new { error = "Product not found" });
+            }
+
+            //save as recently viewed
+            await _recentlyViewedProductsService.AddProductToRecentlyViewedListAsync(product.Id);
+
+            //display "edit" (manage) link
+            if (await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) &&
+                await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+            {
+                //a vendor should have access only to his products
+                var currentVendor = await _workContext.GetCurrentVendorAsync();
+                if (currentVendor == null || currentVendor.Id == product.VendorId)
+                {
+                    DisplayEditLink(Url.Action("Edit", "Product", new { id = product.Id, area = AreaNames.Admin }));
+                }
+            }
+
+            //activity log
+            await _customerActivityService.InsertActivityAsync("PublicStore.ViewProduct",
+                string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.ViewProduct"), product.Name), product);
+
+            //model
+            var model = await _productModelFactory.PrepareProductDetailsModelAsync(product, updatecartitem, false);
+            //template
+            var productTemplateViewPath = await _productModelFactory.PrepareProductTemplateViewPathAsync(product);
+
+            return Json(model);
+        }
 
         public virtual async Task<IActionResult> ProductDetails(int productId, int updatecartitemid = 0)
         {
@@ -201,7 +268,7 @@ namespace Nop.Web.Controllers
                 var store = await _storeContext.GetCurrentStoreAsync();
                 var cart = await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), storeId: store.Id);
                 updatecartitem = cart.FirstOrDefault(x => x.Id == updatecartitemid);
-                
+
                 //not found?
                 if (updatecartitem == null)
                     return LocalRedirect(productUrl);
@@ -638,7 +705,7 @@ namespace Nop.Web.Controllers
             //prepare model
             var poModels = (await _productModelFactory.PrepareProductOverviewModelsAsync(products, prepareSpecificationAttributes: true))
                 .ToList();
-            foreach(var poModel in poModels)
+            foreach (var poModel in poModels)
             {
                 model.Products.Add(poModel);
             }

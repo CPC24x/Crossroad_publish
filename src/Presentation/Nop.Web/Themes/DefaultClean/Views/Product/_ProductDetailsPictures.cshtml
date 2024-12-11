@@ -1,0 +1,72 @@
+﻿@model ProductDetailsModel
+
+<link rel="stylesheet" href="~/lib_npm/magnific-popup/magnific-popup.css" />
+<script asp-exclude-from-bundle="true" src="~/lib_npm/magnific-popup/jquery.magnific-popup.min.js" asp-location="Footer"></script>
+
+<div class="picture-gallery" x-data="{
+    imgChange: function(event) {
+        mainImgSrc = event.target.getAttribute('data-defaultsize');
+        mainImgTitle = event.target.getAttribute('title');
+        mainImgAlt = event.target.getAttribute('alt');
+        lightboxHref = event.target.getAttribute('data-fullsize');
+    },
+    initMagnificPopup: function() {
+        $('.picture-thumbs').magnificPopup({
+            type: 'image',
+            delegate: 'a',
+            removalDelay: 300,
+            gallery: {
+                enabled: true,
+                navigateByImgClick: true,
+                preload: [0, 1],
+                tPrev: '@T("Media.MagnificPopup.Previous")',
+                tNext: '@T("Media.MagnificPopup.Next")',
+                tCounter: '@T("Media.MagnificPopup.Counter")'
+            },
+            tClose: '@T("Media.MagnificPopup.Close")',
+            tLoading: '@T("Media.MagnificPopup.Loading")'
+        });
+
+    }
+}" x-init="initMagnificPopup()">
+
+    <!-- Widget Invocations -->
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsBeforePictures, additionalData = Model })
+
+    <div class="picture">
+        @if (Model.DefaultPictureZoomEnabled)
+        {
+            <a :href="lightboxHref" :title="mainImgTitle" :id="'main-product-img-lightbox-anchor-'+productDetails.Id" x-init="$('#main-product-img-lightbox-anchor-'+ productDetails.Id).magnificPopup({ type: 'image' });" >
+                <img :alt="mainImgAlt" :src="mainImgSrc" :title="mainImgTitle" :id="'main-product-img-'+productDetails.Id" />
+            </a>
+        }
+        else
+        {
+            <img :alt="mainImgAlt" :src="mainImgSrc" :title="mainImgTitle" :id="'main-product-img-'+productDetails.Id" />
+        }
+    </div>
+
+    @if (Model.DefaultPictureZoomEnabled)
+    {
+        <div class="picture-thumbs" x-show="productDetails.PictureModels.length > 0">
+            <template x-for="(item, index) in productDetails.PictureModels" :key="index">
+                <a class="thumb-item" :href="item.FullSizeImageUrl" :alt="item.AlternateText" :title="item.Title">
+                    <img :src="item.ThumbImageUrl" :alt="item.AlternateText" :title="item.Title" :data-defaultsize="item.ImageUrl" :data-fullsize="item.FullSizeImageUrl" x-on:click="imgChange($event)" />
+                </a>
+            </template>
+        </div>
+    }
+    else
+    {
+        <div class="picture-thumbs" x-show="productDetails.PictureModels.length > 0">
+            <template x-for="(item, index) in productDetails.PictureModels" :key="index">
+                <div class="thumb-item">
+                    <img :src="item.ThumbImageUrl" :alt="item.AlternateText" :title="item.Title" :data-defaultsize="item.ImageUrl" :data-fullsize="item.FullSizeImageUrl" x-on:click="imgChange($event)" />
+                </div>
+            </template>
+        </div>
+    }
+
+    <!-- Widget Invocations After Pictures -->
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsAfterPictures, additionalData = Model })
+</div>

@@ -31,6 +31,7 @@ namespace Nop.Web.Models.Catalog
             ProductReviewOverview = new ProductReviewOverviewModel();
             TierPrices = new List<TierPriceModel>();
             ProductEstimateShipping = new ProductEstimateShippingModel();
+            AvailableChildProducts = new List<SelectListItem>();
         }
 
         //picture(s)
@@ -120,7 +121,10 @@ namespace Nop.Web.Models.Catalog
         public bool InStock { get; set; }
 
         public bool AllowAddingOnlyExistingAttributeCombinations { get; set; }
-
+        //custom
+        public int SelectedChildProduct { get; set; }
+        public IList<SelectListItem> AvailableChildProducts { get; set; }
+        //custom
         #region Nested Classes
 
         public partial record ProductBreadcrumbModel : BaseNopModel

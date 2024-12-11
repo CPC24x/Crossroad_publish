@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Math;
 using Microsoft.Extensions.Azure;
 using Nop.Core;
@@ -14,7 +15,10 @@ using Nop.Plugin.Crossroad.Integration.Services.Manufacturer;
 using Nop.Plugin.Crossroad.Integration.Services.Picture;
 using Nop.Plugin.Crossroad.Integration.Services.SpecificationAttributes;
 using Nop.Services.Catalog;
+using Nop.Services.Localization;
 using Nop.Services.Media;
+using Nop.Services.Seo;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.Contracts;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.OnixEditProductsUpdateTask;
 
@@ -35,6 +39,8 @@ public class PersistenceService : IPersistenceService
     private readonly IProductSpecificationAttributeService _specificationAttributeOptionsService;
     private readonly ISpecificationAttributeService _specificationAttributeService;
     private readonly IRepository<Product> _productRepository;
+    private readonly IUrlRecordService _urlRecordService;
+    private readonly ILocalizedEntityService _localizedEntityService;
 
     public PersistenceService(IProductService productService,
         IPictureService pictureService,
@@ -48,7 +54,9 @@ public class PersistenceService : IPersistenceService
         IManufacturerExtendedService manufacturerExtendedService,
         IProductSpecificationAttributeService specificationAttributeOptionsService,
         ISpecificationAttributeService specificationAttributeService,
-        IRepository<Product> productRepository)
+        IRepository<Product> productRepository,
+        IUrlRecordService urlRecordService,
+        ILocalizedEntityService localizedEntityService)
     {
         _productService = productService;
         _pictureService = pictureService;
@@ -63,6 +71,8 @@ public class PersistenceService : IPersistenceService
         _specificationAttributeOptionsService = specificationAttributeOptionsService;
         _specificationAttributeService = specificationAttributeService;
         _productRepository = productRepository;
+        _urlRecordService = urlRecordService;
+        _localizedEntityService = localizedEntityService;
     }
 
     public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<ProgressReport> reportProgress)
@@ -513,6 +523,8 @@ public class PersistenceService : IPersistenceService
             CreatedOnUtc = DateTime.UtcNow,
             UpdatedOnUtc = DateTime.UtcNow,
             Published = true,
+            ProductType = ProductType.SimpleProduct,
+            ProductTypeId = (int)ProductType.SimpleProduct,
         };
 
         var productFromDb = await _productService.GetProductBySkuAsync(product.Sku);
@@ -748,7 +760,7 @@ public class PersistenceService : IPersistenceService
 
                     foreach (var resourceVersion in supportingResource.ResourceVersion)
                     {
-                        var filename = resourceVersion.ResourceVersionFeature.Where(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("File format").Contains(x.ResourceVersionFeatureType?.Value));
+                        var filename = resourceVersion.ResourceVersionFeature.Where(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value));
                         int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: filename.FirstOrDefault().FeatureValue?.Value);
                         await InsertProductPictureAsync(pictureId, productId);
                     }
@@ -923,6 +935,7 @@ public class PersistenceService : IPersistenceService
         if (childProduct == null)
             return;
 
+        var childPicId = (await _pictureService.GetPicturesByProductIdAsync(childProductId)).FirstOrDefault();
         var parentProduct = _productRepository.Table.FirstOrDefault(x => x.AdminComment == parentUniquekey.ToLowerInvariant() && x.ProductTypeId == (int)ProductType.GroupedProduct && x.Deleted == false);
 
         if (parentProduct == null)
@@ -938,12 +951,19 @@ public class PersistenceService : IPersistenceService
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
                 AdminComment = parentUniquekey.ToLowerInvariant(),
+                VisibleIndividually = true,
                 Published = true,
             };
-            await _productService.InsertProductAsync(parentProduct);
 
-            var picId = (await _pictureService.GetPicturesByProductIdAsync(childProductId)).FirstOrDefault();
-            await InsertProductPictureAsync(picId.Id, parentProduct.Id);
+            await _productService.InsertProductAsync(parentProduct);
+            var seName = await _urlRecordService.ValidateSeNameAsync(parentProduct, null, parentProduct.Name, true);
+            await _urlRecordService.SaveSlugAsync(parentProduct, seName, 0);
+        }
+
+        var parentPicId = (await _pictureService.GetPicturesByProductIdAsync(parentProduct.Id)).FirstOrDefault();
+        if (childPicId != null && parentPicId == null)
+        {
+            await InsertProductPictureAsync(childPicId.Id, parentProduct.Id);
         }
 
         childProduct.ParentGroupedProductId = parentProduct.Id;
