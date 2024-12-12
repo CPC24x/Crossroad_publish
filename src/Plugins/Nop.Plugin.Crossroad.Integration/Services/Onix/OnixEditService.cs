@@ -50,7 +50,7 @@ public class OnixEditService
             urlEncodedJson = Uri.EscapeDataString(JsonSerializer.Serialize(searchCriteria));
         }
 
-        var apiResult = await _client.GetAsync($"3.0/product/{catalogueId}?/page=" + page + "&pageSize=" + pageSize + "&searchCriteria=" + urlEncodedJson);
+        var apiResult = await _client.GetAsync($"3.0/product/{catalogueId}?page={page}&pageSize={pageSize}&searchCriteria={urlEncodedJson}");
 
         apiResult.EnsureSuccessStatusCode();
 

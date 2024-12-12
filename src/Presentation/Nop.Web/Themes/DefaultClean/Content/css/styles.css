@@ -2622,7 +2622,7 @@ input[type="checkbox"] {
     font-weight: 500;
   }
 
-  .product-details-page .show-menu p {
+  .product-details-page .show-menu > div {
     display: -webkit-box;
     -webkit-line-clamp: 3; /* Limit to 3 lines */
     -webkit-box-orient: vertical;
@@ -2630,7 +2630,7 @@ input[type="checkbox"] {
     text-overflow: ellipsis;
   }
 
-  .product-details-page .hidden-menu p {
+  .product-details-page .hidden-menu > div {
     border-left: 5px solid #0097BD;
     padding-left: 10px;
   }

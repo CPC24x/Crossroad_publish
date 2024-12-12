@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using DocumentFormat.OpenXml.Math;
 using Microsoft.Extensions.Azure;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Media;
 using Nop.Data;
 using Nop.Plugin.Crossroad.Integration.Infrastructure.Extensions;
 using Nop.Plugin.Crossroad.Integration.Services.Manufacturer;
@@ -41,6 +43,7 @@ public class PersistenceService : IPersistenceService
     private readonly IRepository<Product> _productRepository;
     private readonly IUrlRecordService _urlRecordService;
     private readonly ILocalizedEntityService _localizedEntityService;
+    private readonly IProductTemplateService _productTemplateService;
 
     public PersistenceService(IProductService productService,
         IPictureService pictureService,
@@ -56,7 +59,8 @@ public class PersistenceService : IPersistenceService
         ISpecificationAttributeService specificationAttributeService,
         IRepository<Product> productRepository,
         IUrlRecordService urlRecordService,
-        ILocalizedEntityService localizedEntityService)
+        ILocalizedEntityService localizedEntityService,
+        IProductTemplateService productTemplateService)
     {
         _productService = productService;
         _pictureService = pictureService;
@@ -73,6 +77,7 @@ public class PersistenceService : IPersistenceService
         _productRepository = productRepository;
         _urlRecordService = urlRecordService;
         _localizedEntityService = localizedEntityService;
+        _productTemplateService = productTemplateService;
     }
 
     public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<ProgressReport> reportProgress)
@@ -85,18 +90,26 @@ public class PersistenceService : IPersistenceService
             {
                 try
                 {
+                    var titleCode = catalogue.ProductIdentifier.FirstOrDefault(x => x.IDTypeName?.Value == "Title Code")?.IDValue?.Value;
+
+                    if (titleCode == null)
+                    {
+                        reportProgress(new ProgressReport($"{catalogue.SortFields.Title} no Title Code", false));
+                        continue;
+                    }
+
                     var bookDescriptions = catalogue.CollateralDetail
-                                                                    .TextContent
-                                                                    .Where(tt => !new OE_TextType_Enum().GetKeys("Review quote").Contains(tt.TextType.Type) && !new OE_TextType_Enum().GetKeys("Endorsement").Contains(tt.TextType.Type))
-                                                                    .ToDictionary(tt => tt.TextType.Type,
-                                                                                  tv => tv.Text.Description);
+                                            .TextContent
+                                            .Where(tt => !new OE_TextType_Enum().GetKeys("Review quote").Contains(tt?.TextType?.Type) && !new OE_TextType_Enum().GetKeys("Endorsement").Contains(tt?.TextType?.Type))
+                                            ?.ToDictionary(tt => tt?.TextType?.Type,
+                                                          tv => tv?.Text?.Description);
 
                     int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions);
 
                     if (catalogue.SortFields.CoverImage is not null &&
                         !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
                     {
-                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue.SortFields.CoverImage, seoName: catalogue.SortFields.Title);
+                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue?.SortFields?.CoverImage, seoName: catalogue?.SortFields?.Title);
 
                         await InsertProductPictureAsync(pictureId, productId);
                     }
@@ -164,9 +177,6 @@ public class PersistenceService : IPersistenceService
 
                     // product types
                     await InsertProductTypesAsync(catalogue, productId);
-                    var titlePrefix = catalogue.DescriptiveDetail.TitleDetail.FirstOrDefault().TitleElement.FirstOrDefault().TitlePrefix?.TitlePrefixValue?.Trim();
-                    var titleWithoutPrefix = catalogue.DescriptiveDetail.TitleDetail.FirstOrDefault().TitleElement.FirstOrDefault().TitleWithoutPrefix?.TitleWithoutPrefixValue?.Trim();
-                    await CreateOrJoinParent(productId, $"{titlePrefix} {titleWithoutPrefix}-{string.Join(",", authors.Select(x => x.Trim()))}".Trim());
 
                     reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title} sync complete"));
                 }
@@ -547,6 +557,8 @@ public class PersistenceService : IPersistenceService
     {
         var imageBytes = await url.GetBytesFromUrlAsync();
 
+        string invalidChars = @"[<>:""/\\|?*]";
+        seoName = Regex.Replace(seoName, invalidChars, "");
         seoName = seoName.ToLower().Replace(" ", "_");
 
         Core.Domain.Media.Picture pictureFromDb = await _pictureExtendedService.GetPictureBySeoName(seoName);
@@ -761,7 +773,7 @@ public class PersistenceService : IPersistenceService
                     foreach (var resourceVersion in supportingResource.ResourceVersion)
                     {
                         var filename = resourceVersion.ResourceVersionFeature.Where(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value));
-                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: filename.FirstOrDefault().FeatureValue?.Value);
+                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: Path.GetFileNameWithoutExtension(filename.FirstOrDefault().FeatureValue?.Value));
                         await InsertProductPictureAsync(pictureId, productId);
                     }
                 }
@@ -791,13 +803,14 @@ public class PersistenceService : IPersistenceService
                 foreach (var productIdentifier in productIdentifiers)
                 {
 
-                    if (new OE_ProductIdentifierType_Enum().GetKeys("Proprietary").Contains(productIdentifier.ProductIDType.Value))
+                    if (new OE_ProductIdentifierType_Enum().GetKeys("Proprietary").Contains(productIdentifier.ProductIDType.Value) && productIdentifier?.IDTypeName?.Value == "Title Code")
                     {
                         await AddSpecificationAttributeAsync("Title Code", productIdentifier?.IDValue?.Value ?? "", productId);
-                        //await CreateOrJoinParent(productId, productIdentifier?.IDValue?.Value ?? "");
+                        await CreateOrJoinParent(productId, productIdentifier?.IDValue?.Value ?? "");
                     }
                     else
                         await AddSpecificationAttributeAsync(new OE_ProductIdentifierType_Enum().GetValue(productIdentifier.ProductIDType.Value), productIdentifier?.IDValue?.Value ?? "", productId);
+
 
                 }
 
@@ -940,6 +953,8 @@ public class PersistenceService : IPersistenceService
 
         if (parentProduct == null)
         {
+            var productGroupTemplateId = (await _productTemplateService.GetAllProductTemplatesAsync()).FirstOrDefault(x => x.ViewPath == "ProductTemplate.Grouped").Id;
+
             parentProduct = new Product
             {
                 Name = Regex.Replace(childProduct.Name, @"\s*\(.*\)", ""),
@@ -953,6 +968,7 @@ public class PersistenceService : IPersistenceService
                 AdminComment = parentUniquekey.ToLowerInvariant(),
                 VisibleIndividually = true,
                 Published = true,
+                ProductTemplateId = productGroupTemplateId,
             };
 
             await _productService.InsertProductAsync(parentProduct);

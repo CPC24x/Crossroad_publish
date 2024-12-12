@@ -128,7 +128,8 @@ enteredQuantity: 1,
                         </div>
                         <div class="description-section" x-show="productDetails.FullDescription !=''">
                             <div x-data="{ isExpanded: false }" x-bind:class="isExpanded ? 'hidden-menu' : 'show-menu'">
-                                <p x-text="productDetails.FullDescription"></p>
+                                <div x-html="productDetails.FullDescription" x-show="productDetails.FullDescription !=''"></div>
+                                <div x-show="productDetails.FullDescription ==''">@Html.Raw(Model.FullDescription)</div>
                                 <a @@click="isExpanded = !isExpanded" class="toggle-button">
                                     <span x-show="isExpanded">Show less</span>
                                     <span x-show="!isExpanded">Show more</span>
@@ -137,7 +138,8 @@ enteredQuantity: 1,
                         </div>
                         <div class="endoresement" x-show="productDetails.FullDescription !=''">
                             <div x-data="{ isExpanded: false }" x-bind:class="isExpanded ? 'hidden-menu' : 'show-menu'">
-                                <p x-text="productDetails.FullDescription"></p>
+                                <div x-html="productDetails.FullDescription" x-show="productDetails.FullDescription !=''"></div>
+                                <div x-show="productDetails.FullDescription ==''">@Html.Raw(Model.FullDescription)</div>
                                 <a @@click="isExpanded = !isExpanded" class="toggle-button">
                                     <span x-show="isExpanded">Show less</span>
                                     <span x-show="!isExpanded">Show more</span>
@@ -146,7 +148,7 @@ enteredQuantity: 1,
                         </div>
                         <div class="productviewbookdetail">
                             <ul class="p-0">
-                                <li x-text="'Imprint : '+ productDetails.ProductSpecificationModel.Groups[0].Attributes.find(item => item.Name == 'Imprint name').Values[0].ValueRaw"></li>
+                                <li x-Html="'Imprint : '+ productDetails.ProductSpecificationModel.Groups[0].Attributes.find(item => item.Name == 'Imprint name').Values[0].ValueRaw"></li>
                             </ul>
                         </div>
                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsOverviewTop, additionalData = Model })
@@ -272,24 +274,16 @@ enteredQuantity: 1,
                             <div class="row">
                                 <div class="col-md-6 lefttab">
                                     <ul>
-                                        <template x-for="(item, index) in productDetails.ProductSpecificationModel.Groups[0].Attributes" :key="index">
-                                            <li x-show="item.Values[0].ValueRaw !=''"><strong x-text="item.Name+' : '"></strong><span x-text="item.Values[0].ValueRaw"></span></li>
+                                        <template x-for="(item, index) in productDetails.ProductSpecificationModel.Groups[0].Attributes.filter(item => ['Title','AuthorNameInverted','AuthoRole','Endorsement','Product Form','Imprint name','Title Code',].includes(item.Name))" :key="index">
+                                            <li x-show="item.Values[0].ValueRaw !=''"><strong x-text="item.Name+' : '"></strong><span x-html="item.Values[0].ValueRaw"></span></li>
                                         </template>
                                     </ul>
                                 </div>
                                 <div class="col-md-6 righttab">
                                     <ul>
-                                        @{
-                                            await ProductSpecificationAttribute("Keywords");
-                                            await ProductSpecificationAttribute("Language");
-                                            await ProductSpecificationAttribute("Number of pages");
-                                            await ProductSpecificationAttribute("Publication date");
-                                            await ProductSpecificationAttribute("PublishingStatus");
-                                            await ProductSpecificationAttribute("Table of content");
-                                            await ProductSpecificationAttribute("Trim size");
-                                            await ProductSpecificationAttribute("Type");
-                                        }
-
+                                        <template x-for="(item, index) in productDetails.ProductSpecificationModel.Groups[0].Attributes.filter(item => ['Keywords','Language','Main content page count','Publication date','PublishingStatus','Table of content','Trim size','Type'].includes(item.Name))" :key="index">
+                                            <li x-show="item.Values[0].ValueRaw !=''"><strong x-text="item.Name+' : '"></strong><span x-html="item.Values[0].ValueRaw"></span></li>
+                                        </template>
                                     </ul>
                                 </div>
                             </div>

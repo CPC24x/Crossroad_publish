@@ -24,16 +24,15 @@
                     <span>@Model.RentalPrice</span>
                 </div>
             }
-            if (!string.IsNullOrWhiteSpace(Model.OldPrice))
-            {
-                @*old price*@
-                <div class="old-product-price">
-                    <span>@T("Products.Price.OldPrice"):</span>
-                    <span>@Model.OldPrice</span>
-                </div>
-            }
+
+            @*old price*@
+            <div class="old-product-price" x-show="productDetails.ProductPrice.OldPrice >0 ">
+                <span x-text="'@T("Products.Price.OldPrice"): '+productDetails.ProductPrice.OldPrice"></span>
+                <span>@Model.OldPrice</span>
+            </div>
+
             <div x-text="productDetails.ProductPrice.Price" class="@if (string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
-                        {
+         {
                             <text>product-price</text>
                         }
                         else
@@ -43,13 +42,16 @@
                 @if (!string.IsNullOrWhiteSpace(Model.OldPrice) || !string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
                 {
                     @*display "Price:" label if we have old price or discounted one*@
-                    <label for="price-value-@(Model.ProductId)">@T("Products.Price"):</label>
+                                <label for="price-value-@(Model.ProductId)">@T("Products.Price"):</label>
                 }
                 @*render price*@
-                <span @if (string.IsNullOrWhiteSpace(Model.PriceWithDiscount)) { <text> id="price-value-@(Model.ProductId)" class="price-value-@(Model.ProductId)" </text> }>
+                        <span @if (string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
+                {
+                    <text> id="price-value-@(Model.ProductId)" class="price-value-@(Model.ProductId)" </text>
+                }>
                     @Html.Raw(Model.Price)
-                </span>
-            </div>
+                        </span>
+                    </div>
             if (!string.IsNullOrWhiteSpace(Model.PriceWithDiscount))
             {
                 @*discounted price*@

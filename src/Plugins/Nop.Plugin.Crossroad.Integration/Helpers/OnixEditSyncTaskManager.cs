@@ -75,12 +75,12 @@ public class OnixEditSyncTaskManager
                     LogInformation("OnixEditSync start");
 
                     await onixLoginService.GetTokenAsync();
-                    var i = 0;
-                    LogInformation($"Processing Page {i + 1}");
+                    var i = 1;
+                    LogInformation($"Processing Page {i}");
                     while (_isRunning)
                     {
                         LogInformation($"Getting Product From OnixEdit");
-                        var onixProducts = await onixEditService.GetOnixProductsAsync(page: i, pageSize: 10, isbn);
+                        var onixProducts = await onixEditService.GetOnixProductsAsync(page: i, pageSize: 100, isbn);
                         LogInformation($"Number of Products obtained from OnixEdit: {onixProducts.Count}");
 
                         LogInformation($"Start persisting Product");
