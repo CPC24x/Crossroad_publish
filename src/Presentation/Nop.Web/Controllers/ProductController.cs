@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
@@ -157,11 +158,11 @@ namespace Nop.Web.Controllers
         #endregion
 
         #region Product details page
-        public virtual async Task<IActionResult> ProductData(int productId, int updatecartitemid = 0)
+        private async Task<ProductDetailsModel> ProductData(int productId, int updatecartitemid = 0)
         {
             var product = await _productService.GetProductByIdAsync(productId);
             if (product == null || product.Deleted)
-                return Json(new { error = "Product not found" });
+                return null;
 
             var notAvailable =
                 //published?
@@ -176,7 +177,7 @@ namespace Nop.Web.Controllers
             //We should allows him (her) to use "Preview" functionality
             var hasAdminAccess = await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel) && await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts);
             if (notAvailable && !hasAdminAccess)
-                return Json(new { error = "Product not found" });
+                return null;
 
 
             //update existing shopping cart or wishlist  item?
@@ -191,11 +192,11 @@ namespace Nop.Web.Controllers
 
                 //not found?
                 if (updatecartitem == null)
-                    return Json(new { error = "Product not found" });
+                    return null;
 
                 //is it this product?
                 if (product.Id != updatecartitem.ProductId)
-                    return Json(new { error = "Product not found" });
+                    return null;
             }
 
             //save as recently viewed
@@ -222,7 +223,7 @@ namespace Nop.Web.Controllers
             //template
             var productTemplateViewPath = await _productModelFactory.PrepareProductTemplateViewPathAsync(product);
 
-            return Json(model);
+            return model;
         }
 
         public virtual async Task<IActionResult> ProductDetails(int productId, int updatecartitemid = 0)
@@ -298,7 +299,8 @@ namespace Nop.Web.Controllers
                 string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.ViewProduct"), product.Name), product);
 
             //model
-            var model = await _productModelFactory.PrepareProductDetailsModelAsync(product, updatecartitem, false);
+            var model = await _productModelFactory.PrepareProductDetailsModelAsync(product, updatecartitem, false );
+
             //template
             var productTemplateViewPath = await _productModelFactory.PrepareProductTemplateViewPathAsync(product);
 

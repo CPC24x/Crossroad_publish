@@ -1708,7 +1708,7 @@ namespace Nop.Web.Factories
                 {
                     var associatedProducts = await _productService.GetAssociatedProductsAsync(product.Id, store.Id);
                     foreach (var associatedProduct in associatedProducts)
-                        model.AssociatedProducts.Add(await PrepareProductDetailsModelAsync(associatedProduct, null, true));
+                        model.AssociatedProducts.Add(await PrepareProductDetailsModelAsync(associatedProduct, null, false));
                 }
                 model.InStock = model.AssociatedProducts.Any(associatedProduct => associatedProduct.InStock);
 

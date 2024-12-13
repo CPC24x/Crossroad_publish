@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs.Models;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Math;
@@ -23,6 +24,7 @@ using Nop.Services.Seo;
 using Nop.Web.Areas.Admin.Models.Catalog;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.Contracts;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.OnixEditProductsUpdateTask;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Nop.Plugin.Crossroad.Integration.Services.Products;
 
@@ -94,7 +96,7 @@ public class PersistenceService : IPersistenceService
 
                     if (titleCode == null)
                     {
-                        reportProgress(new ProgressReport($"{catalogue.SortFields.Title} no Title Code", false));
+                        reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no Title Code", false));
                         continue;
                     }
 
@@ -106,10 +108,13 @@ public class PersistenceService : IPersistenceService
 
                     int productId = await InsertOrUpdateProductAsync(catalogue, bookDescriptions);
 
+                    // product types
+                    var productName = await InsertProductTypesAsync(catalogue, productId);
+
                     if (catalogue.SortFields.CoverImage is not null &&
-                        !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
+                       !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
                     {
-                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue?.SortFields?.CoverImage, seoName: catalogue?.SortFields?.Title);
+                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue?.SortFields?.CoverImage, seoName: productName);
 
                         await InsertProductPictureAsync(pictureId, productId);
                     }
@@ -175,19 +180,16 @@ public class PersistenceService : IPersistenceService
                     // keywords
                     await InsertOrUpdateProductKeywordsAsync(catalogue, "Keywords", productId);
 
-                    // product types
-                    await InsertProductTypesAsync(catalogue, productId);
-
-                    reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title} sync complete"));
+                    reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} sync complete"));
                 }
                 catch (Exception ex)
                 {
-                    reportProgress(new ProgressReport($"{catalogue.SortFields.Title} sync exception {ex.Message}", false));
+                    reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} sync exception {ex.Message}", false));
                 }
 
             }
             else
-                reportProgress(new ProgressReport($"{catalogue.SortFields.Title} no publish", false));
+                reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no publish", false));
 
         }
     }
@@ -542,6 +544,8 @@ public class PersistenceService : IPersistenceService
         if (productFromDb == null)
         {
             await _productService.InsertProductAsync(product);
+            var seName = await _urlRecordService.ValidateSeNameAsync(product, null, product.Name, true);
+            await _urlRecordService.SaveSlugAsync(product, seName, 0);
             return product.Id;
         }
 
@@ -690,17 +694,15 @@ public class PersistenceService : IPersistenceService
         return authors.Select(x => x.AuthorName).ToList();
     }
 
-    private async Task InsertProductTypesAsync(CatalogueProductsResponse onixProduct, int productId)
+    private async Task<string> InsertProductTypesAsync(CatalogueProductsResponse onixProduct, int productId)
     {
         var productFormTypes = new OE_ProductFormDetail_Enum().GetDictionary(onixProduct.DescriptiveDetail.ProductFormDetail.Select(x => x.ProductFormCode).ToList());
 
-        foreach (var productFormType in productFormTypes.Values)
-        {
-            var product = await _productService.GetProductByIdAsync(productId);
-            product.Name += $" ({productFormType})";
+        var product = await _productService.GetProductByIdAsync(productId);
+        product.Name += $" ({productFormTypes.Values.FirstOrDefault()})";
 
-            await _productService.UpdateProductAsync(product);
-        }
+        await _productService.UpdateProductAsync(product);
+        return product.Name;
     }
 
     private async Task AddSpecificationAttributeFromListAsync<T>(List<T> onixResponseValues, int productId)
@@ -772,9 +774,13 @@ public class PersistenceService : IPersistenceService
 
                     foreach (var resourceVersion in supportingResource.ResourceVersion)
                     {
-                        var filename = resourceVersion.ResourceVersionFeature.Where(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value));
-                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: Path.GetFileNameWithoutExtension(filename.FirstOrDefault().FeatureValue?.Value));
-                        await InsertProductPictureAsync(pictureId, productId);
+                        var filename = resourceVersion.ResourceVersionFeature.FirstOrDefault(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value)).FeatureValue?.Value;
+                        filename = Path.GetFileNameWithoutExtension(filename);
+                        filename = Regex.Replace(filename, "_[^_]*$", "");
+                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: filename);
+                        var childPicIds = (await _pictureService.GetPicturesByProductIdAsync(productId)).Select(x => x.Id);
+                        if (!childPicIds.Contains(pictureId))
+                            await InsertProductPictureAsync(pictureId, productId);
                     }
                 }
                 break;
@@ -948,7 +954,7 @@ public class PersistenceService : IPersistenceService
         if (childProduct == null)
             return;
 
-        var childPicId = (await _pictureService.GetPicturesByProductIdAsync(childProductId)).FirstOrDefault();
+        var childPic = (await _pictureService.GetPicturesByProductIdAsync(childProductId)).FirstOrDefault();
         var parentProduct = _productRepository.Table.FirstOrDefault(x => x.AdminComment == parentUniquekey.ToLowerInvariant() && x.ProductTypeId == (int)ProductType.GroupedProduct && x.Deleted == false);
 
         if (parentProduct == null)
@@ -977,9 +983,16 @@ public class PersistenceService : IPersistenceService
         }
 
         var parentPicId = (await _pictureService.GetPicturesByProductIdAsync(parentProduct.Id)).FirstOrDefault();
-        if (childPicId != null && parentPicId == null)
+        if (childPic != null && parentPicId == null)
         {
-            await InsertProductPictureAsync(childPicId.Id, parentProduct.Id);
+            string invalidChars = @"[<>:""/\\|?*]";
+            var seoName = Regex.Replace(parentProduct.Name, invalidChars, "");
+            seoName = seoName.ToLower().Replace(" ", "_");
+
+            var pictureBinary = await _pictureService.GetPictureBinaryByPictureIdAsync(childPic.Id);
+            var duplicateBookPicture = await _pictureService.InsertPictureAsync(pictureBinary.BinaryData, MimeTypes.ImageJpeg, seoName);
+
+            await InsertProductPictureAsync(duplicateBookPicture.Id, parentProduct.Id);
         }
 
         childProduct.ParentGroupedProductId = parentProduct.Id;

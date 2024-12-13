@@ -1,5 +1,6 @@
 ﻿@model ProductDetailsModel
 
+@using Newtonsoft.Json
 @using Nop.Core
 @using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Seo
@@ -71,40 +72,21 @@
     <div class="page-body">
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsTop, additionalData = Model })
         <form asp-route="Product" asp-route-sename="@Model.SeName" method="post" id="product-details-form" x-data="{ selectedProduct: '@(Model.AvailableChildProducts.FirstOrDefault().Value)',
-        data: '',
-enteredQuantity: 1,
- mainImgSrc: '',  // Set initial default image
-    mainImgAlt: '',
-    mainImgTitle: '',
-    lightboxHref: '',
-        fetchProductDetails: async function() {
-            this.productDetails = {};
-            try {
-                // Fetch product details from the MVC controller via an API call
-                const response = await fetch(`@Url.ActionLink("ProductData","Product")?productId=${this.selectedProduct}`);
-
-                // Check if the response is ok (status code 200-299)
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                // Parse the JSON response
-                const data = await response.json();
-
-                if (data.error) {
-                    this.productDetails = { description: data.error };  // Handle error in case product is not found
-                } else {
-                    this.productDetails = data;  // Update the product details with the fetched data
-                    this.mainImgSrc= this.productDetails.PictureModels[0].ImageUrl;
-                    this.mainImgAlt= this.productDetails.PictureModels[0].AlternateText;
-                    this.mainImgTitle= this.productDetails.PictureModels[0].Title;
-                    this.lightboxHref=this.productDetails.PictureModels[0].FullSizeImageUrl;
-                }
-            } catch (error) {
-                // Handle errors like network issues
-                this.productDetails = { description: `Error: ${error.message}` };
-            }
-        }}" x-init="fetchProductDetails()">
+              data: '' ,
+              enteredQuantity: 1,
+              mainImgSrc: '' , // Set initial default image
+              mainImgAlt: '' ,
+              mainImgTitle: '' ,
+              lightboxHref: '' ,
+              childProductDetails : @JsonConvert.SerializeObject(Model.AssociatedProducts),
+              fetchProductDetails: async function() {
+              this.productDetails=this.childProductDetails.find(x =>
+            x.Id == this.selectedProduct);
+            this.mainImgSrc=this.productDetails.PictureModels[0].ImageUrl;
+            this.mainImgAlt=this.productDetails.PictureModels[0].AlternateText;
+            this.mainImgTitle=this.productDetails.PictureModels[0].Title;
+            this.lightboxHref=this.productDetails.PictureModels[0].FullSizeImageUrl;
+            }}" x-init="fetchProductDetails()">
             @if (seoSettings.MicrodataEnabled)
             {
                 @await Html.PartialAsync("_Microdata", Model)
