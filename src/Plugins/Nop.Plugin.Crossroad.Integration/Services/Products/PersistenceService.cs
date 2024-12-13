@@ -566,7 +566,6 @@ public class PersistenceService : IPersistenceService
         seoName = seoName.ToLower().Replace(" ", "_");
 
         Core.Domain.Media.Picture pictureFromDb = await _pictureExtendedService.GetPictureBySeoName(seoName);
-
         Core.Domain.Media.Picture bookPicture;
 
         if (pictureFromDb == null)
@@ -642,6 +641,8 @@ public class PersistenceService : IPersistenceService
                                               string pageOptions,
                                               int productId)
     {
+        var selectedManufacturerIds = await _manufacturerService.GetProductManufacturersByProductIdAsync(productId, true);
+
         var authors = onixProduct.DescriptiveDetail
             .Contributor
             .Select(author => new
@@ -650,6 +651,7 @@ public class PersistenceService : IPersistenceService
                 AuthorNameInverted = author.AuthorNameInverted.Value,
                 AuthoRole = author.ContributorRole.Value
             });
+
 
         foreach (var author in authors)
         {
@@ -682,13 +684,24 @@ public class PersistenceService : IPersistenceService
                 manufacturerId = (await _manufacturerExtendedService.GetManufacturerByNameAsync(author.AuthorName)).Id;
             }
 
-            await _manufacturerService.InsertProductManufacturerAsync(new ProductManufacturer
+            if (!selectedManufacturerIds.Any(x => x.ManufacturerId == manufacturerId))
             {
-                IsFeaturedProduct = true,
-                DisplayOrder = 1,
-                ProductId = productId,
-                ManufacturerId = manufacturerId
-            });
+                await _manufacturerService.InsertProductManufacturerAsync(new ProductManufacturer
+                {
+                    IsFeaturedProduct = true,
+                    DisplayOrder = 1,
+                    ProductId = productId,
+                    ManufacturerId = manufacturerId
+                });
+            }
+
+        }
+
+        foreach (var selectedManufacturerId in selectedManufacturerIds)
+        {
+            var manufacturerFromDb = await _manufacturerExtendedService.GetManufacturerByIdAsync(selectedManufacturerId.ManufacturerId);
+            if (!authors.Any(x => x.AuthorName == manufacturerFromDb.Name))
+                await _manufacturerExtendedService.DeleteProductManufacturerAsync(selectedManufacturerId);
         }
 
         return authors.Select(x => x.AuthorName).ToList();
@@ -998,43 +1011,6 @@ public class PersistenceService : IPersistenceService
         childProduct.ParentGroupedProductId = parentProduct.Id;
         childProduct.AdminComment = parentUniquekey.ToLowerInvariant();
         await _productService.UpdateProductAsync(childProduct);
-    }
-
-    private async Task EditOrDeleteParentAsync(int parentProductId, string childProductAdminComment, string parentUniquekey)
-    {
-        var parentProduct = await _productService.GetProductByIdAsync(parentProductId);
-
-        if (parentProduct == null)
-            return;
-
-        if (parentProduct.AdminComment != childProductAdminComment)
-        {
-
-        }
-
-        return;
-    }
-    private async Task ChangeGroupedProductDataAsync(int parentProductId, string newParentProductName)
-    {
-        var parentProduct = await _productService.GetProductByIdAsync(parentProductId);
-
-        if (parentProduct == null)
-            return;
-
-        if (parentProduct.Name != newParentProductName)
-        {
-            parentProduct.Name = newParentProductName;
-            await _productService.UpdateProductAsync(parentProduct);
-
-            var childProducts = await _productService.GetAssociatedProductsAsync(parentProductId);
-            foreach (var childProduct in childProducts)
-            {
-                childProduct.AdminComment = parentProduct.Name.ToLowerInvariant();
-                await _productService.UpdateProductAsync(childProduct);
-            }
-        }
-
-        return;
     }
 
 }
