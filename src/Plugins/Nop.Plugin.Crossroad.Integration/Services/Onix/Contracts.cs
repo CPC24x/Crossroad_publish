@@ -105,12 +105,12 @@ public class Contracts
 
     public record Subject([property: JsonPropertyName("SubjectSchemeIdentifier")] SubjectSchemeIdentifier SubjectSchemeIdentifier,
         [property: JsonPropertyName("SubjectSchemeName")] SubjectSchemeName SchemeName,
-        [property: JsonPropertyName("SubjectHeadingText")] SubjectHeadingText Keywords);
+        [property: JsonPropertyName("SubjectHeadingText")] SubjectHeadingText SubjectHeadingText);
 
     public record SubjectSchemeIdentifier([property: JsonPropertyName("Value")] string Value);
     public record SubjectSchemeName([property: JsonPropertyName("Value")] string Name);
 
-    public record SubjectHeadingText([property: JsonPropertyName("Value")] string KeywordsValues);
+    public record SubjectHeadingText([property: JsonPropertyName("Value")] string Value);
 
     #endregion
 

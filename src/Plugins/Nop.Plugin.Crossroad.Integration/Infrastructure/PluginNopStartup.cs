@@ -25,6 +25,7 @@ namespace Nop.Plugin.Crossroad.Integration.Infrastructure
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<OnixEditSyncTaskManager>();
+            services.AddSingleton<ImageUrlChecker>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {

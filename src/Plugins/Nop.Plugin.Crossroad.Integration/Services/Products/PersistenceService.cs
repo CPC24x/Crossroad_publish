@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs.Models;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Math;
-using Microsoft.Extensions.Azure;
+using System.Web;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
-using Nop.Core.Domain.Media;
 using Nop.Data;
+using Nop.Plugin.Crossroad.Integration.Helpers;
 using Nop.Plugin.Crossroad.Integration.Infrastructure.Extensions;
 using Nop.Plugin.Crossroad.Integration.Services.Manufacturer;
 using Nop.Plugin.Crossroad.Integration.Services.Picture;
 using Nop.Plugin.Crossroad.Integration.Services.SpecificationAttributes;
 using Nop.Services.Catalog;
-using Nop.Services.Localization;
 using Nop.Services.Media;
 using Nop.Services.Seo;
-using Nop.Web.Areas.Admin.Models.Catalog;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.Contracts;
 using static Nop.Plugin.Crossroad.Integration.Services.Onix.OnixEditProductsUpdateTask;
-using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Nop.Plugin.Crossroad.Integration.Services.Products;
 
@@ -44,7 +36,6 @@ public class PersistenceService : IPersistenceService
     private readonly ISpecificationAttributeService _specificationAttributeService;
     private readonly IRepository<Product> _productRepository;
     private readonly IUrlRecordService _urlRecordService;
-    private readonly ILocalizedEntityService _localizedEntityService;
     private readonly IProductTemplateService _productTemplateService;
 
     public PersistenceService(IProductService productService,
@@ -61,7 +52,6 @@ public class PersistenceService : IPersistenceService
         ISpecificationAttributeService specificationAttributeService,
         IRepository<Product> productRepository,
         IUrlRecordService urlRecordService,
-        ILocalizedEntityService localizedEntityService,
         IProductTemplateService productTemplateService)
     {
         _productService = productService;
@@ -78,7 +68,6 @@ public class PersistenceService : IPersistenceService
         _specificationAttributeService = specificationAttributeService;
         _productRepository = productRepository;
         _urlRecordService = urlRecordService;
-        _localizedEntityService = localizedEntityService;
         _productTemplateService = productTemplateService;
     }
 
@@ -100,6 +89,7 @@ public class PersistenceService : IPersistenceService
                         continue;
                     }
 
+
                     var bookDescriptions = catalogue.CollateralDetail
                                             .TextContent
                                             .Where(tt => !new OE_TextType_Enum().GetKeys("Review quote").Contains(tt?.TextType?.Type) && !new OE_TextType_Enum().GetKeys("Endorsement").Contains(tt?.TextType?.Type))
@@ -111,12 +101,33 @@ public class PersistenceService : IPersistenceService
                     // product types
                     var productName = await InsertProductTypesAsync(catalogue, productId);
 
-                    if (catalogue.SortFields.CoverImage is not null &&
-                       !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
+                    ImageUrlChecker.ImageUrls.Clear();
+                    if (catalogue.SortFields.CoverImage is not null && !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
                     {
-                        int pictureId = await InsertOrUpdatePictureAsync(url: catalogue?.SortFields?.CoverImage, seoName: productName);
+                        var url = ImageUrlChecker.AddUrlToDictionary(catalogue?.SortFields?.CoverImage);
+                        if (!string.IsNullOrWhiteSpace(url))
+                        {
+                            int pictureId = await InsertOrUpdatePictureAsync(url: url, seoName: productName);
+                            await InsertProductPictureAsync(pictureId, productId);
+                        }
 
-                        await InsertProductPictureAsync(pictureId, productId);
+                    }
+
+                    foreach (var supportingResource in catalogue.CollateralDetail.SupportingResource)
+                    {
+                        foreach (var resourceVersion in supportingResource.ResourceVersion)
+                        {
+                            //var filename = resourceVersion.ResourceVersionFeature.FirstOrDefault(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value)).FeatureValue?.Value;
+                            //filename = Path.GetFileNameWithoutExtension(filename);
+                            //filename = Regex.Replace(filename, "_[^_]*$", "");
+                            //var urlLink = Regex.Replace(, "_[^_]*$", "");
+                            var url = ImageUrlChecker.AddUrlToDictionary(resourceVersion?.ResourceLink?.Value ?? "");
+                            if (!string.IsNullOrWhiteSpace(url))
+                            {
+                                int pictureId = await InsertOrUpdatePictureAsync(url: url, seoName: productName);
+                                await InsertProductPictureAsync(pictureId, productId);
+                            }
+                        }
                     }
 
                     await InsertProductReviewAsync(productId, catalogue);
@@ -167,7 +178,6 @@ public class PersistenceService : IPersistenceService
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.TitleDetail, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Contributor, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.AncillaryContent, productId);
-                    await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail.SupportingResource, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.PublishingDetail.PublishingDate, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.ProductSupply, productId);
                     //BISAC
@@ -178,7 +188,7 @@ public class PersistenceService : IPersistenceService
                     await InsertOrUpdatePublishingStatusAsync(catalogue, productId);
 
                     // keywords
-                    await InsertOrUpdateProductKeywordsAsync(catalogue, "Keywords", productId);
+                    await InsertOrUpdateProductKeywordsOrBISACAsync(catalogue, productId);
 
                     reportProgress(new ProgressReport($"Start sync {catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} sync complete"));
                 }
@@ -407,84 +417,88 @@ public class PersistenceService : IPersistenceService
         }
     }
 
-    private async Task InsertOrUpdateProductKeywordsAsync(CatalogueProductsResponse onixProduct,
-                                                          string productAttributeColumnName,
-                                                          int productId)
+    private async Task InsertOrUpdateProductKeywordsOrBISACAsync(CatalogueProductsResponse onixProduct, int productId)
     {
         // specification attribute
-        bool isSpecificationAttributeExists = await _specificationAttributeOptionsService.IsSpecificationAttributeExists(productAttributeColumnName);
 
-        SpecificationAttribute specificationAttribute = new()
-        {
-            Name = productAttributeColumnName,
-            DisplayOrder = 1
-        };
-
-        int specificationAttributeId;
-
-        if (!isSpecificationAttributeExists)
-        {
-            await _specificationAttributeService.InsertSpecificationAttributeAsync(specificationAttribute);
-
-            specificationAttributeId = specificationAttribute.Id;
-        }
-        else
-        {
-            specificationAttributeId = (await _specificationAttributeService.GetSpecificationAttributesAsync()).FirstOrDefault(sa => sa.Name == productAttributeColumnName)!.Id;
-        }
 
         // specification attribute option
 
-        Dictionary<string, string> keywordsDictionary = GetBookSubjects(onixProduct);
+        Dictionary<string, string> subjectDictionary = GetBookSubjects(onixProduct);
 
-        var keywords = keywordsDictionary["Keywords"];
-
-        if (keywords is not null)
+        if (subjectDictionary is not null)
         {
-            string[] splitKeywords = keywords.StringToArray();
-
-            foreach (var splitKeyword in splitKeywords)
+            foreach (var subject in subjectDictionary)
             {
-                bool isSpecificationAttributesOptionsExists = await _specificationAttributeOptionsService.IsSpecificationAttributeOptionsExists(splitKeyword, specificationAttributeId);
 
-                SpecificationAttributeOption specificationAttributeOption = new()
+                bool isSpecificationAttributeExists = await _specificationAttributeOptionsService.IsSpecificationAttributeExists(subject.Key);
+
+                SpecificationAttribute specificationAttribute = new()
                 {
-                    Name = splitKeyword,
-                    SpecificationAttributeId = specificationAttributeId,
+                    Name = subject.Key,
                     DisplayOrder = 1
                 };
 
-                int specificationAttributeOptionId;
+                int specificationAttributeId;
 
-                if (!isSpecificationAttributesOptionsExists)
+                if (!isSpecificationAttributeExists)
                 {
-                    await _specificationAttributeService.InsertSpecificationAttributeOptionAsync(specificationAttributeOption);
+                    await _specificationAttributeService.InsertSpecificationAttributeAsync(specificationAttribute);
 
-                    specificationAttributeOptionId = specificationAttributeOption.Id;
+                    specificationAttributeId = specificationAttribute.Id;
                 }
                 else
                 {
-                    specificationAttributeOptionId = await _specificationAttributeOptionsService.GetSpecificationAttributeOptionIdByName(splitKeyword);
+                    specificationAttributeId = (await _specificationAttributeService.GetSpecificationAttributesAsync()).FirstOrDefault(sa => sa.Name == subject.Key)!.Id;
                 }
 
-                // specification attribute mapping
 
-                bool isSpecificationAttributeMappingExists = await _specificationAttributeOptionsService.IsSpecificationAttributeMappingExists(productId, specificationAttributeOptionId);
+                string[] splitKeywords = subject.Value.StringToArray();
 
-                if (!isSpecificationAttributeMappingExists)
+                foreach (var splitKeyword in splitKeywords)
                 {
-                    await _specificationAttributeService.InsertProductSpecificationAttributeAsync(new ProductSpecificationAttribute
+                    bool isSpecificationAttributesOptionsExists = await _specificationAttributeOptionsService.IsSpecificationAttributeOptionsExists(splitKeyword, specificationAttributeId);
+
+                    SpecificationAttributeOption specificationAttributeOption = new()
                     {
-                        ProductId = productId,
-                        AttributeTypeId = 0,
-                        SpecificationAttributeOptionId = specificationAttributeOptionId,
-                        CustomValue = null,
-                        AllowFiltering = true,
-                        ShowOnProductPage = false,
+                        Name = splitKeyword,
+                        SpecificationAttributeId = specificationAttributeId,
                         DisplayOrder = 1
-                    });
+                    };
+
+                    int specificationAttributeOptionId;
+
+                    if (!isSpecificationAttributesOptionsExists)
+                    {
+                        await _specificationAttributeService.InsertSpecificationAttributeOptionAsync(specificationAttributeOption);
+
+                        specificationAttributeOptionId = specificationAttributeOption.Id;
+                    }
+                    else
+                    {
+                        specificationAttributeOptionId = await _specificationAttributeOptionsService.GetSpecificationAttributeOptionIdByName(splitKeyword);
+                    }
+
+                    // specification attribute mapping
+
+                    bool isSpecificationAttributeMappingExists = await _specificationAttributeOptionsService.IsSpecificationAttributeMappingExists(productId, specificationAttributeOptionId);
+
+                    if (!isSpecificationAttributeMappingExists)
+                    {
+                        await _specificationAttributeService.InsertProductSpecificationAttributeAsync(new ProductSpecificationAttribute
+                        {
+                            ProductId = productId,
+                            AttributeTypeId = 0,
+                            SpecificationAttributeOptionId = specificationAttributeOptionId,
+                            CustomValue = null,
+                            AllowFiltering = true,
+                            ShowOnProductPage = false,
+                            DisplayOrder = 1
+                        });
+                    }
                 }
             }
+
         }
     }
 
@@ -781,23 +795,6 @@ public class PersistenceService : IPersistenceService
                 }
                 break;
 
-            case List<SupportingResource> supportingResources:
-                foreach (var supportingResource in supportingResources)
-                {
-
-                    foreach (var resourceVersion in supportingResource.ResourceVersion)
-                    {
-                        var filename = resourceVersion.ResourceVersionFeature.FirstOrDefault(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value)).FeatureValue?.Value;
-                        filename = Path.GetFileNameWithoutExtension(filename);
-                        filename = Regex.Replace(filename, "_[^_]*$", "");
-                        int pictureId = await InsertOrUpdatePictureAsync(url: resourceVersion?.ResourceLink?.Value ?? "", seoName: filename);
-                        var childPicIds = (await _pictureService.GetPicturesByProductIdAsync(productId)).Select(x => x.Id);
-                        if (!childPicIds.Contains(pictureId))
-                            await InsertProductPictureAsync(pictureId, productId);
-                    }
-                }
-                break;
-
             case List<ProductSupply> productSupplies:
                 foreach (var productSupply in productSupplies)
                 {
@@ -812,11 +809,10 @@ public class PersistenceService : IPersistenceService
                 }
                 break;
 
-            case List<Subject> subjects:
-                var biascList = subjects.Where(x => !new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier?.Value));
-                foreach (var biasc in biascList)
-                    await AddSpecificationAttributeAsync(new OE_SubjectSchemeIdentifier_Enum().GetValue(biasc.SubjectSchemeIdentifier?.Value), biasc?.Keywords?.KeywordsValues ?? "", productId);
-                break;
+            //case List<Subject> subjects:
+            //    foreach (var biasc in subjects) //keywords,BISAC Subject Heading
+            //        await AddSpecificationAttributeAsync(new OE_SubjectSchemeIdentifier_Enum().GetValue(biasc.SubjectSchemeIdentifier?.Value), biasc?.SubjectHeadingText?.Value ?? "", productId);
+            //    break;
 
             case List<ProductIdentifier> productIdentifiers:
                 foreach (var productIdentifier in productIdentifiers)
@@ -874,19 +870,20 @@ public class PersistenceService : IPersistenceService
 
     private Dictionary<string, string> GetBookSubjects(CatalogueProductsResponse response)
     {
-        var onixKeywords = response.DescriptiveDetail.Subject.Where(x => new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier.Value));
+        //var onixKeywords = response.DescriptiveDetail.Subject.Where(x => new OE_SubjectSchemeIdentifier_Enum().GetKeys("Keywords").Contains(x.SubjectSchemeIdentifier.Value));
 
-        Dictionary<string, string> keywords = new();
+        Dictionary<string, string> schemeIdentifiers = new();
 
-        foreach (var onixKeyword in onixKeywords)
+        foreach (var subject in response.DescriptiveDetail.Subject)
         {
-            if (onixKeyword is { Keywords: not null, SchemeName: not null })
+            if (subject is { SubjectHeadingText: not null })
             {
-                keywords.Add(onixKeyword.SchemeName.Name, onixKeyword.Keywords.KeywordsValues);
+                var name = new OE_SubjectSchemeIdentifier_Enum().GetValue(subject.SubjectSchemeIdentifier.Value);
+                schemeIdentifiers.Add(name, HttpUtility.HtmlDecode(subject.SubjectHeadingText.Value));
             }
         }
 
-        return keywords;
+        return schemeIdentifiers;
     }
 
     private async Task AddSpecificationAttributeAsync(string columnName, string columnValue, int productId, string alternativeColumName = "", bool showOnProductPage = false)
