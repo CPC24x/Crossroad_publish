@@ -82,13 +82,13 @@ public class PersistenceService : IPersistenceService
             {
                 try
                 {
-                    var titleCode = catalogue.ProductIdentifier.FirstOrDefault(x => x.IDTypeName?.Value == "Title Code")?.IDValue?.Value;
+                    //var titleCode = catalogue.ProductIdentifier.FirstOrDefault(x => x.IDTypeName?.Value == "Title Code")?.IDValue?.Value;
 
-                    if (titleCode == null)
-                    {
-                        reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no Title Code", false));
-                        continue;
-                    }
+                    //if (titleCode == null)
+                    //{
+                    //    reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no Title Code", false));
+                    //    continue;
+                    //}
 
 
                     var bookDescriptions = catalogue.CollateralDetail
@@ -181,8 +181,8 @@ public class PersistenceService : IPersistenceService
                     await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.AncillaryContent, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.PublishingDetail.PublishingDate, productId);
                     await AddSpecificationAttributeFromListAsync(catalogue.ProductSupply, productId);
-                    //BISAC
-                    await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Subject, productId);
+                    //await AddSpecificationAttributeFromListAsync(catalogue.DescriptiveDetail.Subject, productId);
+                    await AddSpecificationAttributeFromListAsync(catalogue.CollateralDetail.Prize, productId);
                     //26/11/2024 add
 
                     // publish status
@@ -810,10 +810,10 @@ public class PersistenceService : IPersistenceService
                 }
                 break;
 
-            //case List<Subject> subjects:
-            //    foreach (var biasc in subjects) //keywords,BISAC Subject Heading
-            //        await AddSpecificationAttributeAsync(new OE_SubjectSchemeIdentifier_Enum().GetValue(biasc.SubjectSchemeIdentifier?.Value), biasc?.SubjectHeadingText?.Value ?? "", productId);
-            //    break;
+            case List<Prize> prize:
+                foreach (var p in prize)
+                    await AddSpecificationAttributeAsync("Prize", p?.PrizeName?.Value, productId, showOnProductPage: true);
+                break;
 
             case List<ProductIdentifier> productIdentifiers:
                 foreach (var productIdentifier in productIdentifiers)

@@ -128,7 +128,8 @@ public class Contracts
     #region Text
 
     public record CollateralDetail([property: JsonPropertyName("TextContent")] List<TextContent> TextContent,
-        [property: JsonPropertyName("SupportingResource")] List<SupportingResource> SupportingResource);
+        [property: JsonPropertyName("SupportingResource")] List<SupportingResource> SupportingResource,
+        [property: JsonPropertyName("Prize")] List<Prize> Prize);
 
     public record TextContent([property: JsonPropertyName("TextType")] TextType TextType,
         [property: JsonPropertyName("Text")] Text Text);
@@ -157,6 +158,8 @@ public class Contracts
     public record FeatureValue([property: JsonPropertyName("Value")] string Value);
 
     public record ResourceLink([property: JsonPropertyName("Value")] string Value);
+    public record Prize([property: JsonPropertyName("PrizeName")] PrizeName PrizeName);
+    public record PrizeName([property: JsonPropertyName("Value")] string Value);
 
     #endregion
 
