@@ -56,7 +56,7 @@ public class OnixEditSyncTaskManager
         _logger?.Error(message);
     }
 
-    public async Task<bool> TryStartSync(string isbn = "")
+    public async Task<bool> TryStartSync(string isbn = "", bool checkTitlecode = true)
     {
         if (!TryStart())
             return false;
@@ -90,7 +90,7 @@ public class OnixEditSyncTaskManager
                                 LogInformation(progress.Message);
                             else
                                 LogError(progress.Message);
-                        });
+                        }, checkTitlecode: checkTitlecode);
 
                         //LogInformation($"Start Update Prices For Books Based On Types");
                         //await persistenceService.UpdatePricesForBooksBasedOnTypes(progress =>

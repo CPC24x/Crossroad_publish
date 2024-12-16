@@ -8,7 +8,7 @@ namespace Nop.Plugin.Crossroad.Integration.Services.Products;
 
 public interface IPersistenceService
 {
-    Task PersistProducts(List<Contracts.CatalogueProductsResponse> catalogues,Action<ProgressReport> messages);
+    Task PersistProducts(List<Contracts.CatalogueProductsResponse> catalogues,Action<ProgressReport> messages, bool checkTitlecode = true);
 
     Task UpdatePricesForBooksBasedOnTypes(Action<ProgressReport> reportProgress);
 }

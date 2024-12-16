@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ public class PersistenceService : IPersistenceService
     private readonly IRepository<Product> _productRepository;
     private readonly IUrlRecordService _urlRecordService;
     private readonly IProductTemplateService _productTemplateService;
+    private readonly ImageUrlChecker _imageUrlChecker;
 
     public PersistenceService(IProductService productService,
         IPictureService pictureService,
@@ -53,7 +55,8 @@ public class PersistenceService : IPersistenceService
         ISpecificationAttributeService specificationAttributeService,
         IRepository<Product> productRepository,
         IUrlRecordService urlRecordService,
-        IProductTemplateService productTemplateService)
+        IProductTemplateService productTemplateService,
+        ImageUrlChecker imageUrlChecker)
     {
         _productService = productService;
         _pictureService = pictureService;
@@ -70,9 +73,10 @@ public class PersistenceService : IPersistenceService
         _productRepository = productRepository;
         _urlRecordService = urlRecordService;
         _productTemplateService = productTemplateService;
+        _imageUrlChecker = imageUrlChecker;
     }
 
-    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<ProgressReport> reportProgress)
+    public async Task PersistProducts(List<CatalogueProductsResponse> catalogues, Action<ProgressReport> reportProgress, bool checkTitlecode = true)
     {
         foreach (var catalogue in catalogues)
         {
@@ -82,13 +86,13 @@ public class PersistenceService : IPersistenceService
             {
                 try
                 {
-                    //var titleCode = catalogue.ProductIdentifier.FirstOrDefault(x => x.IDTypeName?.Value == "Title Code")?.IDValue?.Value;
+                    var titleCode = catalogue.ProductIdentifier.FirstOrDefault(x => x.IDTypeName?.Value == "Title Code")?.IDValue?.Value;
 
-                    //if (titleCode == null)
-                    //{
-                    //    reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no Title Code", false));
-                    //    continue;
-                    //}
+                    if (titleCode == null && checkTitlecode)
+                    {
+                        reportProgress(new ProgressReport($"{catalogue.SortFields.Title} ISBN13:{catalogue.SortFields?.ISBN13 ?? ""} no Title Code", false));
+                        continue;
+                    }
 
 
                     var bookDescriptions = catalogue.CollateralDetail
@@ -102,10 +106,10 @@ public class PersistenceService : IPersistenceService
                     // product types
                     var productName = await InsertProductTypesAsync(catalogue, productId);
 
-                    ImageUrlChecker.ImageUrls.Clear();
+                    _imageUrlChecker.ImageUrls.Clear();
                     if (catalogue.SortFields.CoverImage is not null && !string.IsNullOrWhiteSpace(catalogue.SortFields.CoverImage))
                     {
-                        var url = ImageUrlChecker.AddUrlToDictionary(catalogue?.SortFields?.CoverImage);
+                        var url = _imageUrlChecker.AddUrlToDictionary(catalogue?.SortFields?.CoverImage);
                         if (!string.IsNullOrWhiteSpace(url))
                         {
                             int pictureId = await InsertOrUpdatePictureAsync(url: url, seoName: productName);
@@ -118,14 +122,15 @@ public class PersistenceService : IPersistenceService
                     {
                         foreach (var resourceVersion in supportingResource.ResourceVersion)
                         {
-                            //var filename = resourceVersion.ResourceVersionFeature.FirstOrDefault(x => new OE_ResourceVersionFeatureType_Enum().GetKeys("Filename").Contains(x.ResourceVersionFeatureType?.Value)).FeatureValue?.Value;
-                            //filename = Path.GetFileNameWithoutExtension(filename);
-                            //filename = Regex.Replace(filename, "_[^_]*$", "");
-                            //var urlLink = Regex.Replace(, "_[^_]*$", "");
-                            var url = ImageUrlChecker.AddUrlToDictionary(resourceVersion?.ResourceLink?.Value ?? "");
+
+                            var url = _imageUrlChecker.AddUrlToDictionary(resourceVersion?.ResourceLink?.Value ?? "");
                             if (!string.IsNullOrWhiteSpace(url))
                             {
-                                int pictureId = await InsertOrUpdatePictureAsync(url: url, seoName: productName);
+                                int lastSlashIndex = url.LastIndexOf('/');
+                                var filename = url.Substring(lastSlashIndex + 1);
+                                filename = Path.GetFileNameWithoutExtension(filename);
+                                filename = Regex.Replace(filename, "_[^_]*$", "");
+                                int pictureId = await InsertOrUpdatePictureAsync(url: url, seoName: filename);
                                 await InsertProductPictureAsync(pictureId, productId);
                             }
                         }

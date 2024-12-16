@@ -59,9 +59,9 @@ public class IntegrationController : BaseAdminController
     }
 
     [ActionName("sync-from-onixedit")]
-    public async Task SyncFromOnixedit(string isbn)
+    public async Task SyncFromOnixedit(string isbn, bool checkTitlecode = true)
     {
-        if (!await _onixSyncTaskManager.TryStartSync(isbn))
+        if (!await _onixSyncTaskManager.TryStartSync(isbn, checkTitlecode: checkTitlecode))
             throw new NopException("OnixEdit currently already start");
     }
 
