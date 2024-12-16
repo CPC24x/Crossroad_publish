@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using LinqToDB;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Data;
@@ -879,7 +880,12 @@ public class PersistenceService : IPersistenceService
             if (subject is { SubjectHeadingText: not null })
             {
                 var name = new OE_SubjectSchemeIdentifier_Enum().GetValue(subject.SubjectSchemeIdentifier.Value);
-                schemeIdentifiers.Add(name, HttpUtility.HtmlDecode(subject.SubjectHeadingText.Value));
+                var subjectHeadingText = HttpUtility.HtmlDecode(subject.SubjectHeadingText.Value);
+
+                if (schemeIdentifiers.ContainsKey(name))
+                    schemeIdentifiers[name] += ";" + subjectHeadingText;
+                else
+                    schemeIdentifiers[name] = subjectHeadingText;
             }
         }
 
