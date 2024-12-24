@@ -130,6 +130,14 @@
         <div class="footer-lower">
             <div class="footer-info my-auto">
                 <span class="footer-disclaimer">@T("Content.CopyrightNotice", DateTime.Now.Year, Model.StoreName)</span>
+                @if (!Model.HidePoweredByNopCommerce)
+                {
+                    <span class="footer-disclaimer">
+                        @*Would you like to remove the "Powered by nopCommerce" link in the bottom of the footer?
+                    Please find more info at https://www.nopcommerce.com/nopcommerce-copyright-removal-key*@
+                        Powered by <a href="@(OfficialSite.Main)" target="_blank" @(Model.IsHomePage ? string.Empty : "rel=nofollow")>nopCommerce</a>
+                    </span>
+                }
                 @if (Model.DisplayTaxShippingInfoFooter)
                 {
                     var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
